@@ -51,11 +51,58 @@ input[type=text]:focus,input[type=date]:focus{background:#fff8c6;color:#000}
 #lt tbody tr{cursor:pointer}#lt tbody tr:hover{background:var(--grey)}#lt td{padding:5px 6px;height:auto}
 input:disabled{color:var(--ink);opacity:1;background:transparent}
 @media print{#nav,#login,#list{display:none!important}}
+
+#login{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;overflow:hidden;color:#e8f0ff;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(1200px 700px at 15% 5%,#0e2a5c 0,transparent 60%),radial-gradient(900px 600px at 90% 95%,#3b0f66 0,transparent 55%),#050816}
+#login::before{content:"";position:absolute;left:-50%;right:-50%;bottom:-10%;height:80%;background-image:linear-gradient(rgba(80,140,255,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(80,140,255,.16) 1px,transparent 1px);background-size:46px 46px;transform:perspective(500px) rotateX(62deg);animation:grid 6s linear infinite;-webkit-mask-image:linear-gradient(to top,#000 5%,transparent 80%);mask-image:linear-gradient(to top,#000 5%,transparent 80%);pointer-events:none}
+@keyframes grid{to{background-position:0 46px}}
+#fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.orb{position:absolute;width:380px;height:380px;border-radius:50%;filter:blur(90px);opacity:.4;animation:fl 14s ease-in-out infinite alternate;pointer-events:none}
+.o1{background:#1f6bff;top:-100px;left:-80px}.o2{background:#a23bff;bottom:-120px;right:-90px;animation-delay:-6s}
+@keyframes fl{to{transform:translate(70px,50px) scale(1.18)}}
+.card{position:relative;z-index:2;width:100%;max-width:380px;padding:34px 28px 22px;border-radius:20px;background:rgba(12,18,40,.66);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 0 0 1px rgba(120,160,255,.16),0 30px 80px rgba(0,0,0,.55),0 0 70px rgba(60,120,255,.2);display:flex;flex-direction:column;gap:16px;animation:rise .9s cubic-bezier(.2,.8,.2,1) both}
+.card::before{content:"";position:absolute;inset:-1px;border-radius:21px;padding:1px;background:conic-gradient(from var(--a,0deg),transparent 0 65%,#4da3ff,#b05cff,transparent);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 5s linear infinite;pointer-events:none}
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes spin{to{--a:360deg}}
+@keyframes rise{from{opacity:0;transform:translateY(30px) scale(.96)}}
+.card.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.logo{width:64px;height:64px;margin:0 auto;border-radius:18px;display:grid;place-items:center;font-weight:800;font-size:22px;letter-spacing:1px;color:#fff;background:linear-gradient(135deg,#1f6bff,#8a3bff);box-shadow:0 0 30px rgba(90,120,255,.7);animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 52px rgba(150,100,255,.95)}}
+#login h2{margin:2px 0 0;text-align:center;font-size:26px;letter-spacing:.04em;background:linear-gradient(90deg,#8fc2ff,#d3a6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin:-8px 0 4px;text-align:center;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#8fa3d6}
+.fld{position:relative;display:block}
+.fld input{width:100%;height:52px;padding:20px 58px 6px 14px;border-radius:12px;border:1px solid rgba(120,160,255,.25);background:rgba(5,10,30,.65);color:#fff;font:15px Arial,sans-serif;outline:0;transition:.25s}
+.fld span{position:absolute;left:14px;top:17px;color:#8fa3d6;font-size:14px;pointer-events:none;transition:.2s}
+.fld input:focus+span,.fld input:not(:placeholder-shown)+span{top:7px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6fb3ff}
+.fld input:focus{border-color:#4da3ff;box-shadow:0 0 0 3px rgba(77,163,255,.18),0 0 26px rgba(77,163,255,.28)}
+#eye{position:absolute;right:6px;top:11px;height:30px;padding:0 8px;border:0;background:transparent;color:#8fa3d6;font-size:11px;cursor:pointer;border-radius:6px}
+#eye:hover{color:#fff}
+#bIn{position:relative;height:50px;border:0;border-radius:12px;font-size:15px;letter-spacing:.14em;color:#fff;cursor:pointer;background:linear-gradient(110deg,#1f6bff,#8a3bff,#1f6bff);background-size:220% 100%;animation:sh 4s linear infinite;box-shadow:0 8px 30px rgba(60,110,255,.45);overflow:hidden;transition:transform .15s,box-shadow .2s}
+@keyframes sh{to{background-position:220% 0}}
+#bIn:hover{transform:translateY(-2px);box-shadow:0 12px 42px rgba(120,90,255,.65)}
+#bIn:active{transform:scale(.98)}
+#bIn:disabled{opacity:.8;cursor:wait}
+#bIn .sp{display:none;position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite}
+#bIn.ld .t{opacity:0}#bIn.ld .sp{display:block}
+@keyframes rot{to{transform:rotate(360deg)}}
+#login .err{min-height:16px;margin:0;text-align:center;font-size:12.5px;color:#ff8a9a}
+.ft{margin:0;text-align:center;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#55648f}
+@media (prefers-reduced-motion:reduce){#login *,#login::before,.card::before{animation:none!important}}
 </style>
 </head>
 <body>
 <div class="bar" id="nav" hidden><span id="who" style="margin-right:auto;align-self:center"></span><button class="g" id="bList">Daftar WO</button><button id="bNew">+ WO Baru</button><button class="g" id="bOut">Keluar</button></div>
-<div id="login" class="box" hidden><h2>Work Order - Login</h2><input id="em" type="text" placeholder="Email" autocomplete="username"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button id="bIn">Masuk</button><p id="err" class="err"></p></div>
+<div id="login" hidden>
+<canvas id="fx"></canvas><div class="orb o1"></div><div class="orb o2"></div>
+<form id="lf" class="card" novalidate>
+ <div class="logo"><span>WO</span></div>
+ <h2>Work Order</h2><p class="sub">Planning Upkeep &middot; Digital System</p>
+ <label class="fld"><input id="em" type="email" placeholder=" " autocomplete="username"><span>Email</span></label>
+ <label class="fld"><input id="pw" type="password" placeholder=" " autocomplete="current-password"><span>Password</span><button type="button" id="eye" tabindex="-1">Lihat</button></label>
+ <button id="bIn" type="submit"><b class="t">MASUK</b><i class="sp"></i></button>
+ <p id="err" class="err" role="alert"></p>
+ <p class="ft">GPA &middot; Work Order System</p>
+</form></div>
 <div id="list" class="wrap" hidden><div class="paper"><h2 style="margin:0 0 8px">Daftar Work Order</h2><table id="lt"><thead><tr><th>No WO</th><th>Divisi</th><th>Mandor</th><th>Status</th><th>Diubah</th></tr></thead><tbody></tbody></table><p id="lmsg"></p></div></div>
 <div id="formv" hidden>
 <div class="bar"><span id="stat" style="margin-right:auto;align-self:center;font-weight:700"></span><button class="g" id="bBack">Kembalikan ke Draft</button><button class="g" id="bSave">Simpan Draft</button><button id="bNext">Ajukan</button><button class="g" onclick="window.print()">Cetak / PDF</button></div>
@@ -163,21 +210,34 @@ const isR=(...r)=>r.includes(me.role)||me.role==='admin';
 const show=v=>{['login','list','formv'].forEach(x=>$(x).hidden=x!==v);$('nav').hidden=v==='login'};
 const msg=e=>alert('Gagal: '+(e.code||e.message));
 
+const ERR={'auth/invalid-credential':'Email atau password salah.','auth/invalid-email':'Format email tidak valid.','auth/missing-password':'Password belum diisi.','auth/user-disabled':'Akun ini dinonaktifkan.','auth/too-many-requests':'Terlalu banyak percobaan. Coba lagi beberapa menit.','auth/network-request-failed':'Koneksi internet bermasalah.','auth/unauthorized-domain':'Domain situs ini belum ditambahkan di Firebase (Authorized domains).','permission-denied':'Akses ditolak oleh Firestore Rules.'};
+const say=e=>{$('err').textContent=typeof e==='string'?e:(ERR[e.code]||e.code||e.message);const c=$('lf');c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake')};
+const busy=b=>{$('bIn').disabled=b;$('bIn').classList.toggle('ld',b)};
 onAuthStateChanged(auth,async u=>{
- if(!u){me=null;show('login');return}
+ if(!u){me=null;busy(false);show('login');return}
  try{
   const d=await getDoc(doc(db,'users',u.uid));
-  if(!d.exists()){$('err').textContent='Akun belum punya role di koleksi users.';await signOut(auth);return}
+  if(!d.exists()){await signOut(auth);say('Akun belum punya role. Buat dokumen users/'+u.uid+' di Firestore.');return}
   me={uid:u.uid,...d.data()};
   $('who').textContent=(me.nama||u.email)+' ('+me.role+')';
   $('bNew').hidden=!isR('mandor');
-  loadList();
- }catch(e){$('err').textContent=e.code||e.message}
+  busy(false);loadList();
+ }catch(e){await signOut(auth);say(e)}
 });
-$('bIn').onclick=async()=>{$('err').textContent='';
- if(false){$('err').textContent='firebaseConfig belum diisi di index.html';return}
- try{await signInWithEmailAndPassword(auth,$('em').value.trim(),$('pw').value)}catch(e){$('err').textContent='Login gagal: '+(e.code||e.message)}};
-$('pw').addEventListener('keydown',e=>{if(e.key==='Enter')$('bIn').click()});
+$('lf').addEventListener('submit',async ev=>{
+ ev.preventDefault();$('err').textContent='';
+ const em=$('em').value.trim(),pw=$('pw').value;
+ if(!em||!pw){say('Isi email dan password.');return}
+ busy(true);
+ try{await signInWithEmailAndPassword(auth,em,pw)}catch(e){busy(false);say(e)}
+});
+$('eye').onclick=()=>{const p=$('pw'),h=p.type==='password';p.type=h?'text':'password';$('eye').textContent=h?'Sembunyi':'Lihat'};
+(function(){const c=$('fx'),x=c.getContext('2d');let w,h,P=[];
+ function rs(){w=c.width=innerWidth;h=c.height=innerHeight;P=Array.from({length:Math.min(70,Math.floor(w*h/18000))},()=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4}))}
+ function f(){requestAnimationFrame(f);if($('login').hidden)return;x.clearRect(0,0,w,h);
+  for(const p of P){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;x.fillStyle='rgba(130,180,255,.85)';x.fillRect(p.x,p.y,2,2)}
+  for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const a=P[i],b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<120){x.strokeStyle='rgba(100,150,255,'+((1-d/120)*.35)+')';x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}}
+ rs();addEventListener('resize',rs);f()})();
 $('bOut').onclick=()=>signOut(auth);
 $('bList').onclick=loadList;
 
