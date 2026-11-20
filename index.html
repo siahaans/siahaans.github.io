@@ -196,27 +196,33 @@ function clearAll(){
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {getFirestore,doc,getDoc,setDoc,addDoc,collection,query,orderBy,limit,getDocs,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {initializeFirestore,doc,getDoc,setDoc,addDoc,collection,query,orderBy,limit,getDocs,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 /* ====== ISI DENGAN firebaseConfig ANDA (Project settings > Your apps) ====== */
 const cfg={apiKey:"AIzaSyDEsM1oAvOw_7Zd14wd2SmlnOAqAgwbQIU",authDomain:"gpa---work-order.firebaseapp.com",projectId:"gpa---work-order",storageBucket:"gpa---work-order.firebasestorage.app",messagingSenderId:"352208521958",appId:"1:352208521958:web:895d25863e8ec918070927"};
 /* =========================================================================== */
 
 const $=id=>document.getElementById(id);
-const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app);
+const app=initializeApp(cfg),auth=getAuth(app);let db;
+const DBIDS=['(default)','default']; /* coba ID database standar, lalu 'default' */
 let me=null,cur={id:null,status:'draft'};
 const ins=()=>[...document.querySelectorAll('#formv .paper input')];
 const isR=(...r)=>r.includes(me.role)||me.role==='admin';
 const show=v=>{['login','list','formv'].forEach(x=>$(x).hidden=x!==v);$('nav').hidden=v==='login'};
 const msg=e=>alert('Gagal: '+(e.code||e.message));
 
-const ERR={'auth/invalid-credential':'Email atau password salah.','auth/invalid-email':'Format email tidak valid.','auth/missing-password':'Password belum diisi.','auth/user-disabled':'Akun ini dinonaktifkan.','auth/too-many-requests':'Terlalu banyak percobaan. Coba lagi beberapa menit.','auth/network-request-failed':'Koneksi internet bermasalah.','auth/unauthorized-domain':'Domain situs ini belum ditambahkan di Firebase (Authorized domains).','permission-denied':'Akses ditolak oleh Firestore Rules.'};
+const ERR={'auth/invalid-credential':'Email atau password salah.','auth/invalid-email':'Format email tidak valid.','auth/missing-password':'Password belum diisi.','auth/user-disabled':'Akun ini dinonaktifkan.','auth/too-many-requests':'Terlalu banyak percobaan. Coba lagi beberapa menit.','auth/network-request-failed':'Koneksi internet bermasalah.','auth/unauthorized-domain':'Domain situs ini belum ditambahkan di Firebase (Authorized domains).','permission-denied':'Akses ditolak oleh Firestore Rules.','unavailable':'Tidak bisa terhubung ke database Firestore. Cek koneksi/ID database, atau matikan ekstensi pemblokir iklan.'};
 const say=e=>{$('err').textContent=typeof e==='string'?e:(ERR[e.code]||e.code||e.message);const c=$('lf');c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake')};
 const busy=b=>{$('bIn').disabled=b;$('bIn').classList.toggle('ld',b)};
 onAuthStateChanged(auth,async u=>{
  if(!u){me=null;busy(false);show('login');return}
  try{
-  const d=await getDoc(doc(db,'users',u.uid));
+  let d,le;
+  for(const id of DBIDS){
+   const t=initializeFirestore(app,{experimentalForceLongPolling:true},id);
+   try{d=await getDoc(doc(t,'users',u.uid));db=t;break}catch(e){le=e;if(e.code!=='unavailable'&&e.code!=='not-found')throw e}
+  }
+  if(!db)throw le;
   if(!d.exists()){await signOut(auth);say('Akun belum punya role. Buat dokumen users/'+u.uid+' di Firestore.');return}
   me={uid:u.uid,...d.data()};
   $('who').textContent=(me.nama||u.email)+' ('+me.role+')';
