@@ -5,18 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Work Order</title>
 <style>
-:root{--bg:#e9ebef;--paper:#fff;--ink:#111;--line:#222;--head:#1f3a73;--htxt:#fff;--grey:#d9d9d9;--inp:#fff;--hint:#fff3cd;
+:root{--bg:#e9ebef;--paper:#fff;--ink:#111;--line:#222;--head:#1f3a73;--htxt:#fff;--grey:#d9d9d9;--inp:#fff;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171b;--paper:#1e2127;--ink:#e8e8e8;--line:#9aa0aa;--head:#2c4f94;--grey:#2c3038;--inp:#1e2127;--hint:#3b3314}}
-:root[data-theme="dark"]{--bg:#15171b;--paper:#1e2127;--ink:#e8e8e8;--line:#9aa0aa;--head:#2c4f94;--grey:#2c3038;--inp:#1e2127;--hint:#3b3314}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171b;--paper:#1e2127;--ink:#e8e8e8;--line:#9aa0aa;--head:#2c4f94;--grey:#2c3038;--inp:#1e2127}}
+:root[data-theme="dark"]{--bg:#15171b;--paper:#1e2127;--ink:#e8e8e8;--line:#9aa0aa;--head:#2c4f94;--grey:#2c3038;--inp:#1e2127}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:10px/1.2 Arial,Helvetica,sans-serif;padding:10px}
 .bar{max-width:820px;margin:0 auto 8px;display:flex;gap:8px;justify-content:flex-end}
 button{padding:6px 12px;border:1px solid var(--line);background:var(--head);color:#fff;border-radius:3px;cursor:pointer;font:inherit;font-size:12px}
 button.g{background:var(--paper);color:var(--ink)}
-button.sm{padding:2px 6px;font-size:10px;border-radius:2px}
-button:disabled{opacity:.45;cursor:not-allowed}
 .wrap{overflow-x:auto;max-width:820px;margin:0 auto}
 .paper{background:var(--paper);width:100%;min-width:760px;padding:14px 16px 12px;border:1px solid var(--line)}
 .hd{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:start;margin-bottom:8px}
@@ -25,8 +23,6 @@ button:disabled{opacity:.45;cursor:not-allowed}
 h1{margin:0 0 6px;font-size:13px;text-align:center}
 .ctr{display:flex;flex-direction:column;align-items:center}
 .ctr .kv{align-self:center}
-.req-note{margin-top:3px;font-size:9.5px;color:#b45309;font-weight:700;text-align:center}
-.need-fs{background:var(--hint)!important;box-shadow:0 0 0 1px #d97706}
 table{border-collapse:collapse;width:100%;table-layout:fixed}
 th{background:var(--head);color:var(--htxt);border:1px solid var(--line);padding:2px 1px;font-weight:600;text-align:center;font-size:9px}
 td{border:1px solid var(--line);padding:0;height:17px}
@@ -36,13 +32,6 @@ td.pct{text-align:center}
 input[type=text],input[type=date]{width:100%;height:100%;min-height:16px;border:0;background:var(--inp);color:var(--ink);font:inherit;padding:1px 3px;outline:0}
 input[type=text]:focus,input[type=date]:focus{background:#fff8c6;color:#000}
 .kv input{border:0;border-bottom:1px solid var(--line)}
-.op-ctrl td{background:var(--grey);padding:3px 6px}
-.op-ctrl-wrap{display:flex;align-items:center;gap:6px}
-.ket-wrap{display:flex;align-items:center;gap:2px;height:100%;padding:0 2px}
-.ket-wrap input{flex:1;min-width:40px}
-.sh-grp{display:inline-flex;gap:1px;flex-shrink:0}
-.sh-btn{padding:1px 4px;font-size:8.5px;line-height:1.1;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:2px;cursor:pointer}
-.sh-btn.on{background:var(--head);color:#fff;border-color:var(--head)}
 .gap{height:10px}
 .foot{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;align-items:start}
 .dt{width:230px}
@@ -54,7 +43,7 @@ input[type=text]:focus,input[type=date]:focus{background:#fff8c6;color:#000}
 .sig th{background:none;color:var(--ink);height:18px;font-size:10px}
 .sig td.s{height:62px}
 .sig td.r{height:18px;text-align:center}
-@media print{body{background:#fff;padding:0}.bar,.op-ctrl,.sh-grp,.req-note{display:none!important}.wrap{overflow:visible;max-width:none}.paper{min-width:0;border:1px solid #000}@page{size:A4 portrait;margin:8mm}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+@media print{body{background:#fff;padding:0}.bar{display:none}.wrap{overflow:visible;max-width:none}.paper{min-width:0;border:1px solid #000}@page{size:A4 portrait;margin:8mm}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 [hidden]{display:none!important}
 .box{max-width:340px;margin:40px auto;background:var(--paper);border:1px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:10px}
 .box input{border:1px solid var(--line);padding:8px;font-size:14px;background:var(--inp);color:var(--ink)}
@@ -62,11 +51,12 @@ input[type=text]:focus,input[type=date]:focus{background:#fff8c6;color:#000}
 #lt tbody tr{cursor:pointer}#lt tbody tr:hover{background:var(--grey)}#lt td{padding:5px 6px;height:auto}
 input:disabled{color:var(--ink);opacity:1;background:transparent}
 @media print{#nav,#login,#list{display:none!important}}
+
 </style>
 </head>
 <body>
 <p id="ld" style="text-align:center;padding:30px">Memuat...</p>
-<div class="bar" id="nav" hidden><span id="who" style="margin-right:auto;align-self:center"></span><button class="g" id="bHome">← Beranda</button><button class="g" id="bList">Daftar WO</button><button id="bNew">+ WO Baru</button><button class="g" id="bOut">Keluar</button></div>
+<div class="bar" id="nav" hidden><span id="who" style="margin-right:auto;align-self:center"></span><button class="g" id="bHome">&larr; Beranda</button><button class="g" id="bList">Daftar WO</button><button id="bNew">+ WO Baru</button><button class="g" id="bOut">Keluar</button></div>
 <div id="list" class="wrap" hidden><div class="paper"><h2 style="margin:0 0 8px">Daftar Work Order</h2><table id="lt"><thead><tr><th>No WO</th><th>Divisi</th><th>Mandor</th><th>Status</th><th>Diubah</th></tr></thead><tbody></tbody></table><p id="lmsg"></p></div></div>
 <div id="formv" hidden>
 <div class="bar"><span id="stat" style="margin-right:auto;align-self:center;font-weight:700"></span><button class="g" id="bBack">Kembalikan ke Draft</button><button class="g" id="bSave">Simpan Draft</button><button id="bNext">Ajukan</button><button class="g" onclick="window.print()">Cetak / PDF</button></div>
@@ -75,9 +65,7 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 <div class="hd">
  <div class="kv"><b>No</b>:<input type="text"><b>PT</b>:<input type="text"><b>Divisi</b>:<input type="text"><b>Front</b>:<input type="text"><b>Mandor</b>:<input type="text"></div>
  <div class="ctr"><h1>Work Order</h1>
-  <div class="kv f"><b>Forecast Start</b>:<input type="date" id="fStart"><b>Forecast End</b>:<input type="date" id="fEnd"></div>
-  <div id="fsNote" class="req-note" hidden>Isi Forecast Start terlebih dahulu.</div>
- </div>
+  <div class="kv f"><b>Forecast Start</b>:<input type="date"><b>Forecast End</b>:<input type="date"></div></div>
  <div></div>
 </div>
 
@@ -89,17 +77,7 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
   <tr><th rowspan="2">Op Code</th><th rowspan="2">Desc</th><th rowspan="2">Paddock / Block</th><th rowspan="2">Luas Area</th><th rowspan="2">Open</th><th colspan="2">Luas Area</th></tr>
   <tr><th>Close</th><th>%</th></tr>
  </thead>
- <tbody id="opBody"></tbody>
- <tbody>
-  <tr class="op-ctrl">
-   <td colspan="11">
-    <div class="op-ctrl-wrap">
-     <button type="button" class="sm" id="bAddOp">+ Add Line</button>
-     <button type="button" class="sm g" id="bDelOp">- Hapus Line</button>
-    </div>
-   </td>
-  </tr>
- </tbody>
+ <tbody></tbody>
  <tfoot><tr><td></td><td></td><td class="t">Total</td><td></td><td class="t" id="tLuas"></td><td class="t" id="tHK"></td><td></td><td class="t" id="tOpen"></td><td class="t" id="tClose"></td><td class="t" id="tPct"></td><td></td></tr></tfoot>
 </table>
 <div class="gap"></div>
@@ -124,98 +102,15 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 </div>
 <script>
 var I='<td><input type="text"></td>';
-var ob=document.getElementById('opBody');
-var isNewMode=false;
-
-function fmtTglIndo(iso){
- if(!iso)return '';
- var p=String(iso).split('-');
- if(p.length!==3)return iso;
- var d=new Date(Number(p[0]),Number(p[1])-1,Number(p[2]));
- if(isNaN(d.getTime()))return iso;
- return d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+var ob=document.querySelector('#op tbody');
+for(var i=1;i<=5;i++){
+ ob.insertAdjacentHTML('beforeend','<tr><td class="n">'+i+'</td>'+I+I+I+'<td><input type="text" class="luas"></td><td><input type="text" class="hk"></td>'+I+'<td><input type="text" class="open"></td><td><input type="text" class="close"></td><td class="pct"></td>'+I+'</tr>');
 }
-
-function getShiftLabel(n){
- var fs=document.getElementById('fStart').value;
- var tgl=fmtTglIndo(fs)||'[tanggal Forecast Start]';
- return 'Shift '+n+' - '+tgl;
-}
-
-function syncShiftBtns(tr){
- var val=tr.querySelector('.ket-in').value.trim();
- var sh=tr.dataset.shift||'';
- tr.querySelectorAll('.sh-btn').forEach(function(b){
-  var k=b.dataset.sh;
-  b.classList.toggle('on',k===sh||(k==='none'&&!val));
- });
-}
-
-function renumberOp(){
- var rows=ob.querySelectorAll('tr');
- rows.forEach(function(r,idx){
-  r.querySelector('.op-n').textContent=idx+1;
- });
- document.getElementById('bDelOp').disabled=rows.length<=1;
-}
-
-function addOpLine(val){
- var tr=document.createElement('tr');
- tr.dataset.shift=(val&&val.shift)||'';
- tr.innerHTML=
-  '<td class="n op-n"></td>'+
-  I+I+I+
-  '<td><input type="text" class="luas"></td>'+
-  '<td><input type="text" class="hk"></td>'+
-  I+
-  '<td><input type="text" class="open"></td>'+
-  '<td><input type="text" class="close"></td>'+
-  '<td class="pct"></td>'+
-  '<td><div class="ket-wrap">'+
-   '<input type="text" class="ket-in">'+
-   '<span class="sh-grp">'+
-    '<button type="button" class="sh-btn" data-sh="1">S1</button>'+
-    '<button type="button" class="sh-btn" data-sh="2">S2</button>'+
-    '<button type="button" class="sh-btn" data-sh="3">S3</button>'+
-    '<button type="button" class="sh-btn" data-sh="none">None</button>'+
-   '</span>'+
-  '</div></td>';
-
- var ketIn=tr.querySelector('.ket-in');
- ketIn.addEventListener('input',function(){
-  tr.dataset.shift='';
-  syncShiftBtns(tr);
- });
-
- tr.querySelectorAll('.sh-btn').forEach(function(btn){
-  btn.addEventListener('click',function(){
-   var k=btn.dataset.sh;
-   if(k==='none'){
-    tr.dataset.shift='none';
-    ketIn.value='';
-   }else{
-    tr.dataset.shift=k;
-    ketIn.value=getShiftLabel(k);
-   }
-   syncShiftBtns(tr);
-  });
- });
-
- if(val&&val.ket){ketIn.value=val.ket;}
- syncShiftBtns(tr);
- ob.appendChild(tr);
- renumberOp();
- calc();
- return tr;
-}
-
-for(var i=1;i<=5;i++){addOpLine()}
-
 function v(e){return parseFloat(String(e.value).replace(',','.'))||0}
-function sum(c){var s=0;document.querySelectorAll('#opBody .'+c).forEach(function(e){s+=v(e)});return s}
+function sum(c){var s=0;document.querySelectorAll('#op .'+c).forEach(function(e){s+=v(e)});return s}
 function f(x){return Math.round(x*100)/100}
 function calc(){
- document.querySelectorAll('#opBody tr').forEach(function(r){
+ document.querySelectorAll('#op tbody tr').forEach(function(r){
   var o=v(r.querySelector('.open')),c=v(r.querySelector('.close'));
   r.querySelector('.pct').textContent=o?f(c/o*100)+'%':'';
  });
@@ -223,32 +118,7 @@ function calc(){
  tLuas.textContent=f(sum('luas'))||'';tHK.textContent=f(sum('hk'))||'';
  tOpen.textContent=f(o)||'';tClose.textContent=f(c)||'';tPct.textContent=o?f(c/o*100)+'%':'';
 }
-document.getElementById('opBody').addEventListener('input',calc);
-
-document.getElementById('bAddOp').onclick=function(){
- addOpLine();
- if(typeof window.applyFsLock==='function')window.applyFsLock();
-};
-document.getElementById('bDelOp').onclick=function(){
- var rows=ob.querySelectorAll('tr');
- if(rows.length<=1)return;
- rows[rows.length-1].remove();
- renumberOp();
- calc();
-};
-
-document.getElementById('fStart').addEventListener('change',function(){
- var val=this.value;
- var fe=document.getElementById('fEnd');
- if(val&&!fe.value)fe.value=val;
- ob.querySelectorAll('tr').forEach(function(tr){
-  var sh=tr.dataset.shift;
-  if(sh==='1'||sh==='2'||sh==='3'){
-   tr.querySelector('.ket-in').value=getShiftLabel(sh);
-  }
- });
- if(typeof window.applyFsLock==='function')window.applyFsLock();
-});
+document.getElementById('op').addEventListener('input',calc);
 
 // Unit Kerja: 1-15 | 16-30
 var u='<colgroup>'+[3,9,8.5,16.5,7,6,3,9,8.5,16.5,7,6].map(function(w){return '<col style="width:'+w+'%">'}).join('')+'</colgroup>';
@@ -257,6 +127,7 @@ u+='<thead><tr><th colspan="12">Unit Kerja</th></tr><tr>'+uh+uh+'</tr><tr>'+'<th
 function ur(n){return '<td class="n">'+n+'</td>'+I+I+I+I+I}
 for(var i=1;i<=15;i++)u+='<tr>'+ur(i)+ur(i+15)+'</tr>';
 document.getElementById('uk').innerHTML=u+'</tbody>';
+// perbaiki header Unit Kerja (3 baris -> 2 baris + sub NIK/Nama)
 document.querySelector('#uk thead').innerHTML='<tr><th colspan="12">Unit Kerja</th></tr><tr>'+
  '<th rowspan="2">No</th><th rowspan="2">Unit Kerja<br>Kode Unit</th><th colspan="2">Data Karyawan</th><th rowspan="2">Est<br>HM/KM/Rit</th><th rowspan="2">Est HK</th>'+
  '<th rowspan="2">No</th><th rowspan="2">Unit Kerja<br>Kode Unit</th><th colspan="2">Data Karyawan</th><th rowspan="2">Est<br>HM/KM/Rit</th><th rowspan="2">Est HK</th></tr>'+
@@ -269,13 +140,22 @@ m+='<thead><tr><th colspan="10">Man Power Support</th></tr><tr>'+mh+mh+'</tr></t
 function mr(n){return '<td class="n">'+n+'</td>'+I+I+I+I}
 for(var i=1;i<=10;i++)m+='<tr>'+mr(i)+mr(i+10)+'</tr>';
 document.getElementById('mp').innerHTML=m+'</tbody>';
+
+function clearAll(){
+ if(!confirm('Kosongkan semua isian?'))return;
+ document.querySelectorAll('.paper input').forEach(function(e){if(e.type==='checkbox')e.checked=false;else e.value=''});
+ calc();
+}
 </script>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {getAuth,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {initializeFirestore,doc,getDoc,setDoc,addDoc,collection,query,orderBy,limit,getDocs,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+/* ====== ISI DENGAN firebaseConfig ANDA (Project settings > Your apps) ====== */
 const cfg={apiKey:"AIzaSyDEsM1oAvOw_7Zd14wd2SmlnOAqAgwbQIU",authDomain:"gpa---work-order.firebaseapp.com",projectId:"gpa---work-order",storageBucket:"gpa---work-order.firebasestorage.app",messagingSenderId:"352208521958",appId:"1:352208521958:web:895d25863e8ec918070927"};
+/* =========================================================================== */
+
 const $=id=>document.getElementById(id);
 const app=initializeApp(cfg),auth=getAuth(app);let db;const dbm={};
 const ls=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};
@@ -285,24 +165,6 @@ const ins=()=>[...document.querySelectorAll('#formv .paper input')];
 const isR=(...r)=>r.includes(me.role)||me.role==='admin';
 const show=v=>{['list','formv'].forEach(x=>$(x).hidden=x!==v);$('nav').hidden=false;$('ld').hidden=true};
 const msg=e=>alert('Gagal: '+(e.code||e.message));
-
-window.applyFsLock=function(){
- if(!me)return;
- const edit=cur.status==='draft'&&isR('mandor');
- const fsVal=$('fStart').value.trim();
- const needFirst=edit&&window.isNewMode&&!fsVal;
- $('fsNote').hidden=!needFirst;
- $('fStart').classList.toggle('need-fs',needFirst);
- ins().forEach(e=>{
-  if(!edit){e.disabled=true;return}
-  if(e.id==='fStart'){e.disabled=false;return}
-  e.disabled=needFirst;
- });
- $('bAddOp').disabled=!edit||needFirst;
- $('bDelOp').disabled=!edit||needFirst||$('opBody').rows.length<=1;
- $('opBody').querySelectorAll('.sh-btn').forEach(b=>{b.disabled=!edit||needFirst});
- $('bSave').disabled=!edit||needFirst;
-};
 
 onAuthStateChanged(auth,async u=>{
  if(!u){location.replace('index.html');return}
@@ -334,13 +196,12 @@ async function loadList(){
 }
 
 function apply(f){ins().forEach((e,i)=>{const v=f?f[i]:undefined;if(e.type==='checkbox')e.checked=!!v;else e.value=v==null?(e.defaultValue||''):v});calc()}
-function openWO(id,x){cur={id:id,status:x.status||'draft'};window.isNewMode=false;apply(x.f);ui()}
+function openWO(id,x){cur={id:id,status:x.status||'draft'};apply(x.f);ui()}
 $('bNew').onclick=()=>{
- cur={id:null,status:'draft'};window.isNewMode=true;apply(null);
+ cur={id:null,status:'draft'};apply(null);
  const d=new Date(),p=n=>String(n).padStart(2,'0');
  ins()[0].value='WO-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes());
  ui();
- $('fStart').focus();
 };
 function ui(){
  show('formv');
@@ -351,21 +212,15 @@ function ui(){
  const nx={draft:['Ajukan','dibuat',isR('mandor')],dibuat:['Tandai Diperiksa','diperiksa',isR('pemeriksa')],diperiksa:['Setujui','disetujui',isR('manager')]}[cur.status];
  $('bNext').hidden=!(nx&&nx[2]);if(nx){$('bNext').textContent=nx[0];$('bNext').dataset.to=nx[1]}
  $('bBack').hidden=!((cur.status==='dibuat'&&isR('pemeriksa'))||(cur.status==='diperiksa'&&isR('manager')));
- window.applyFsLock();
  window.scrollTo(0,0);
 }
 async function save(status){
- if(status==='draft'&&isR('mandor')&&!$('fStart').value.trim()){
-  alert('Forecast Start wajib diisi terlebih dahulu.');
-  $('fStart').focus();
-  return false;
- }
  const v=ins().map(e=>e.type==='checkbox'?e.checked:e.value);
  const data={f:v,no:v[0],divisi:v[2],mandor:v[4],status:status,updatedAt:serverTimestamp(),updatedBy:me.nama||me.uid};
  try{
   if(!cur.id){data.createdBy=me.uid;data.createdAt=serverTimestamp();cur.id=(await addDoc(collection(db,'workOrders'),data)).id}
   else await setDoc(doc(db,'workOrders',cur.id),data,{merge:true});
-  cur.status=status;window.isNewMode=false;ui();return true;
+  cur.status=status;ui();return true;
  }catch(e){msg(e);return false}
 }
 $('bSave').onclick=async()=>{if(await save('draft'))alert('Draft tersimpan')};
