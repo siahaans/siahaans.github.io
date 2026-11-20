@@ -44,10 +44,21 @@ input[type=text]:focus,input[type=date]:focus{background:#fff8c6;color:#000}
 .sig td.s{height:62px}
 .sig td.r{height:18px;text-align:center}
 @media print{body{background:#fff;padding:0}.bar{display:none}.wrap{overflow:visible;max-width:none}.paper{min-width:0;border:1px solid #000}@page{size:A4 portrait;margin:8mm}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+[hidden]{display:none!important}
+.box{max-width:340px;margin:40px auto;background:var(--paper);border:1px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:10px}
+.box input{border:1px solid var(--line);padding:8px;font-size:14px;background:var(--inp);color:var(--ink)}
+.box h2{margin:0 0 4px}.err{color:#c00;margin:0;font-size:12px}
+#lt tbody tr{cursor:pointer}#lt tbody tr:hover{background:var(--grey)}#lt td{padding:5px 6px;height:auto}
+input:disabled{color:var(--ink);opacity:1;background:transparent}
+@media print{#nav,#login,#list{display:none!important}}
 </style>
 </head>
 <body>
-<div class="bar"><button class="g" onclick="clearAll()">Reset</button><button onclick="window.print()">Cetak / Simpan PDF</button></div>
+<div class="bar" id="nav" hidden><span id="who" style="margin-right:auto;align-self:center"></span><button class="g" id="bList">Daftar WO</button><button id="bNew">+ WO Baru</button><button class="g" id="bOut">Keluar</button></div>
+<div id="login" class="box" hidden><h2>Work Order - Login</h2><input id="em" type="text" placeholder="Email" autocomplete="username"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button id="bIn">Masuk</button><p id="err" class="err"></p></div>
+<div id="list" class="wrap" hidden><div class="paper"><h2 style="margin:0 0 8px">Daftar Work Order</h2><table id="lt"><thead><tr><th>No WO</th><th>Divisi</th><th>Mandor</th><th>Status</th><th>Diubah</th></tr></thead><tbody></tbody></table><p id="lmsg"></p></div></div>
+<div id="formv" hidden>
+<div class="bar"><span id="stat" style="margin-right:auto;align-self:center;font-weight:700"></span><button class="g" id="bBack">Kembalikan ke Draft</button><button class="g" id="bSave">Simpan Draft</button><button id="bNext">Ajukan</button><button class="g" onclick="window.print()">Cetak / PDF</button></div>
 <div class="wrap"><div class="paper">
 
 <div class="hd">
@@ -87,6 +98,7 @@ input[type=text]:focus,input[type=date]:focus{background:#fff8c6;color:#000}
 </div>
 
 </div></div>
+</div>
 <script>
 var I='<td><input type="text"></td>';
 var ob=document.querySelector('#op tbody');
@@ -133,6 +145,85 @@ function clearAll(){
  document.querySelectorAll('.paper input').forEach(function(e){if(e.type==='checkbox')e.checked=false;else e.value=''});
  calc();
 }
+</script>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {getFirestore,doc,getDoc,setDoc,addDoc,collection,query,orderBy,limit,getDocs,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* ====== ISI DENGAN firebaseConfig ANDA (Project settings > Your apps) ====== */
+const cfg={apiKey:"AIzaSyDEsM1oAvOw_7Zd14wd2SmlnOAqAgwbQIU",authDomain:"gpa---work-order.firebaseapp.com",projectId:"gpa---work-order",storageBucket:"gpa---work-order.firebasestorage.app",messagingSenderId:"352208521958",appId:"1:352208521958:web:895d25863e8ec918070927"};
+/* =========================================================================== */
+
+const $=id=>document.getElementById(id);
+const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app);
+let me=null,cur={id:null,status:'draft'};
+const ins=()=>[...document.querySelectorAll('#formv .paper input')];
+const isR=(...r)=>r.includes(me.role)||me.role==='admin';
+const show=v=>{['login','list','formv'].forEach(x=>$(x).hidden=x!==v);$('nav').hidden=v==='login'};
+const msg=e=>alert('Gagal: '+(e.code||e.message));
+
+onAuthStateChanged(auth,async u=>{
+ if(!u){me=null;show('login');return}
+ try{
+  const d=await getDoc(doc(db,'users',u.uid));
+  if(!d.exists()){$('err').textContent='Akun belum punya role di koleksi users.';await signOut(auth);return}
+  me={uid:u.uid,...d.data()};
+  $('who').textContent=(me.nama||u.email)+' ('+me.role+')';
+  $('bNew').hidden=!isR('mandor');
+  loadList();
+ }catch(e){$('err').textContent=e.code||e.message}
+});
+$('bIn').onclick=async()=>{$('err').textContent='';
+ if(false){$('err').textContent='firebaseConfig belum diisi di index.html';return}
+ try{await signInWithEmailAndPassword(auth,$('em').value.trim(),$('pw').value)}catch(e){$('err').textContent='Login gagal: '+(e.code||e.message)}};
+$('pw').addEventListener('keydown',e=>{if(e.key==='Enter')$('bIn').click()});
+$('bOut').onclick=()=>signOut(auth);
+$('bList').onclick=loadList;
+
+async function loadList(){
+ show('list');const tb=document.querySelector('#lt tbody');tb.innerHTML='';$('lmsg').textContent='Memuat...';
+ try{
+  const q=await getDocs(query(collection(db,'workOrders'),orderBy('updatedAt','desc'),limit(100)));
+  $('lmsg').textContent=q.empty?'Belum ada Work Order.':'';
+  q.forEach(d=>{const x=d.data(),t=x.updatedAt?x.updatedAt.toDate().toLocaleString('id-ID'):'';
+   const tr=document.createElement('tr');
+   [x.no,x.divisi,x.mandor,x.status,t].forEach(v=>{const c=document.createElement('td');c.textContent=v||'';tr.appendChild(c)});
+   tr.onclick=()=>openWO(d.id,x);tb.appendChild(tr)});
+ }catch(e){$('lmsg').textContent='Gagal memuat: '+(e.code||e.message)}
+}
+
+function apply(f){ins().forEach((e,i)=>{const v=f?f[i]:undefined;if(e.type==='checkbox')e.checked=!!v;else e.value=v==null?(e.defaultValue||''):v});calc()}
+function openWO(id,x){cur={id:id,status:x.status||'draft'};apply(x.f);ui()}
+$('bNew').onclick=()=>{
+ cur={id:null,status:'draft'};apply(null);
+ const d=new Date(),p=n=>String(n).padStart(2,'0');
+ ins()[0].value='WO-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes());
+ ui();
+};
+function ui(){
+ show('formv');
+ const edit=cur.status==='draft'&&isR('mandor');
+ ins().forEach(e=>e.disabled=!edit);
+ $('stat').textContent='Status: '+cur.status.toUpperCase();
+ $('bSave').hidden=!edit;
+ const nx={draft:['Ajukan','dibuat',isR('mandor')],dibuat:['Tandai Diperiksa','diperiksa',isR('pemeriksa')],diperiksa:['Setujui','disetujui',isR('manager')]}[cur.status];
+ $('bNext').hidden=!(nx&&nx[2]);if(nx){$('bNext').textContent=nx[0];$('bNext').dataset.to=nx[1]}
+ $('bBack').hidden=!((cur.status==='dibuat'&&isR('pemeriksa'))||(cur.status==='diperiksa'&&isR('manager')));
+ window.scrollTo(0,0);
+}
+async function save(status){
+ const v=ins().map(e=>e.type==='checkbox'?e.checked:e.value);
+ const data={f:v,no:v[0],divisi:v[2],mandor:v[4],status:status,updatedAt:serverTimestamp(),updatedBy:me.nama||me.uid};
+ try{
+  if(!cur.id){data.createdBy=me.uid;data.createdAt=serverTimestamp();cur.id=(await addDoc(collection(db,'workOrders'),data)).id}
+  else await setDoc(doc(db,'workOrders',cur.id),data,{merge:true});
+  cur.status=status;ui();return true;
+ }catch(e){msg(e);return false}
+}
+$('bSave').onclick=async()=>{if(await save('draft'))alert('Draft tersimpan')};
+$('bNext').onclick=()=>{const to=$('bNext').dataset.to;if(confirm('Ubah status menjadi "'+to+'"?'))save(to)};
+$('bBack').onclick=()=>{if(confirm('Kembalikan ke draft?'))save('draft')};
 </script>
 </body>
 </html>
