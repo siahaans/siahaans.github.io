@@ -223,29 +223,22 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {getAuth,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {initializeFirestore,getFirestore,doc,getDoc,setDoc,addDoc,collection,query,orderBy,limit,getDocs,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {initializeFirestore,doc,getDoc,setDoc,addDoc,collection,query,orderBy,limit,getDocs,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {loadPaddocks,getPaddock,fmtLuas,fillDatalist} from "./paddock.js";
 
 const cfg={apiKey:"AIzaSyDEsM1oAvOw_7Zd14wd2SmlnOAqAgwbQIU",authDomain:"gpa---work-order.firebaseapp.com",projectId:"gpa---work-order",storageBucket:"gpa---work-order.firebasestorage.app",messagingSenderId:"352208521958",appId:"1:352208521958:web:895d25863e8ec918070927"};
 const $=id=>document.getElementById(id);
 const app=initializeApp(cfg),auth=getAuth(app);
 let db=null,me=null,cur={id:null,status:'draft'},paddockList=[],isNewWO=false,saving=false;
+const dbm={};
 
 const ls=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};
-function getDb(id){
- if(!id||id==='(default)'||id==='default'){
-  try{return initializeFirestore(app,{experimentalForceLongPolling:true})}
-  catch(e){return getFirestore(app)}
- }
- try{return initializeFirestore(app,{experimentalForceLongPolling:true},id)}
- catch(e){return getFirestore(app,id)}
-}
+const mk=id=>dbm[id]||(dbm[id]=initializeFirestore(app,{experimentalForceLongPolling:true},id));
 
 const isR=(...r)=>me&&(r.includes(me.role)||me.role==='admin');
 const show=v=>{['list','formv'].forEach(x=>$(x).hidden=x!==v);$('nav').hidden=false;$('ld').hidden=true};
 const msg=e=>alert('Gagal: '+(e.code||e.message));
 
-// Build Man Power Support static rows (1-10 | 11-20)
 (function buildMP(){
  const I='<td><input type="text"></td>';
  let m='<colgroup>'+[3,9,20,11,7,3,9,20,11,7].map(w=>'<col style="width:'+w+'%">').join('')+'</colgroup>';
@@ -257,7 +250,6 @@ const msg=e=>alert('Gagal: '+(e.code||e.message));
  $('mp').innerHTML=m+'</tbody>';
 })();
 
-// Format tanggal YYYY-MM-DD -> "16 November 2026"
 function fmtTanggalID(iso){
  if(!iso)return '';
  const parts=String(iso).split('-');
@@ -424,7 +416,6 @@ function setOpRowCount(count){
  calc();
 }
 
-// Init default 5 rows
 setOpRowCount(5);
 
 function v(e){return parseFloat(String(e.value||'').replace(/\./g,'').replace(',','.'))||0}
@@ -454,7 +445,6 @@ $('bDelOp').onclick=()=>{
  calc();
 };
 
-// Forecast Start wajib diisi pertama pada WO baru
 function applyForecastStartLock(){
  const baseEdit=cur.status==='draft'&&isR('mandor');
  const fsVal=$('fStart').value.trim();
@@ -478,7 +468,6 @@ function applyForecastStartLock(){
 $('fStart').addEventListener('change',()=>{
  const val=$('fStart').value;
  if(val&&!$('fEnd').value)$('fEnd').value=val;
- // Perbarui baris operation yang memakai format Shift X - ...
  [...$('opBody').rows].forEach(tr=>{
   const s=tr.dataset.shift;
   if(s==='1'||s==='2'||s==='3'){
@@ -489,19 +478,18 @@ $('fStart').addEventListener('change',()=>{
  applyForecastStartLock();
 });
 
-// Auth & Firestore
 onAuthStateChanged(auth,async u=>{
  if(!u){location.replace('index.html');return}
  try{
   let d,le;
   const ids=[...new Set([ls('woDb'),'(default)','default'].filter(Boolean))];
   for(const id of ids){
-   const t=getDb(id);
+   const t=mk(id);
    try{d=await getDoc(doc(t,'users',u.uid));db=t;ls('woDb',id);break}
    catch(e){le=e;if(e.code!=='unavailable'&&e.code!=='not-found')throw e}
   }
-  if(!db)throw le;
-  if(!d.exists()){await signOut(auth);return}
+  if(!db||!d)throw le||new Error('unavailable');
+  if(!d.exists()){await signOut(auth);location.replace('index.html');return}
   me={uid:u.uid,...d.data()};
   $('who').textContent=(me.nama||u.email)+' ('+me.role+')';
   $('bNew').hidden=!isR('mandor');
@@ -585,7 +573,6 @@ function collectStructuredData(){
 }
 
 function applyStructuredData(docData){
- // Reset semua input
  document.querySelectorAll('#formv .paper input').forEach(e=>{
   if(e.type==='checkbox')e.checked=false;
   else e.value=e.defaultValue||'';
@@ -598,7 +585,6 @@ function applyStructuredData(docData){
   return;
  }
 
- // Dukungan format baru (schemaVersion 2) maupun format lama (array f)
  if(docData.schemaVersion===2||docData.header){
   const h=docData.header||{};
   document.querySelectorAll('.hd [data-field]').forEach(e=>{
@@ -639,7 +625,6 @@ function applyStructuredData(docData){
    }
   });
  }else if(Array.isArray(docData.f)){
-  // Fallback legacy format
   setOpRowCount(5);
   const allIns=[...document.querySelectorAll('#formv .paper input')];
   docData.f.forEach((val,idx)=>{
