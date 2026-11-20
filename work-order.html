@@ -195,7 +195,7 @@ const OPROW='<tr class="r"><td class="n"></td>'+
  '<td>'+T+'data-k="hk" class="hk"></td><td>'+T+'data-k="uom"></td>'+
  '<td>'+T+'data-k="open" class="open"></td><td>'+T+'data-k="close" class="close"></td>'+
  '<td class="pct"></td>'+
- '<td class="kc"><select class="sh" title="Pilih shift">'+OPT+'</select>'+T+'class="ket" readonly tabindex="-1"></td></tr>';
+ '<td class="kc"><select class="sh" title="Pilih shift">'+OPT+'</select>'+T+'class="ket" spellcheck="false" title="Bisa diedit. Format: Shift 1 - 17 November 2026"></td></tr>';
 const UKROW='<tr><td class="n"></td><td>'+T+'data-k="ukode"></td><td>'+T+'data-k="unik"></td><td>'+T+'data-k="unama"></td><td>'+T+'data-k="uest"></td><td>'+T+'data-k="uhk"></td>'+
  '<td class="n"></td><td>'+T+'class="uk2" readonly tabindex="-1"></td><td>'+T+'data-k="vnik"></td><td>'+T+'data-k="vnama"></td><td>'+T+'data-k="vest"></td><td>'+T+'data-k="vhk"></td></tr>';
 
@@ -207,6 +207,7 @@ function mkRow(r){
  const u=ukBody.lastElementChild;
  [o,u].forEach(t=>t.querySelectorAll('[data-k]').forEach(e=>{const x=r[e.dataset.k];e.value=x==null?'':x}));
  o.querySelector('.sh').value=r.shift||'';
+ o.dataset.date=r.date||'';   // tanggal khusus baris (kosong = ikut Forecast Start)
  o.querySelector('.luas').readOnly=luasRO;
  return o;
 }
@@ -223,9 +224,9 @@ function renum(){
 function sync(){
  const s=startEl.value,ur=ukRows();
  opRows().forEach((tr,i)=>{
-  const sh=tr.querySelector('.sh').value;
-  tr.querySelector('.ket').value=shiftTxt(sh,s,dLong);
-  if(ur[i])ur[i].querySelector('.uk2').value=shiftTxt(sh,s,dShort);
+  const sh=tr.querySelector('.sh').value,dt=tr.dataset.date||s;
+  tr.querySelector('.ket').value=shiftTxt(sh,dt,dLong);
+  if(ur[i])ur[i].querySelector('.uk2').value=shiftTxt(sh,dt,dShort);
  });
 }
 
@@ -308,7 +309,29 @@ opEl.addEventListener('keydown',e=>{
  }else if(e.key==='Enter'){if(acItems[acIdx]){e.preventDefault();acPick(acItems[acIdx])}}
  else if(e.key==='Escape')acHide();
 });
-opBody.addEventListener('change',e=>{if(e.target.classList.contains('sh'))sync()});
+// Keterangan boleh diedit asalkan formatnya: Shift 1/2/3 - tanggal bulan [tahun]
+const MKEY={agt:7,ags:7};
+MONTH.forEach((m,i)=>{MKEY[m.toLowerCase()]=i});MON.forEach((m,i)=>{MKEY[m.toLowerCase()]=i});
+function parseKet(t){
+ t=t.trim();
+ if(!t)return{shift:'',date:''};
+ const m=/^shift\s*([123])\s*-\s*(\d{1,2})\s+([a-z]+)(?:\s+(\d{4}))?$/i.exec(t);
+ if(!m)return null;
+ const mo=MKEY[m[3].toLowerCase()];if(mo==null)return null;
+ const d=+m[2],y=m[4]?+m[4]:(dParts(startEl.value)||{y:new Date().getFullYear()}).y,dt=new Date(y,mo,d);
+ if(dt.getFullYear()!==y||dt.getMonth()!==mo||dt.getDate()!==d)return null;
+ const p=n=>String(n).padStart(2,'0');
+ return{shift:m[1],date:y+'-'+p(mo+1)+'-'+p(d)};
+}
+opBody.addEventListener('change',e=>{
+ const t=e.target;
+ if(t.classList.contains('ket')){
+  const tr=t.closest('tr'),r=parseKet(t.value);
+  if(!r)alert('Format Keterangan tidak sesuai.\nContoh: Shift 1 - 17 November 2026\n(Shift 1/2/3, tanggal, nama bulan, tahun)');
+  else{tr.querySelector('.sh').value=r.shift;tr.dataset.date=r.date&&r.date!==startEl.value?r.date:''}
+  sync();
+ }else if(t.classList.contains('sh'))sync();
+});
 
 function loadMaster(){
  loadPaddocks().then(l=>{
@@ -358,6 +381,7 @@ function collect(){
    const o={};
    [tr,ur[i]].forEach(t=>t.querySelectorAll('[data-k]').forEach(e=>{o[e.dataset.k]=e.value}));
    o.shift=tr.querySelector('.sh').value;
+   o.date=tr.dataset.date||'';
    return o;
   })
  };
