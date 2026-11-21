@@ -126,7 +126,14 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
  </thead>
  <tbody></tbody>
 </table>
-<table id="mp" style="border-top:0"></table>
+<table id="mp" style="border-top:0">
+ <colgroup><col style="width:3%"><col style="width:9%"><col style="width:20%"><col style="width:11%"><col style="width:7%"><col style="width:3%"><col style="width:9%"><col style="width:20%"><col style="width:11%"><col style="width:7%"></colgroup>
+ <thead>
+  <tr><th colspan="10">Man Power Support</th></tr>
+  <tr><th>No</th><th>NIK</th><th>Nama</th><th>Jabatan</th><th>Est HK</th><th>No</th><th>NIK</th><th>Nama</th><th>Jabatan</th><th>Est HK</th></tr>
+ </thead>
+ <tbody></tbody>
+</table>
 
 <div class="foot">
  <div>
@@ -168,22 +175,12 @@ const msg=e=>alert('Gagal: '+(e.code||e.message));
 /* ---------- referensi DOM ---------- */
 const paper=document.querySelector('#formv .paper');
 const opEl=$('op'),opBody=opEl.querySelector('tbody'),ctlRow=opBody.querySelector('.ctl');
-const ukBody=document.querySelector('#uk tbody');
+const ukBody=document.querySelector('#uk tbody'),mpBody=document.querySelector('#mp tbody');
 const startEl=$('fStart'),endEl=$('fEnd');
 const S=()=>[...paper.querySelectorAll('[data-s]')];            // input tetap (header, man power, footer)
 const opRows=()=>[...opBody.querySelectorAll('tr.r')];          // baris Operation
 const ukRows=()=>[...ukBody.children];                          // baris Unit Kerja (selalu sama banyak)
-
-/* ---------- Man Power Support: 1-10 | 11-20 ---------- */
-(function(){
- const I='<td><input type="text" data-s></td>';
- const w=[3,9,20,11,7,3,9,20,11,7];
- const mh='<th>No</th><th>NIK</th><th>Nama</th><th>Jabatan</th><th>Est HK</th>';
- const mr=n=>'<td class="n">'+n+'</td>'+I+I+I+I;
- let m='<colgroup>'+w.map(x=>'<col style="width:'+x+'%">').join('')+'</colgroup><thead><tr><th colspan="10">Man Power Support</th></tr><tr>'+mh+mh+'</tr></thead><tbody>';
- for(let i=1;i<=10;i++)m+='<tr>'+mr(i)+mr(i+10)+'</tr>';
- $('mp').innerHTML=m+'</tbody>';
-})();
+const mpRows=()=>[...mpBody.children];                          // baris Man Power Support (selalu sama banyak)
 
 const iStart=S().indexOf(startEl),iClose=S().indexOf($('dClose'));   // posisi Forecast Start & Tanggal Closing di array s
 
@@ -209,13 +206,18 @@ const OPROW='<tr class="r"><td class="n"></td>'+
 const UKROW='<tr><td class="n"></td><td>'+T+'data-k="ukode"></td><td>'+T+'data-k="unik"></td><td>'+T+'data-k="unama"></td><td>'+T+'data-k="uest"></td><td>'+T+'data-k="uhk"></td>'+
  '<td class="n"></td><td>'+T+'class="uk2" readonly tabindex="-1"></td><td>'+T+'data-k="vnik"></td><td>'+T+'data-k="vnama"></td><td>'+T+'data-k="vest"></td><td>'+T+'data-k="vhk"></td></tr>';
 
+const MPROW='<tr><td class="n"></td><td>'+T+'data-k="mnik"></td><td>'+T+'data-k="mnama"></td><td>'+T+'data-k="mjab"></td><td>'+T+'data-k="mhk"></td>'+
+ '<td class="n"></td><td>'+T+'data-k="pnik"></td><td>'+T+'data-k="pnama"></td><td>'+T+'data-k="pjab"></td><td>'+T+'data-k="phk"></td></tr>';
+
 function mkRow(r){
  r=r||{};
  ctlRow.insertAdjacentHTML('beforebegin',OPROW);
  const o=ctlRow.previousElementSibling;
  ukBody.insertAdjacentHTML('beforeend',UKROW);
  const u=ukBody.lastElementChild;
- [o,u].forEach(t=>t.querySelectorAll('[data-k]').forEach(e=>{const x=r[e.dataset.k];e.value=x==null?'':x}));
+ mpBody.insertAdjacentHTML('beforeend',MPROW);
+ const m=mpBody.lastElementChild;
+ [o,u,m].forEach(t=>t.querySelectorAll('[data-k]').forEach(e=>{const x=r[e.dataset.k];e.value=x==null?'':x}));
  o.querySelector('.sh').value=r.shift||'';
  o.dataset.date=r.date||'';   // tanggal khusus baris (kosong = ikut Forecast Start)
  o.querySelector('.luas').readOnly=luasRO;
@@ -224,10 +226,12 @@ function mkRow(r){
 function markSel(){
  opRows().forEach((tr,i)=>tr.firstElementChild.classList.toggle('sel',i===sel));
  ukRows().forEach((tr,i)=>{tr.children[0].classList.toggle('sel',i===sel);tr.children[6].classList.toggle('sel',i===sel)});
+ mpRows().forEach((tr,i)=>{tr.children[0].classList.toggle('sel',i===sel);tr.children[5].classList.toggle('sel',i===sel)});
 }
 function renum(){
  opRows().forEach((tr,i)=>{tr.firstElementChild.textContent=i+1});
  ukRows().forEach((tr,i)=>{tr.children[0].textContent=i+1;tr.children[6].textContent=i+1});
+ mpRows().forEach((tr,i)=>{tr.children[0].textContent=i+1;tr.children[5].textContent=i+1});
  markSel();
 }
 // keterangan (Operation) dan kode unit (Unit Kerja kanan) mengikuti shift + Forecast Start
@@ -368,28 +372,28 @@ $('bAdd').onclick=()=>{
 $('bDel').onclick=()=>{
  const n=opRows().length;
  if(n<=1){alert('Minimal 1 baris.');return}
- const i=sel>=0&&sel<n?sel:n-1,tr=opRows()[i],ur=ukRows()[i];
- const has=[...tr.querySelectorAll('[data-k]'),...ur.querySelectorAll('[data-k]')].some(e=>e.value)||tr.querySelector('.sh').value;
- if(has&&!confirm('Hapus baris '+(i+1)+' beserta isinya (Operation dan Unit Kerja)?'))return;
- tr.remove();ur.remove();sel=-1;renum();calc();
+ const i=sel>=0&&sel<n?sel:n-1,tr=opRows()[i],ur=ukRows()[i],mr=mpRows()[i];
+ const has=[tr,ur,mr].some(t=>[...t.querySelectorAll('[data-k]')].some(e=>e.value))||tr.querySelector('.sh').value;
+ if(has&&!confirm('Hapus baris '+(i+1)+' beserta isinya (Operation, Unit Kerja, dan Man Power Support)?'))return;
+ tr.remove();ur.remove();mr.remove();sel=-1;renum();calc();
 };
 paper.addEventListener('click',e=>{
  const td=e.target.closest('td.n');
  if(!td||!paper.classList.contains('on'))return;
  const tr=td.parentNode;
- let i=opRows().indexOf(tr);if(i<0)i=ukRows().indexOf(tr);
+ let i=opRows().indexOf(tr);if(i<0)i=ukRows().indexOf(tr);if(i<0)i=mpRows().indexOf(tr);
  if(i<0)return;
  sel=sel===i?-1:i;markSel();
 });
 
 /* ---------- simpan / muat data ---------- */
 function collect(){
- const ur=ukRows();
+ const ur=ukRows(),mr=mpRows();
  return{
   s:S().map(e=>e.type==='checkbox'?e.checked:e.value),
   rows:opRows().map((tr,i)=>{
    const o={};
-   [tr,ur[i]].forEach(t=>t.querySelectorAll('[data-k]').forEach(e=>{o[e.dataset.k]=e.value}));
+   [tr,ur[i],mr[i]].forEach(t=>t.querySelectorAll('[data-k]').forEach(e=>{o[e.dataset.k]=e.value}));
    o.shift=tr.querySelector('.sh').value;
    o.date=tr.dataset.date||'';
    return o;
@@ -408,10 +412,23 @@ function fromLegacy(f){
  const rows=[];for(let i=0;i<n;i++)rows.push(Object.assign({},ops[i],uk[i]));
  return{s:s,rows:rows};
 }
+// Format v2 / lama: Man Power Support ada di array s (indeks 7-86). Format v3: Man Power ikut di setiap baris.
+function upgrade(d){
+ const s=(d&&d.s)||[],rows=((d&&d.rows)||[]).map(r=>Object.assign({},r));
+ if(s.length<95)return{s:s,rows:rows};
+ const mp=s.slice(7,87);let n=rows.length;
+ for(let i=0;i<10;i++)if(mp.slice(i*8,i*8+8).some(Boolean))n=Math.max(n,i+1);
+ while(rows.length<n)rows.push({});
+ for(let i=0;i<10&&i<rows.length;i++){const b=i*8;
+  Object.assign(rows[i],{mnik:mp[b],mnama:mp[b+1],mjab:mp[b+2],mhk:mp[b+3],pnik:mp[b+4],pnama:mp[b+5],pjab:mp[b+6],phk:mp[b+7]});
+ }
+ return{s:s.slice(0,7).concat(s.slice(87)),rows:rows};
+}
+const norm=x=>x.v===3?x:(x.v===2?upgrade(x):(x.f?upgrade(fromLegacy(x.f)):null));
 function apply(d){
  const s=d&&d.s;
  S().forEach((e,i)=>{const x=s?s[i]:undefined;if(e.type==='checkbox')e.checked=!!x;else e.value=x==null?(e.defaultValue||''):x});
- opRows().forEach(tr=>tr.remove());ukBody.innerHTML='';sel=-1;
+ opRows().forEach(tr=>tr.remove());ukBody.innerHTML='';mpBody.innerHTML='';sel=-1;
  const rows=d&&d.rows&&d.rows.length?d.rows:[{},{},{},{},{}];
  rows.forEach(r=>mkRow(r));
  renum();sync();calc();
@@ -463,8 +480,8 @@ $('bList').onclick=loadList;
 
 /* ---------- daftar WO ---------- */
 const stOf=x=>x.status==='closed'?'closed':'open';            // status lama (draft/dibuat/dst) dianggap open
-const rowsOfDoc=x=>x.v===2?(x.rows||[]):(x.f?fromLegacy(x.f).rows:[]);
-const startOfDoc=x=>x.v===2?((x.s&&x.s[iStart])||''):((x.f&&x.f[5])||'');
+const rowsOfDoc=x=>x.v>=2?(x.rows||[]):(x.f?fromLegacy(x.f).rows:[]);
+const startOfDoc=x=>x.v>=2?((x.s&&x.s[iStart])||''):((x.f&&x.f[5])||'');
 const descsOf=x=>[...new Set(rowsOfDoc(x).map(r=>String(r.desc||'').trim()).filter(Boolean))];
 const shortDesc=ds=>{const f=ds[0].length>30?ds[0].slice(0,30).trimEnd()+'\u2026':ds[0];return ds.length>1?f+' (+'+(ds.length-1)+')':f};
 const dFull=s=>{const p=dParts(s);return p?p.d+' '+MON[p.m]+' '+p.y:''};
@@ -497,13 +514,14 @@ async function loadList(){
 function openWO(id,x,want){
  const st=stOf(x);
  cur={id:id,status:st,mode:(st==='closed'||!isR('mandor'))?'view':(want||'plan')};
- apply(x.v===2?x:(x.f?fromLegacy(x.f):null));ui();
+ apply(norm(x));ui();
 }
 async function closeWO(id,x){
  const has=rowsOfDoc(x).some(r=>String(r.close||'').trim());
  if(!confirm((has?'':'Belum ada realisasi (kolom Close) yang diisi.\n')+'Close WO '+(x.no||'')+'?\nSetelah di-close, WO tidak bisa diubah.'))return;
  const u={status:'closed',closedAt:serverTimestamp(),closedBy:me.nama||me.uid,updatedAt:serverTimestamp(),updatedBy:me.nama||me.uid};
- if(x.v===2&&Array.isArray(x.s)&&!x.s[iClose]){const s=x.s.slice();s[iClose]=todayStr();u.s=s}
+ const d=norm(x);                                   // WO format lama sekaligus dimigrasi ke v3
+ if(d){const s=d.s.slice();while(s.length<=iClose)s.push(null);if(!s[iClose])s[iClose]=todayStr();Object.assign(u,{v:3,s:s,rows:d.rows,f:deleteField()})}
  try{await setDoc(doc(db,'workOrders',id),u,{merge:true});toast('WO di-close');loadList()}catch(e){msg(e)}
 }
 async function delWO(id,x){
@@ -528,7 +546,7 @@ function ui(){
 }
 async function save(status){
  const c=collect(),s=c.s;
- const data={v:2,s:s,rows:c.rows,no:s[0],divisi:s[2],mandor:s[4],status:status,updatedAt:serverTimestamp(),updatedBy:me.nama||me.uid};
+ const data={v:3,s:s,rows:c.rows,no:s[0],divisi:s[2],mandor:s[4],status:status,updatedAt:serverTimestamp(),updatedBy:me.nama||me.uid};
  if(status==='closed'){data.closedAt=serverTimestamp();data.closedBy=me.nama||me.uid}
  try{
   if(!cur.id){data.createdBy=me.uid;data.createdAt=serverTimestamp();cur.id=(await addDoc(collection(db,'workOrders'),data)).id}
