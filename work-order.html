@@ -66,9 +66,16 @@ input.bad{box-shadow:inset 0 0 0 1px #d33;background:rgba(220,50,50,.15)}
 #ac .it span{opacity:.8;font-size:11px;white-space:nowrap}
 #ac .more{padding:5px 10px;font-size:11px;color:var(--mute)}
 
+.paper.real input.close:not(:disabled){box-shadow:inset 0 0 0 1px #4da3ff;background:rgba(77,163,255,.1)}
+button.dg{background:#b3261e;border-color:#b3261e;color:#fff}
+#list{max-width:1000px}
+#lt td{overflow-wrap:anywhere;vertical-align:middle}
+#lt td.act{white-space:normal}
+#lt td.act button{margin:1px 2px 1px 0}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:8px 16px;border-radius:4px;font-size:13px;z-index:70}
 @media print{body{background:#fff;padding:0}.bar{display:none}.wrap{overflow:visible;max-width:none}.paper{min-width:0;border:1px solid #000}@page{size:A4 portrait;margin:8mm}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 :root:root:root{--bg:#fff;--paper:#fff;--ink:#111;--line:#222;--grey:#d9d9d9;--inp:#fff;--auto:#fff}
-.ctl,.sh,#hint,#ac,#mwarn{display:none!important}.kc .ket{width:100%}td.n.sel{background:var(--grey)!important}}
+.ctl,.sh,#hint,#ac,#mwarn,#toast{display:none!important}.kc .ket{width:100%}td.n.sel{background:var(--grey)!important}}
 [hidden]{display:none!important}
 .box{max-width:340px;margin:40px auto;background:var(--paper);border:1px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:10px}
 .box input{border:1px solid var(--line);padding:8px;font-size:14px;background:var(--inp);color:var(--ink)}
@@ -82,9 +89,9 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 <body>
 <p id="ld" style="text-align:center;padding:30px">Memuat...</p>
 <div class="bar" id="nav" hidden><span id="who" style="margin-right:auto;align-self:center"></span><button class="g" id="bHome">&larr; Beranda</button><button class="g" id="bList">Daftar WO</button><button id="bNew">+ WO Baru</button><button class="g" id="bOut">Keluar</button></div>
-<div id="list" class="wrap" hidden><div class="paper"><h2 style="margin:0 0 8px">Daftar Work Order</h2><table id="lt"><thead><tr><th>No WO</th><th>Divisi</th><th>Mandor</th><th>Status</th><th>Diubah</th></tr></thead><tbody></tbody></table><p id="lmsg"></p></div></div>
+<div id="list" class="wrap" hidden><div class="paper"><h2 style="margin:0 0 8px">Daftar Work Order</h2><table id="lt"><colgroup><col style="width:29%"><col style="width:11%"><col style="width:8%"><col style="width:8%"><col style="width:7%"><col style="width:12%"><col style="width:25%"></colgroup><thead><tr><th>No WO - Pekerjaan</th><th>Forecast Start</th><th>Divisi</th><th>Mandor</th><th>Status</th><th>Diubah</th><th>Aksi</th></tr></thead><tbody></tbody></table><p id="lmsg"></p></div></div>
 <div id="formv" hidden>
-<div class="bar"><span id="stat" style="margin-right:auto;align-self:center;font-weight:700"></span><button class="g" id="bBack">Kembalikan ke Draft</button><button class="g" id="bSave">Simpan Draft</button><button id="bNext">Ajukan</button><button class="g" onclick="window.print()">Cetak / PDF</button></div>
+<div class="bar"><span id="stat" style="margin-right:auto;align-self:center;font-weight:700"></span><button class="g" id="bSave">Simpan</button><button class="dg" id="bClose">Close WO</button><button class="g" onclick="window.print()">Cetak / PDF</button></div>
 <div class="warn" id="mwarn" hidden>Master paddock tidak bisa dimuat. Luas Area diisi manual dan paddock tidak divalidasi.</div>
 <div class="wrap"><div class="paper">
 
@@ -123,7 +130,7 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 
 <div class="foot">
  <div>
-  <table class="dt"><tr><td>Tanggal Open WO</td><td><input type="date" data-s></td></tr><tr><td>Tanggal Closing WO</td><td><input type="date" data-s></td></tr></table>
+  <table class="dt"><tr><td>Tanggal Open WO</td><td><input type="date" id="dOpen" data-s></td></tr><tr><td>Tanggal Closing WO</td><td><input type="date" id="dClose" data-s></td></tr></table>
   <div style="margin-top:6px">Lampiran</div>
   <div class="chk"><input type="checkbox" data-s><span>Peta Rencana Kerja</span></div>
   <div class="chk"><input type="checkbox" data-s><input class="ln" type="text" data-s></div>
@@ -137,10 +144,11 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 
 </div></div>
 </div>
+<div id="toast" hidden></div>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {initializeFirestore,doc,getDoc,setDoc,addDoc,collection,query,orderBy,limit,getDocs,serverTimestamp,deleteField} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {initializeFirestore,doc,getDoc,setDoc,addDoc,collection,query,orderBy,limit,getDocs,serverTimestamp,deleteField,deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {loadPaddocks,searchPaddocks,getPaddock,fmtLuas} from "./paddock.js";
 
 /* ====== ISI DENGAN firebaseConfig ANDA (Project settings > Your apps) ====== */
@@ -151,7 +159,7 @@ const $=id=>document.getElementById(id);
 const app=initializeApp(cfg),auth=getAuth(app);let db;const dbm={};
 const ls=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};
 const mk=id=>dbm[id]||(dbm[id]=initializeFirestore(app,{experimentalForceLongPolling:true},id));
-let me=null,cur={id:null,status:'draft'},master=null,luasRO=true,sel=-1;
+let me=null,cur={id:null,status:'open',mode:'plan'},master=null,luasRO=true,sel=-1;
 const MAXR=100;
 const isR=(...r)=>r.includes(me.role)||me.role==='admin';
 const show=v=>{['list','formv'].forEach(x=>$(x).hidden=x!==v);$('nav').hidden=false;$('ld').hidden=true};
@@ -176,6 +184,8 @@ const ukRows=()=>[...ukBody.children];                          // baris Unit Ke
  for(let i=1;i<=10;i++)m+='<tr>'+mr(i)+mr(i+10)+'</tr>';
  $('mp').innerHTML=m+'</tbody>';
 })();
+
+const iStart=S().indexOf(startEl),iClose=S().indexOf($('dClose'));   // posisi Forecast Start & Tanggal Closing di array s
 
 /* ---------- tanggal & shift ---------- */
 const MONTH=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -338,7 +348,7 @@ function loadMaster(){
   master=l;luasRO=true;
   opEl.querySelectorAll('.luas').forEach(e=>{e.readOnly=true});
   $('mwarn').hidden=true;
-  if(me&&cur.status==='draft'&&isR('mandor'))opRows().forEach(tr=>{
+  if(me&&cur.mode==='plan')opRows().forEach(tr=>{
    if(tr.querySelector('[data-k=paddock]').value.trim()&&!tr.querySelector('.luas').value)resolvePad(tr);
   });
   calc();
@@ -408,14 +418,18 @@ function apply(d){
 }
 
 /* ---------- kunci form: Forecast Start wajib diisi pertama ---------- */
+// mode: plan = buat/ubah rencana, real = input realisasi (kolom Close saja), view = hanya lihat
 function lock(){
- const edit=cur.status==='draft'&&isR('mandor'),ready=!!startEl.value;
- paper.classList.toggle('ro',!edit);
- paper.classList.toggle('on',edit&&ready);
- paper.querySelectorAll('input,select').forEach(e=>{e.disabled=!edit||(!ready&&e!==startEl)});
- startEl.classList.toggle('need',edit&&!ready);
- $('hint').hidden=!(edit&&!ready);
- ctlRow.hidden=!(edit&&ready);
+ const plan=cur.mode==='plan',real=cur.mode==='real',ready=!!startEl.value;
+ paper.classList.toggle('ro',!plan);
+ paper.classList.toggle('on',plan&&ready);
+ paper.classList.toggle('real',real);
+ paper.querySelectorAll('input,select').forEach(e=>{
+  e.disabled=plan?(e.classList.contains('close')||(!ready&&e!==startEl)):!(real&&e.classList.contains('close'));
+ });
+ startEl.classList.toggle('need',plan&&!ready);
+ $('hint').hidden=!(plan&&!ready);
+ ctlRow.hidden=!(plan&&ready);
  endEl.min=startEl.value||'';
 }
 ['input','change'].forEach(t=>startEl.addEventListener(t,()=>{lock();sync()}));
@@ -447,21 +461,57 @@ $('bHome').onclick=()=>{location.href='index.html'};
 $('bOut').onclick=()=>signOut(auth);
 $('bList').onclick=loadList;
 
+/* ---------- daftar WO ---------- */
+const stOf=x=>x.status==='closed'?'closed':'open';            // status lama (draft/dibuat/dst) dianggap open
+const rowsOfDoc=x=>x.v===2?(x.rows||[]):(x.f?fromLegacy(x.f).rows:[]);
+const startOfDoc=x=>x.v===2?((x.s&&x.s[iStart])||''):((x.f&&x.f[5])||'');
+const descsOf=x=>[...new Set(rowsOfDoc(x).map(r=>String(r.desc||'').trim()).filter(Boolean))];
+const shortDesc=ds=>{const f=ds[0].length>30?ds[0].slice(0,30).trimEnd()+'\u2026':ds[0];return ds.length>1?f+' (+'+(ds.length-1)+')':f};
+const dFull=s=>{const p=dParts(s);return p?p.d+' '+MON[p.m]+' '+p.y:''};
+const todayStr=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())};
+function toast(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>{e.hidden=true},2200)}
+
 async function loadList(){
  show('list');const tb=document.querySelector('#lt tbody');tb.innerHTML='';$('lmsg').textContent='Memuat...';
  try{
   const q=await getDocs(query(collection(db,'workOrders'),orderBy('updatedAt','desc'),limit(100)));
   $('lmsg').textContent=q.empty?'Belum ada Work Order.':'';
-  q.forEach(d=>{const x=d.data(),t=x.updatedAt?x.updatedAt.toDate().toLocaleString('id-ID'):'';
-   const tr=document.createElement('tr');
-   [x.no,x.divisi,x.mandor,x.status,t].forEach(v=>{const c=document.createElement('td');c.textContent=v||'';tr.appendChild(c)});
-   tr.onclick=()=>openWO(d.id,x);tb.appendChild(tr)});
+  q.forEach(d=>{
+   const x=d.data(),st=stOf(x),tr=document.createElement('tr');
+   const cell=t=>{const c=document.createElement('td');if(t!=null)c.textContent=t;tr.appendChild(c);return c};
+   const c0=cell(),b=document.createElement('b');b.textContent=x.no||'(tanpa nomor)';c0.appendChild(b);
+   const ds=descsOf(x);if(ds.length){c0.append(' - '+shortDesc(ds));c0.title=ds.join('\n')}
+   cell(dFull(startOfDoc(x)));cell(x.divisi);cell(x.mandor);
+   cell(st==='closed'?'Closed':'Open');
+   cell(x.updatedAt?x.updatedAt.toDate().toLocaleString('id-ID'):'');
+   const ca=cell();ca.className='act';
+   const btn=(label,cls,fn)=>{const e=document.createElement('button');e.type='button';e.className='sm '+cls;e.textContent=label;e.onclick=ev=>{ev.stopPropagation();fn()};ca.appendChild(e)};
+   if(st!=='closed'&&isR('mandor')){btn('Input Realisasi','',()=>openWO(d.id,x,'real'));btn('Close WO','g',()=>closeWO(d.id,x))}
+   if(me.role==='admin')btn('Hapus','dg',()=>delWO(d.id,x));
+   if(st==='closed')tr.style.opacity='.7';
+   tr.onclick=()=>openWO(d.id,x);tb.appendChild(tr);
+  });
  }catch(e){$('lmsg').textContent='Gagal memuat: '+(e.code||e.message)}
 }
 
-function openWO(id,x){cur={id:id,status:x.status||'draft'};apply(x.v===2?x:(x.f?fromLegacy(x.f):null));ui()}
+function openWO(id,x,want){
+ const st=stOf(x);
+ cur={id:id,status:st,mode:(st==='closed'||!isR('mandor'))?'view':(want||'plan')};
+ apply(x.v===2?x:(x.f?fromLegacy(x.f):null));ui();
+}
+async function closeWO(id,x){
+ const has=rowsOfDoc(x).some(r=>String(r.close||'').trim());
+ if(!confirm((has?'':'Belum ada realisasi (kolom Close) yang diisi.\n')+'Close WO '+(x.no||'')+'?\nSetelah di-close, WO tidak bisa diubah.'))return;
+ const u={status:'closed',closedAt:serverTimestamp(),closedBy:me.nama||me.uid,updatedAt:serverTimestamp(),updatedBy:me.nama||me.uid};
+ if(x.v===2&&Array.isArray(x.s)&&!x.s[iClose]){const s=x.s.slice();s[iClose]=todayStr();u.s=s}
+ try{await setDoc(doc(db,'workOrders',id),u,{merge:true});toast('WO di-close');loadList()}catch(e){msg(e)}
+}
+async function delWO(id,x){
+ if(!confirm('Hapus WO '+(x.no||'')+'?\nTindakan ini tidak bisa dibatalkan.'))return;
+ try{await deleteDoc(doc(db,'workOrders',id));toast('WO dihapus');loadList()}catch(e){msg(e)}
+}
 $('bNew').onclick=()=>{
- cur={id:null,status:'draft'};apply(null);
+ cur={id:null,status:'open',mode:'plan'};apply(null);
  const d=new Date(),p=n=>String(n).padStart(2,'0');
  S()[0].value='WO-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes());
  if(!master)loadMaster();
@@ -470,30 +520,34 @@ $('bNew').onclick=()=>{
 function ui(){
  show('formv');
  lock();
- const edit=cur.status==='draft'&&isR('mandor');
- $('stat').textContent='Status: '+cur.status.toUpperCase();
- $('bSave').hidden=!edit;
- const nx={draft:['Ajukan','dibuat',isR('mandor')],dibuat:['Tandai Diperiksa','diperiksa',isR('pemeriksa')],diperiksa:['Setujui','disetujui',isR('manager')]}[cur.status];
- $('bNext').hidden=!(nx&&nx[2]);if(nx){$('bNext').textContent=nx[0];$('bNext').dataset.to=nx[1]}
- $('bBack').hidden=!((cur.status==='dibuat'&&isR('pemeriksa'))||(cur.status==='diperiksa'&&isR('manager')));
+ const mn={plan:'Perencanaan',real:'Realisasi',view:'Lihat saja'}[cur.mode];
+ $('stat').textContent=(cur.id?'Status: '+cur.status.toUpperCase():'WO BARU')+' \u00b7 Mode: '+mn;
+ $('bSave').hidden=cur.mode==='view';
+ $('bClose').hidden=!(cur.mode!=='view'&&cur.id);
  window.scrollTo(0,0);
 }
 async function save(status){
  const c=collect(),s=c.s;
  const data={v:2,s:s,rows:c.rows,no:s[0],divisi:s[2],mandor:s[4],status:status,updatedAt:serverTimestamp(),updatedBy:me.nama||me.uid};
+ if(status==='closed'){data.closedAt=serverTimestamp();data.closedBy=me.nama||me.uid}
  try{
   if(!cur.id){data.createdBy=me.uid;data.createdAt=serverTimestamp();cur.id=(await addDoc(collection(db,'workOrders'),data)).id}
   else{data.f=deleteField();await setDoc(doc(db,'workOrders',cur.id),data,{merge:true})}
-  cur.status=status;ui();return true;
+  cur.status=status;return true;
  }catch(e){msg(e);return false}
 }
-$('bSave').onclick=async()=>{if(await save('draft'))alert('Draft tersimpan')};
-$('bNext').onclick=()=>{
- const to=$('bNext').dataset.to;
- if(cur.status==='draft'&&to==='dibuat'){const err=validate();if(err){alert(err);return}}
- if(confirm('Ubah status menjadi "'+to+'"?'))save(to);
+$('bSave').onclick=async()=>{
+ if(cur.mode==='plan'){const err=validate();if(err){alert(err);return}}
+ if(!cur.id&&!$('dOpen').value)$('dOpen').value=todayStr();   // Tanggal Open WO = hari WO pertama disimpan
+ if(await save('open')){toast('WO tersimpan');loadList()}
 };
-$('bBack').onclick=()=>{if(confirm('Kembalikan ke draft?'))save('draft')};
+$('bClose').onclick=async()=>{
+ if(cur.mode==='plan'){const err=validate();if(err){alert(err);return}}
+ const has=opRows().some(tr=>v(tr.querySelector('.close')));
+ if(!confirm((has?'':'Belum ada realisasi (kolom Close) yang diisi.\n')+'Simpan dan Close WO ini?\nSetelah di-close, WO tidak bisa diubah.'))return;
+ if(!$('dClose').value)$('dClose').value=todayStr();
+ if(await save('closed')){toast('WO di-close');loadList()}
+};
 </script>
 </body>
 </html>
