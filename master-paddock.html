@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Master Paddock</title>
+<style>
+:root{--bg:#e9ebef;--paper:#fff;--ink:#111;--mute:#5b6270;--line:#c9cdd4;--head:#1f3a73;--grey:#f1f3f6;--inp:#fff;--hl:#fff8c6;--chg:rgba(46,160,67,.16);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#15171b;--paper:#1e2127;--ink:#e8e8e8;--mute:#9aa0aa;--line:#3a3f48;--head:#2c4f94;--grey:#262a31;--inp:#1e2127;--hl:#4a4520;--chg:rgba(46,160,67,.28)}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.4 Arial,Helvetica,sans-serif;padding:10px}
+[hidden]{display:none!important}
+.top{max-width:960px;margin:0 auto 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.top #who{margin-right:auto;color:var(--mute);font-size:13px}
+button{padding:7px 12px;border:1px solid var(--line);background:var(--head);color:#fff;border-radius:4px;cursor:pointer;font:inherit;font-size:13px}
+button.g{background:var(--paper);color:var(--ink)}
+button.sm{padding:3px 9px;font-size:12px}
+button.dg{background:#b3261e;border-color:#b3261e;color:#fff}
+button:disabled{opacity:.6;cursor:wait}
+.paper{max-width:960px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px}
+.h1r{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+h1{margin:0;font-size:20px}
+.tools{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;margin-bottom:12px}
+.tools input,.tools select{width:100%;height:38px;padding:0 10px;border:1px solid var(--line);border-radius:4px;background:var(--inp);color:var(--ink);font:inherit}
+.tools input:focus,.tools select:focus{outline:2px solid #4da3ff;outline-offset:-1px}
+.pend{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding:10px 12px;border:1px solid #2ea043;background:var(--chg);border-radius:6px;font-size:13px}
+.pend span{margin-right:auto}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.st{flex:1 1 140px;padding:10px 12px;background:var(--grey);border-radius:6px}
+.st b{display:block;font-size:20px}.st small{color:var(--mute);text-transform:uppercase;letter-spacing:.06em;font-size:11px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px}
+th{background:var(--head);color:#fff;text-align:left;padding:8px 10px;font-size:13px;user-select:none;white-space:nowrap}
+th[data-k]{cursor:pointer}
+th.r,td.r{text-align:right}
+td{padding:7px 10px;border-bottom:1px solid var(--line)}
+td.act{text-align:right;white-space:nowrap;width:1%}
+tbody tr.m.alt{background:var(--grey)}
+tbody tr.m.chg td{background:var(--chg)}
+tr.multi{cursor:pointer}
+.badge{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:10px;background:var(--head);color:#fff;font-size:11px;white-space:nowrap}
+tr.dt td{background:var(--paper);color:var(--mute);font-size:13px;padding:5px 10px;border-bottom:1px dashed var(--line)}
+tr.dt td:first-child{padding-left:28px}
+mark{background:var(--hl);color:inherit;padding:0 1px;border-radius:2px}
+#msg{margin:10px 0 0;color:var(--mute);font-size:13px}
+dialog{width:min(660px,94vw);padding:16px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h2{margin:0 0 12px;font-size:17px}
+dialog label{display:block;font-size:12px;color:var(--mute);margin-bottom:10px}
+dialog input[type=text],dialog input[type=password]{width:100%;height:36px;padding:0 9px;margin-top:3px;border:1px solid var(--line);border-radius:4px;background:var(--inp);color:var(--ink);font:inherit;font-size:14px}
+dialog input:focus{outline:2px solid #4da3ff;outline-offset:-1px}
+#dT{min-width:0}
+#dT th{padding:5px 8px;font-size:12px}
+#dT td{padding:4px 4px;border-bottom:0}
+#dT td input{margin:0;height:34px}
+#dT td:last-child{width:1%}
+.dsum{display:flex;align-items:center;justify-content:space-between;margin:8px 0;font-size:13px}
+.hlp{font-size:12px;color:var(--mute);margin:-4px 0 10px}
+.derr{min-height:18px;margin:6px 0;color:#d33;font-size:13px}
+.dbtn{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ghx{font-size:12px;color:var(--mute);line-height:1.5;margin:0 0 10px}
+.ghx b{color:var(--ink)}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;border-radius:4px;font-size:13px;z-index:70;max-width:92vw;text-align:center}
+@media(max-width:640px){.tools{grid-template-columns:1fr 1fr}.tools input{grid-column:1/-1}.tools button{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<p id="ld" style="text-align:center;padding:30px">Memuat...</p>
+<div id="app" hidden>
+ <div class="top"><span id="who"></span><button class="g" id="bGh" hidden>&#9881; GitHub</button><button class="g" id="bHome">&larr; Beranda</button><button class="g" id="bWO">Work Order</button><button class="g" id="bOut">Keluar</button></div>
+ <div class="paper">
+  <div class="h1r"><h1>Master Paddock</h1><button id="bAdd" hidden>+ Tambah Paddock</button></div>
+  <div class="tools">
+   <input id="q" type="search" placeholder="Cari paddock, varietas, atau status..." autocomplete="off">
+   <select id="fv"><option value="">Semua varietas</option></select>
+   <select id="fs"><option value="">Semua status</option></select>
+   <button class="g" id="bReset">Reset</button>
+  </div>
+  <div class="pend" id="pend" hidden><span id="pendTxt"></span><button id="bPush">Simpan ke GitHub</button><button class="g" id="bDiscard">Batalkan</button></div>
+  <div class="stats">
+   <div class="st"><b id="sN">-</b><small>Jumlah paddock</small></div>
+   <div class="st"><b id="sL">-</b><small>Total luas (Ha)</small></div>
+  </div>
+  <div class="scroll"><table>
+   <thead><tr><th data-k="paddock">Paddock<i></i></th><th data-k="varietas">Varietas<i></i></th><th data-k="status">Status<i></i></th><th data-k="luas" class="r">Luasan (Ha)<i></i></th><th id="thAct" hidden></th></tr></thead>
+   <tbody id="tb"></tbody>
+  </table></div>
+  <p id="msg"></p>
+ </div>
+</div>
+
+<dialog id="dlg">
+ <h2 id="dTitle"></h2>
+ <label>Nama Paddock<input id="dName" type="text" autocomplete="off"></label>
+ <p class="hlp">Mengganti nama tidak mengubah Work Order yang sudah tersimpan.</p>
+ <table id="dT"><thead><tr><th>Varietas</th><th>Status</th><th>Luasan (Ha)</th><th></th></tr></thead><tbody></tbody></table>
+ <div class="dsum"><button type="button" class="g sm" id="dAddRow">+ Tambah baris varietas / status</button><span>Total: <b id="dTot">0</b> Ha</span></div>
+ <p class="derr" id="dErr"></p>
+ <div class="dbtn"><button type="button" class="dg" id="dDel">Hapus Paddock</button><span style="flex:1"></span><button type="button" class="g" id="dCancel">Batal</button><button type="button" id="dOk">Simpan Perubahan</button></div>
+ <datalist id="dlVar"></datalist><datalist id="dlSt"></datalist>
+</dialog>
+
+<dialog id="dlgGh">
+ <h2>Pengaturan GitHub</h2>
+ <p class="ghx">Perubahan master paddock disimpan sebagai <b>commit</b> ke file CSV di GitHub. Untuk itu dibutuhkan <b>Personal Access Token</b> (fine-grained) dengan akses <b>Contents: Read and write</b> hanya untuk repo ini. Token disimpan di browser ini saja, tidak dikirim ke tempat lain selain GitHub.</p>
+ <label>Repo (pemilik/nama)<input id="ghRepo" type="text" autocomplete="off" placeholder="siahaans/siahaans.github.io"></label>
+ <label>Branch (kosongkan = branch utama)<input id="ghBranch" type="text" autocomplete="off"></label>
+ <label>Path file CSV<input id="ghPath" type="text" autocomplete="off" placeholder="paddock.csv"></label>
+ <label>Token<input id="ghToken" type="password" autocomplete="off" placeholder="github_pat_..."></label>
+ <p class="derr" id="ghMsg"></p>
+ <div class="dbtn"><button type="button" class="g" id="ghTest">Uji Koneksi</button><button type="button" class="dg" id="ghClear">Hapus Token</button><span style="flex:1"></span><button type="button" class="g" id="ghClose">Tutup</button><button type="button" id="ghSave">Simpan</button></div>
+</dialog>
+
+<div id="toast" hidden></div>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {getAuth,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {initializeFirestore,doc,getDoc} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {loadCsvText,parseSource,groupRows,serializeSource,applyEdits,parseNum,setPendingCsv,searchPaddocks,rowsOf,distinct,fmtLuas} from "./paddock.js";
+
+const cfg={apiKey:"AIzaSyDEsM1oAvOw_7Zd14wd2SmlnOAqAgwbQIU",authDomain:"gpa---work-order.firebaseapp.com",projectId:"gpa---work-order",storageBucket:"gpa---work-order.firebasestorage.app",messagingSenderId:"352208521958",appId:"1:352208521958:web:895d25863e8ec918070927"};
+const $=id=>document.getElementById(id);
+const fbApp=initializeApp(cfg),auth=getAuth(fbApp);
+const ls=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};
+const lsDel=k=>{try{localStorage.removeItem(k)}catch(e){}};
+const MAX=500;
+const r4=n=>Math.round(n*10000)/10000;
+const key=s=>String(s||'').trim().toLowerCase();
+let base=null,edits=[],all=[],sm=null,isAdmin=false,email='',sortK=null,sortD=1,timer;
+
+function toast(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>{e.hidden=true},3800)}
+
+/* ---------- peran admin (sama seperti halaman Work Order) ---------- */
+async function getRole(u){
+ try{
+  const ids=[...new Set([ls('woDb'),'(default)','default'].filter(Boolean))];
+  for(const id of ids){
+   const t=initializeFirestore(fbApp,{experimentalForceLongPolling:true},id);
+   try{const d=await getDoc(doc(t,'users',u.uid));ls('woDb',id);return d.exists()?(d.data().role||''):''}
+   catch(e){if(e.code!=='unavailable'&&e.code!=='not-found')throw e}
+  }
+ }catch(e){}
+ return '';
+}
+
+onAuthStateChanged(auth,async u=>{
+ if(!u){location.replace('index.html');return}
+ email=u.email||'';$('who').textContent=email;
+ try{
+  const [role,text]=await Promise.all([getRole(u),loadCsvText()]);
+  isAdmin=role==='admin';
+  base={text,...parseSource(text)};
+  $('bGh').hidden=$('bAdd').hidden=$('thAct').hidden=!isAdmin;
+  $('ld').hidden=true;$('app').hidden=false;
+  recompute();$('q').focus();
+ }catch(e){$('ld').textContent='Gagal memuat paddock.csv: '+e.message+'. Pastikan file paddock.csv ada di folder yang sama.'}
+});
+
+/* ---------- data kerja = data dasar + perubahan yang belum disimpan ---------- */
+const sig=it=>it.rows.map(r=>[r.varietas,r.status,r.luas==null?'':r.luas].join('|')).join(';');
+function summarize(){
+ const bm=new Map(groupRows(base.rows).map(it=>[key(it.paddock),sig(it)])),wm=new Map(all.map(it=>[key(it.paddock),sig(it)]));
+ let a=0,c=0,d=0;const touched=new Set();
+ wm.forEach((v,k)=>{if(!bm.has(k)){a++;touched.add(k)}else if(bm.get(k)!==v){c++;touched.add(k)}});
+ bm.forEach((v,k)=>{if(!wm.has(k))d++});
+ return{a,c,d,n:a+c+d,touched,txt:[a&&a+' baru',c&&c+' diubah',d&&d+' dihapus'].filter(Boolean).join(', ')};
+}
+function fill(sel,arr){const cur=sel.value;sel.length=1;arr.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o)});sel.value=arr.includes(cur)?cur:''}
+function recompute(){
+ all=groupRows(applyEdits(base.rows,edits,base.meta));
+ sm=summarize();
+ fill($('fv'),distinct(all,'varietas'));fill($('fs'),distinct(all,'status'));
+ $('pend').hidden=!sm.n;
+ $('pendTxt').textContent=sm.n+' perubahan belum disimpan ke GitHub ('+sm.txt+')';
+ render();
+}
+addEventListener('beforeunload',e=>{if(sm&&sm.n){e.preventDefault();e.returnValue=''}});
+
+/* ---------- tabel ---------- */
+function hl(td,text,terms){
+ const low=text.toLowerCase();let pos=0;
+ const hits=[];
+ terms.forEach(t=>{let i=low.indexOf(t);if(i>-1)hits.push([i,i+t.length])});
+ hits.sort((a,b)=>a[0]-b[0]);
+ hits.forEach(([s,e])=>{if(s<pos)return;td.append(text.slice(pos,s));const m=document.createElement('mark');m.textContent=text.slice(s,e);td.append(m);pos=e});
+ td.append(text.slice(pos));
+}
+function uniq(rows,k){return [...new Set(rows.map(r=>r[k]).filter(Boolean))].join(' / ')}
+
+function render(){
+ const q=$('q').value,fv=$('fv').value,fs=$('fs').value;
+ const terms=q.toLowerCase().split(/\s+/).filter(Boolean);
+ // satu item = satu paddock; jika filter aktif, luas = jumlah baris yang cocok filter
+ let res=searchPaddocks(all,q).map(it=>{
+  const rows=rowsOf(it,{varietas:fv,status:fs});
+  return{it,rows,varietas:uniq(rows,'varietas'),status:uniq(rows,'status'),luas:r4(rows.reduce((s,r)=>s+(r.luas||0),0))};
+ }).filter(x=>x.rows.length);
+ if(sortK)res=res.slice().sort((a,b)=>{
+  if(sortK==='luas')return(a.luas-b.luas)*sortD;
+  const x=sortK==='paddock'?a.it.paddock:a[sortK],y=sortK==='paddock'?b.it.paddock:b[sortK];
+  return String(x).localeCompare(String(y),'id',{numeric:true})*sortD;
+ });
+ $('sN').textContent=res.length.toLocaleString('id-ID');
+ $('sL').textContent=fmtLuas(r4(res.reduce((s,x)=>s+x.luas,0)))||'0';
+ const touched=sm?sm.touched:new Set(),fr=document.createDocumentFragment();
+ res.slice(0,MAX).forEach((x,i)=>{
+  const tr=document.createElement('tr');tr.className='m'+(i%2?' alt':'')+(touched.has(key(x.it.paddock))?' chg':'');
+  const c0=document.createElement('td');hl(c0,x.it.paddock,terms);
+  const c1=document.createElement('td');hl(c1,x.varietas,terms);
+  const c2=document.createElement('td');hl(c2,x.status,terms);
+  const c3=document.createElement('td');c3.className='r';c3.textContent=fmtLuas(x.luas);
+  tr.append(c0,c1,c2,c3);
+  if(isAdmin){
+   const ca=document.createElement('td');ca.className='act';
+   const b=document.createElement('button');b.type='button';b.className='g sm';b.textContent='\u270E Edit';
+   b.onclick=ev=>{ev.stopPropagation();openDlg(x.it)};ca.appendChild(b);tr.appendChild(ca);
+  }
+  fr.appendChild(tr);
+  if(x.rows.length>1){
+   const bd=document.createElement('span');bd.className='badge';bd.textContent='\u25B8 '+x.rows.length+' detail';c0.appendChild(bd);
+   tr.classList.add('multi');
+   const dts=x.rows.map(r=>{
+    const d=document.createElement('tr');d.className='dt';d.hidden=true;
+    ['\u21B3',r.varietas,r.status].forEach(v=>{const td=document.createElement('td');td.textContent=v;d.appendChild(td)});
+    const l=document.createElement('td');l.className='r';l.textContent=fmtLuas(r.luas);d.appendChild(l);
+    if(isAdmin)d.appendChild(document.createElement('td'));
+    fr.appendChild(d);return d;
+   });
+   tr.onclick=()=>{const open=dts[0].hidden;dts.forEach(d=>d.hidden=!open);bd.textContent=(open?'\u25BE ':'\u25B8 ')+x.rows.length+' detail'};
+  }
+ });
+ $('tb').replaceChildren(fr);
+ $('msg').textContent=!res.length?'Tidak ada paddock yang cocok.':res.length>MAX?'Menampilkan '+MAX+' dari '+res.length+' paddock. Persempit pencarian untuk melihat sisanya.':(fv||fs)?'Filter aktif: luas yang tampil hanya dari baris yang cocok dengan filter.':'';
+ document.querySelectorAll('th[data-k]').forEach(th=>{th.querySelector('i').textContent=th.dataset.k===sortK?(sortD>0?' \u25B2':' \u25BC'):''});
+}
+$('q').addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(render,120)});
+$('fv').onchange=$('fs').onchange=render;
+$('bReset').onclick=()=>{$('q').value='';$('fv').value='';$('fs').value='';sortK=null;sortD=1;render();$('q').focus()};
+document.querySelectorAll('th[data-k]').forEach(th=>th.onclick=()=>{const k=th.dataset.k;sortD=sortK===k?-sortD:1;sortK=k;render()});
+$('bHome').onclick=()=>{location.href='index.html'};
+$('bWO').onclick=()=>{location.href='work-order.html'};
+$('bOut').onclick=()=>signOut(auth);
+
+/* ---------- dialog edit / tambah paddock ---------- */
+let dCur=null;
+const dBody=()=>$('dT').tBodies[0];
+function dTot(){let s=0;[...dBody().rows].forEach(tr=>{s+=parseNum(tr.querySelector('.dl').value)||0});$('dTot').textContent=fmtLuas(r4(s))||'0'}
+function addDRow(d){
+ const tr=document.createElement('tr');
+ const mk=(cls,val,list)=>{const td=document.createElement('td'),i=document.createElement('input');i.type='text';i.className=cls;i.value=val;i.autocomplete='off';if(list)i.setAttribute('list',list);td.appendChild(i);tr.appendChild(td);return i};
+ mk('dv',d.varietas||'','dlVar');mk('ds',d.status||'','dlSt');
+ const l=mk('dl',d.luas==null?'':String(d.luas).replace('.',','));l.inputMode='decimal';l.oninput=dTot;
+ const tx=document.createElement('td'),x=document.createElement('button');
+ x.type='button';x.className='g sm';x.textContent='\u00d7';x.title='Hapus baris';
+ x.onclick=()=>{if(dBody().rows.length>1){tr.remove();dTot()}};
+ tx.appendChild(x);tr.appendChild(tx);tr._src=d.src;
+ dBody().appendChild(tr);
+}
+function openDlg(it){
+ dCur={key:it?key(it.paddock):null};
+ $('dTitle').textContent=it?'Edit Paddock':'Tambah Paddock';
+ $('dName').value=it?it.paddock:'';
+ dBody().replaceChildren();
+ (it?it.rows:[{}]).forEach(addDRow);
+ $('dDel').hidden=!it;$('dErr').textContent='';
+ const opt=arr=>arr.map(v=>{const o=document.createElement('option');o.value=v;return o});
+ $('dlVar').replaceChildren(...opt(distinct(all,'varietas')));$('dlSt').replaceChildren(...opt(distinct(all,'status')));
+ dTot();$('dlg').showModal();$('dName').focus();
+}
+$('bAdd').onclick=()=>openDlg(null);
+$('dAddRow').onclick=()=>{addDRow({});const r=dBody().rows;r[r.length-1].querySelector('.dv').focus()};
+$('dCancel').onclick=()=>$('dlg').close();
+$('dOk').onclick=()=>{
+ const err=m=>{$('dErr').textContent=m};
+ const name=$('dName').value.trim();
+ if(!name)return err('Nama paddock wajib diisi.');
+ const k=key(name);
+ if(k!==dCur.key&&all.some(x=>key(x.paddock)===k))return err('Nama paddock sudah ada.');
+ const details=[];let bad=0;
+ [...dBody().rows].forEach((tr,i)=>{
+  const n=parseNum(tr.querySelector('.dl').value);
+  if(n==null||n<0)bad=bad||i+1;
+  details.push({varietas:tr.querySelector('.dv').value.trim(),status:tr.querySelector('.ds').value.trim(),luas:n,src:tr._src});
+ });
+ if(bad)return err('Luasan pada baris '+bad+' harus berupa angka (contoh: 12,5).');
+ edits.push({key:dCur.key||k,name,details,del:false});
+ $('dlg').close();recompute();
+ toast('Perubahan ditampung. Klik "Simpan ke GitHub" untuk menerapkannya.');
+};
+$('dDel').onclick=()=>{
+ if(!confirm('Hapus paddock '+$('dName').value+' beserta semua detailnya?'))return;
+ edits.push({key:dCur.key,name:'',details:[],del:true});
+ $('dlg').close();recompute();
+ toast('Paddock dihapus (belum disimpan ke GitHub).');
+};
+$('bDiscard').onclick=()=>{if(confirm('Batalkan semua perubahan yang belum disimpan?')){edits=[];recompute()}};
+
+/* ---------- GitHub: simpan sebagai commit ---------- */
+function ghDefaults(){
+ const h=location.hostname;let repo='';
+ if(/\.github\.io$/.test(h)){const seg=location.pathname.split('/')[1]||'';repo=h.split('.')[0]+'/'+((seg&&!seg.includes('.'))?seg:h)}
+ return{repo,branch:'',path:'paddock.csv'};
+}
+function ghCfg(){let c={};try{c=JSON.parse(ls('ghCfg')||'{}')}catch(e){}return Object.assign(ghDefaults(),c)}
+const fileUrl=c=>'/repos/'+c.repo+'/contents/'+c.path.split('/').map(encodeURIComponent).join('/');
+const b64dec=s=>new TextDecoder('utf-8',{ignoreBOM:true}).decode(Uint8Array.from(atob(s.replace(/\s/g,'')),c=>c.charCodeAt(0)));
+const b64enc=t=>{const b=new TextEncoder().encode(t);let s='';for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode.apply(null,b.subarray(i,i+8192));return btoa(s)};
+async function gh(method,url,body){
+ const t=ls('ghToken');
+ if(!t){const e=new Error('Token GitHub belum diisi.');e.status=0;throw e}
+ const r=await fetch('https://api.github.com'+url,{method,cache:'no-store',headers:Object.assign({Accept:'application/vnd.github+json',Authorization:'Bearer '+t},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined});
+ const j=await r.json().catch(()=>({}));
+ if(!r.ok){const e=new Error(j.message||('HTTP '+r.status));e.status=r.status;throw e}
+ return j;
+}
+function ghErr(e){
+ if(e.status===0)return 'Token GitHub belum diisi.';
+ if(e.status===401)return 'Token tidak valid atau sudah kedaluwarsa.';
+ if(e.status===403)return 'Token tidak punya izin (perlu Contents: Read and write) atau terkena batas permintaan GitHub.';
+ if(e.status===404)return 'Repo, branch, atau file tidak ditemukan, atau token tidak punya akses ke repo ini.';
+ if(e.status===409||e.status===422)return 'Konflik versi file di GitHub. Coba lagi.';
+ return e.message||'Gagal terhubung ke GitHub.';
+}
+function openGh(msg){
+ const c=ghCfg();$('ghRepo').value=c.repo;$('ghBranch').value=c.branch;$('ghPath').value=c.path;$('ghToken').value=ls('ghToken')||'';
+ $('ghMsg').style.color='#d33';$('ghMsg').textContent=msg||'';$('dlgGh').showModal();
+}
+const readGh=()=>({repo:$('ghRepo').value.trim(),branch:$('ghBranch').value.trim(),path:$('ghPath').value.trim()||'paddock.csv'});
+$('bGh').onclick=()=>openGh();
+$('ghClose').onclick=()=>$('dlgGh').close();
+$('ghSave').onclick=()=>{
+ const c=readGh();
+ if(!/^[\w.-]+\/[\w.-]+$/.test(c.repo)){$('ghMsg').style.color='#d33';$('ghMsg').textContent='Repo harus berformat pemilik/nama, contoh: siahaans/siahaans.github.io';return}
+ ls('ghCfg',JSON.stringify(c));const t=$('ghToken').value.trim();if(t)ls('ghToken',t);
+ $('dlgGh').close();toast('Pengaturan GitHub tersimpan.');
+};
+$('ghClear').onclick=()=>{lsDel('ghToken');$('ghToken').value='';$('ghMsg').style.color='';$('ghMsg').textContent='Token dihapus dari browser ini.'};
+$('ghTest').onclick=async()=>{
+ const c=readGh(),msg=$('ghMsg');msg.style.color='';msg.textContent='Menguji...';
+ const t=$('ghToken').value.trim();if(t)ls('ghToken',t);
+ try{
+  const rp=await gh('GET','/repos/'+c.repo);
+  const f=await gh('GET',fileUrl(c)+(c.branch?'?ref='+encodeURIComponent(c.branch):''));
+  const w=rp.permissions?(rp.permissions.push?'akses tulis: ya':'akses tulis: TIDAK (token hanya baca)'):'akses tulis: tidak diketahui';
+  msg.style.color=rp.permissions&&!rp.permissions.push?'#d33':'#2ea043';
+  msg.textContent='Terhubung. File '+f.path+' ditemukan ('+f.size+' byte), '+w+'.';
+ }catch(e){msg.style.color='#d33';msg.textContent=ghErr(e)}
+};
+
+async function push(){
+ if(!sm||!sm.n){toast('Tidak ada perubahan.');return}
+ if(!ls('ghToken')){openGh('Isi token GitHub dulu untuk bisa menyimpan.');return}
+ const c=ghCfg();
+ if(!confirm('Simpan '+sm.txt+' ke GitHub?\n'+c.repo+' / '+c.path))return;
+ const btn=$('bPush');btn.disabled=true;btn.textContent='Menyimpan...';
+ const msg='Update master paddock via web: '+sm.txt+(email?' ('+email+')':'');
+ try{
+  let newText=null,done=false;
+  for(let attempt=0;attempt<2&&!done;attempt++){
+   const f=await gh('GET',fileUrl(c)+(c.branch?'?ref='+encodeURIComponent(c.branch):''));
+   const remoteText=b64dec(f.content);
+   const rem=parseSource(remoteText);
+   // perubahan diterapkan ke versi terbaru di GitHub (digabung per paddock)
+   newText=serializeSource(rem.meta,applyEdits(rem.rows,edits,rem.meta));
+   if(newText===remoteText){done=true;break}
+   try{
+    await gh('PUT',fileUrl(c),Object.assign({message:msg,content:b64enc(newText),sha:f.sha},c.branch?{branch:c.branch}:{}));
+    done=true;
+   }catch(e){if(!((e.status===409||e.status===422)&&attempt===0))throw e}
+  }
+  if(!done)throw Object.assign(new Error('Konflik versi file di GitHub.'),{status:409});
+  setPendingCsv(newText);
+  base={text:newText,...parseSource(newText)};edits=[];recompute();
+  toast('Tersimpan ke GitHub. Perubahan tampil untuk semua pengguna dalam 1-2 menit.');
+ }catch(e){
+  if(e.status===0||e.status===401)openGh(ghErr(e));else alert('Gagal menyimpan ke GitHub:\n'+ghErr(e)+'\n\nPerubahan Anda masih tertampung di halaman ini.');
+ }finally{btn.disabled=false;btn.textContent='Simpan ke GitHub'}
+}
+$('bPush').onclick=push;
+</script>
+</body>
+</html>
