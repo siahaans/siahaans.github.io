@@ -348,7 +348,7 @@ function loadMaster(){
   master=l;luasRO=true;
   opEl.querySelectorAll('.luas').forEach(e=>{e.readOnly=true});
   $('mwarn').hidden=true;
-  if(me&&cur.mode==='plan')opRows().forEach(tr=>{
+  if(me&&cur.mode!=='view')opRows().forEach(tr=>{
    if(tr.querySelector('[data-k=paddock]').value.trim()&&!tr.querySelector('.luas').value)resolvePad(tr);
   });
   calc();
@@ -418,18 +418,18 @@ function apply(d){
 }
 
 /* ---------- kunci form: Forecast Start wajib diisi pertama ---------- */
-// mode: plan = buat/ubah rencana, real = input realisasi (kolom Close saja), view = hanya lihat
+// mode: plan = buat/ubah rencana (kolom Close terkunci), real = realisasi (semua bisa diubah, termasuk Close & tambah baris), view = hanya lihat
 function lock(){
- const plan=cur.mode==='plan',real=cur.mode==='real',ready=!!startEl.value;
- paper.classList.toggle('ro',!plan);
- paper.classList.toggle('on',plan&&ready);
+ const edit=cur.mode!=='view',real=cur.mode==='real',ready=!!startEl.value;
+ paper.classList.toggle('ro',!edit);
+ paper.classList.toggle('on',edit&&ready);
  paper.classList.toggle('real',real);
  paper.querySelectorAll('input,select').forEach(e=>{
-  e.disabled=plan?(e.classList.contains('close')||(!ready&&e!==startEl)):!(real&&e.classList.contains('close'));
+  e.disabled=!edit||(!ready&&e!==startEl)||(!real&&e.classList.contains('close'));
  });
- startEl.classList.toggle('need',plan&&!ready);
- $('hint').hidden=!(plan&&!ready);
- ctlRow.hidden=!(plan&&ready);
+ startEl.classList.toggle('need',edit&&!ready);
+ $('hint').hidden=!(edit&&!ready);
+ ctlRow.hidden=!(edit&&ready);
  endEl.min=startEl.value||'';
 }
 ['input','change'].forEach(t=>startEl.addEventListener(t,()=>{lock();sync()}));
@@ -537,12 +537,12 @@ async function save(status){
  }catch(e){msg(e);return false}
 }
 $('bSave').onclick=async()=>{
- if(cur.mode==='plan'){const err=validate();if(err){alert(err);return}}
+ if(cur.mode!=='view'){const err=validate();if(err){alert(err);return}}
  if(!cur.id&&!$('dOpen').value)$('dOpen').value=todayStr();   // Tanggal Open WO = hari WO pertama disimpan
  if(await save('open')){toast('WO tersimpan');loadList()}
 };
 $('bClose').onclick=async()=>{
- if(cur.mode==='plan'){const err=validate();if(err){alert(err);return}}
+ if(cur.mode!=='view'){const err=validate();if(err){alert(err);return}}
  const has=opRows().some(tr=>v(tr.querySelector('.close')));
  if(!confirm((has?'':'Belum ada realisasi (kolom Close) yang diisi.\n')+'Simpan dan Close WO ini?\nSetelah di-close, WO tidak bisa diubah.'))return;
  if(!$('dClose').value)$('dClose').value=todayStr();
