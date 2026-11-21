@@ -51,7 +51,7 @@
 .ghost:hover{border-color:#4da3ff;box-shadow:0 0 20px rgba(77,163,255,.35);color:#fff}
 .hi{margin:0;font-size:30px}.hi span{background:linear-gradient(90deg,#8fc2ff,#d3a6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
 .sub2{margin:6px 0 22px;color:#8fa3d6}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:26px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:26px}
 .st{padding:14px;border-radius:14px;background:rgba(12,18,40,.6);box-shadow:0 0 0 1px rgba(120,160,255,.16);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 .st b{display:block;font-size:28px;color:#6fb3ff;text-shadow:0 0 18px rgba(77,163,255,.6)}.st small{color:#8fa3d6;text-transform:uppercase;letter-spacing:.1em;font-size:10px}
 .apps{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
@@ -82,10 +82,9 @@ a.app:hover::after{left:140%}
  <h1 class="hi">Selamat datang, <span id="nm"></span></h1>
  <p class="sub2">Pilih modul yang ingin Anda buka.</p>
  <div class="stats">
-  <div class="st"><b id="s_draft">-</b><small>Draft</small></div>
-  <div class="st"><b id="s_dibuat">-</b><small>Diajukan</small></div>
-  <div class="st"><b id="s_diperiksa">-</b><small>Diperiksa</small></div>
-  <div class="st"><b id="s_disetujui">-</b><small>Disetujui</small></div>
+  <div class="st"><b id="s_total">-</b><small>Total WO</small></div>
+  <div class="st"><b id="s_open">-</b><small>Open</small></div>
+  <div class="st"><b id="s_closed">-</b><small>Closed</small></div>
  </div>
  <div class="apps">
   <a class="app" href="work-order.html"><div class="ic">&#128203;</div><h3>Work Order</h3><p>Buat, periksa, dan setujui Work Order.</p><span class="go">BUKA &rarr;</span></a>
@@ -122,8 +121,8 @@ onAuthStateChanged(auth,async u=>{
 });
 async function stats(){
  try{const q=await getDocs(query(collection(db,'workOrders'),limit(500)));
-  const c={draft:0,dibuat:0,diperiksa:0,disetujui:0};q.forEach(d=>{const s=d.data().status;if(s in c)c[s]++});
-  for(const k in c)$('s_'+k).textContent=c[k]}catch(e){}
+  const c={open:0,closed:0};q.forEach(d=>{c[d.data().status==='closed'?'closed':'open']++});   // status lama dihitung Open
+  $('s_open').textContent=c.open;$('s_closed').textContent=c.closed;$('s_total').textContent=c.open+c.closed}catch(e){}
 }
 $('lf').addEventListener('submit',async ev=>{
  ev.preventDefault();$('err').textContent='';
