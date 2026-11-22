@@ -63,7 +63,7 @@ input.bad{box-shadow:inset 0 0 0 1px #d33;background:rgba(220,50,50,.15)}
 #ac{position:fixed;z-index:60;background:var(--paper);color:var(--ink);border:1px solid var(--line);box-shadow:0 6px 20px rgba(0,0,0,.25);border-radius:4px;min-width:260px;max-width:92vw;font-size:12px;overflow:hidden}
 #ac .it{padding:6px 10px;cursor:pointer;display:flex;gap:10px;justify-content:space-between;align-items:baseline}
 #ac .it.on{background:var(--head);color:#fff}
-#ac .it span{opacity:.8;font-size:11px;white-space:nowrap}
+#ac .it span{opacity:.8;font-size:11px;text-align:right}
 #ac .more{padding:5px 10px;font-size:11px;color:var(--mute)}
 
 .paper.real input.close:not(:disabled){box-shadow:inset 0 0 0 1px #4da3ff;background:rgba(77,163,255,.1)}
@@ -104,7 +104,7 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 </div>
 
 <table id="op">
- <colgroup><col style="width:3.5%"><col style="width:7%"><col style="width:17.5%"><col style="width:12%"><col style="width:6%"><col style="width:5%"><col style="width:4.5%"><col style="width:6%"><col style="width:6%"><col style="width:4.5%"><col style="width:28%"></colgroup>
+ <colgroup><col style="width:3%"><col style="width:8%"><col style="width:22%"><col style="width:11%"><col style="width:5.5%"><col style="width:4.5%"><col style="width:4%"><col style="width:5.5%"><col style="width:5.5%"><col style="width:4.5%"><col style="width:26.5%"></colgroup>
  <thead>
   <tr><th colspan="11">Operation</th></tr>
   <tr><th rowspan="3">No</th><th colspan="2">Pekerjaan</th><th colspan="2">Field</th><th rowspan="3">Jml HK</th><th rowspan="3">UoM</th><th colspan="3">Target Kerja</th><th rowspan="3">Keterangan</th></tr>
@@ -157,6 +157,7 @@ import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase
 import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {initializeFirestore,doc,getDoc,setDoc,addDoc,collection,query,orderBy,limit,getDocs,serverTimestamp,deleteField,deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {loadPaddocks,searchPaddocks,getPaddock,fmtLuas} from "./paddock.js";
+import {loadOps,searchOps,getOpByCode,getOpByDesc} from "./operation.js";
 
 /* ====== ISI DENGAN firebaseConfig ANDA (Project settings > Your apps) ====== */
 const cfg={apiKey:"AIzaSyDEsM1oAvOw_7Zd14wd2SmlnOAqAgwbQIU",authDomain:"gpa---work-order.firebaseapp.com",projectId:"gpa---work-order",storageBucket:"gpa---work-order.firebasestorage.app",messagingSenderId:"352208521958",appId:"1:352208521958:web:895d25863e8ec918070927"};
@@ -166,7 +167,7 @@ const $=id=>document.getElementById(id);
 const app=initializeApp(cfg),auth=getAuth(app);let db;const dbm={};
 const ls=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};
 const mk=id=>dbm[id]||(dbm[id]=initializeFirestore(app,{experimentalForceLongPolling:true},id));
-let me=null,cur={id:null,status:'open',mode:'plan'},master=null,luasRO=true,sel=-1;
+let me=null,cur={id:null,status:'open',mode:'plan'},master=null,ops=null,padFail=false,opsFail=false,luasRO=true,sel=-1;
 const MAXR=100;
 const isR=(...r)=>r.includes(me.role)||me.role==='admin';
 const show=v=>{['list','formv'].forEach(x=>$(x).hidden=x!==v);$('nav').hidden=false;$('ld').hidden=true};
@@ -219,6 +220,7 @@ function mkRow(r){
  const m=mpBody.lastElementChild;
  [o,u,m].forEach(t=>t.querySelectorAll('[data-k]').forEach(e=>{const x=r[e.dataset.k];e.value=x==null?'':x}));
  o.querySelector('.sh').value=r.shift||'';
+ const di=o.querySelector('[data-k=desc]');di.title=di.value;
  o.dataset.date=r.date||'';   // tanggal khusus baris (kosong = ikut Forecast Start)
  o.querySelector('.luas').readOnly=luasRO;
  return o;
@@ -275,48 +277,112 @@ function resolvePad(tr){
  if(it){inp.value=it.paddock;lu.value=numStr(it.luas)}
  else{inp.classList.add('bad');inp.title='Paddock tidak ditemukan di master';lu.value=''}
 }
+/* ---------- master Op Code / Desc: saling mengisi ---------- */
+function setOp(tr,it){
+ const ci=tr.querySelector('[data-k=code]'),di=tr.querySelector('[data-k=desc]');
+ ci.value=it.code;di.value=it.desc;di.title=it.desc;
+ ci.classList.remove('bad');di.classList.remove('bad');ci.title='';
+}
+function resolveOp(tr,from){
+ const ci=tr.querySelector('[data-k=code]'),di=tr.querySelector('[data-k=desc]');
+ ci.classList.remove('bad');di.classList.remove('bad');ci.title='';di.title=di.value;
+ if(!ops)return;
+ const cv=ci.value.trim(),dv=di.value.trim();
+ let it=null;
+ if(from==='code'){
+  if(!cv)return;
+  it=getOpByCode(ops,cv);
+  if(!it){const m=ops.filter(o=>o.code.includes(cv));if(m.length===1)it=m[0]}   // koreksi otomatis jika hanya 1 yang cocok
+  if(it){setOp(tr,it);return}
+  ci.classList.add('bad');ci.title='Op Code tidak ada di master';
+ }else{
+  if(!dv)return;
+  it=getOpByDesc(ops,dv);
+  if(!it){const m=searchOps(ops,dv);if(m.length===1)it=m[0]}
+  if(it){setOp(tr,it);return}
+  di.classList.add('bad');di.title='Desc tidak ada di master';
+ }
+}
+// peringatan (tidak memblokir) jika ada Op Code / Desc yang tidak ada di master, mis. WO lama
+function opWarn(){
+ if(!ops)return '';
+ const bad=[];
+ opRows().forEach((tr,i)=>{
+  const c=tr.querySelector('[data-k=code]').value.trim(),d=tr.querySelector('[data-k=desc]').value.trim();
+  if((c&&!getOpByCode(ops,c))||(d&&!getOpByDesc(ops,d)))bad.push(i+1);
+ });
+ return bad.length?'Op Code / Desc tidak ada di master pada baris: '+bad.join(', ')+'.\nTetap simpan?':'';
+}
+
+/* ---------- dropdown saran (dipakai Paddock, Op Code, dan Desc) ---------- */
 const ac=document.createElement('div');ac.id='ac';ac.hidden=true;document.body.appendChild(ac);
-let acIn=null,acItems=[],acIdx=0;
-const acHide=()=>{ac.hidden=true;acIn=null};
+let acIn=null,acKind=null,acItems=[],acIdx=0;
+const AC={
+ paddock:{ready:()=>!!master,find:cand,onFocus:true,w:260,none:'Tidak ada paddock yang cocok',
+  label:it=>[it.paddock,[it.varietas,it.luas!=null?fmtLuas(it.luas)+' Ha':''].filter(Boolean).join(' \u00b7 ')],
+  pick:(tr,it)=>{tr.querySelector('[data-k=paddock]').value=it.paddock;resolvePad(tr)}},
+ code:{ready:()=>!!ops,find:q=>searchOps(ops,q),w:440,none:'Tidak ada Op Code yang cocok',label:it=>[it.code,it.desc],pick:setOp},
+ desc:{ready:()=>!!ops,find:q=>searchOps(ops,q),w:440,none:'Tidak ada Desc yang cocok',label:it=>[it.desc,it.code],pick:setOp}
+};
+const acHide=()=>{ac.hidden=true;acIn=null;acKind=null};
 const acPaint=()=>[...ac.querySelectorAll('.it')].forEach((el,i)=>el.classList.toggle('on',i===acIdx));
 function acShow(inp){
- const q=inp.value.trim();
- if(!master||!q){acHide();return}
- const all=cand(q);acItems=all.slice(0,8);acIdx=0;acIn=inp;
+ const kind=inp.dataset.k,cfg=AC[kind],q=inp.value.trim();
+ if(!cfg||!cfg.ready()||!q){acHide();return}
+ const all=cfg.find(q);acItems=all.slice(0,8);acIdx=0;acIn=inp;acKind=kind;
  ac.textContent='';
- if(!acItems.length){const n=document.createElement('div');n.className='more';n.textContent='Tidak ada paddock yang cocok';ac.appendChild(n)}
+ if(!acItems.length){const n=document.createElement('div');n.className='more';n.textContent=cfg.none;ac.appendChild(n)}
  acItems.forEach((it,i)=>{
   const d=document.createElement('div');d.className='it';d.dataset.i=i;
-  const b=document.createElement('b');b.textContent=it.paddock;
-  const sp=document.createElement('span');sp.textContent=[it.varietas,it.luas!=null?fmtLuas(it.luas)+' Ha':''].filter(Boolean).join(' \u00b7 ');
+  const lb=cfg.label(it),b=document.createElement('b');b.textContent=lb[0];
+  const sp=document.createElement('span');sp.textContent=lb[1];
   d.append(b,sp);ac.appendChild(d);
  });
  if(all.length>8){const n=document.createElement('div');n.className='more';n.textContent='+'+(all.length-8)+' lainnya, ketik lebih spesifik';ac.appendChild(n)}
  const r=inp.getBoundingClientRect();
  ac.hidden=false;
- ac.style.minWidth=Math.max(r.width,260)+'px';
+ ac.style.minWidth=Math.min(Math.max(r.width,cfg.w),innerWidth-8)+'px';
  ac.style.left=Math.max(4,Math.min(r.left,innerWidth-ac.offsetWidth-4))+'px';
  ac.style.top=(r.bottom+2)+'px';
  acPaint();
 }
 function acPick(it){
  if(!acIn||!it)return;
- const tr=acIn.closest('tr');acIn.value=it.paddock;acHide();resolvePad(tr);calc();
+ const tr=acIn.closest('tr'),cfg=AC[acKind];
+ cfg.pick(tr,it);acHide();calc();
 }
 ac.addEventListener('mousedown',e=>{e.preventDefault();const el=e.target.closest('.it');if(el)acPick(acItems[+el.dataset.i])});
 addEventListener('scroll',acHide,true);addEventListener('resize',acHide);
 
 opEl.addEventListener('input',e=>{
- if(e.target.matches('[data-k=paddock]')){
-  if(master)e.target.closest('tr').querySelector('.luas').value='';
+ const k=e.target.dataset.k;
+ if(AC[k]){
+  const tr=e.target.closest('tr');
+  // kolom pasangannya dikosongkan; akan terisi lagi otomatis saat pilihan sudah benar
+  if(k==='paddock'&&master)tr.querySelector('.luas').value='';
+  if(k==='code'&&ops)tr.querySelector('[data-k=desc]').value='';
+  if(k==='desc'&&ops){tr.querySelector('[data-k=code]').value='';e.target.title=e.target.value}
   acShow(e.target);
  }
  calc();
 });
-opEl.addEventListener('focusin',e=>{if(e.target.matches('[data-k=paddock]'))acShow(e.target)});
-opEl.addEventListener('focusout',e=>{if(e.target.matches('[data-k=paddock]')){acHide();resolvePad(e.target.closest('tr'));calc()}});
+opEl.addEventListener('focusin',e=>{
+ const k=e.target.dataset.k;
+ if(!AC[k])return;
+ e.target._fv=e.target.value;
+ if(AC[k].onFocus)acShow(e.target);
+});
+opEl.addEventListener('focusout',e=>{
+ const k=e.target.dataset.k;
+ if(!AC[k])return;
+ const tr=e.target.closest('tr');
+ acHide();
+ if(k==='paddock')resolvePad(tr);
+ else if(e.target.value!==e.target._fv)resolveOp(tr,k);   // hanya jika diubah, agar data lama tidak tersentuh
+ calc();
+});
 opEl.addEventListener('keydown',e=>{
- if(!e.target.matches('[data-k=paddock]')||ac.hidden)return;
+ if(!AC[e.target.dataset.k]||ac.hidden)return;
  if(e.key==='ArrowDown'||e.key==='ArrowUp'){
   e.preventDefault();
   if(acItems.length){acIdx=(acIdx+(e.key==='ArrowDown'?1:-1)+acItems.length)%acItems.length;acPaint()}
@@ -347,20 +413,29 @@ opBody.addEventListener('change',e=>{
  }else if(t.classList.contains('sh'))sync();
 });
 
+function warnUpdate(){
+ const m=[];
+ if(padFail)m.push('Master paddock tidak bisa dimuat. Luas Area diisi manual dan paddock tidak divalidasi.');
+ if(opsFail)m.push('Master Op Code (operation.csv) tidak bisa dimuat. Op Code dan Desc diisi manual.');
+ $('mwarn').textContent=m.join(' ');$('mwarn').hidden=!m.length;
+}
 function loadMaster(){
  loadPaddocks().then(l=>{
-  master=l;luasRO=true;
+  master=l;luasRO=true;padFail=false;
   opEl.querySelectorAll('.luas').forEach(e=>{e.readOnly=true});
-  $('mwarn').hidden=true;
+  warnUpdate();
   if(me&&cur.mode!=='view')opRows().forEach(tr=>{
    if(tr.querySelector('[data-k=paddock]').value.trim()&&!tr.querySelector('.luas').value)resolvePad(tr);
   });
   calc();
  },()=>{
-  master=null;luasRO=false;
+  master=null;luasRO=false;padFail=true;
   opEl.querySelectorAll('.luas').forEach(e=>{e.readOnly=false});
-  $('mwarn').hidden=false;
+  warnUpdate();
  });
+}
+function loadOpsMaster(){
+ loadOps().then(l=>{ops=l;opsFail=false;warnUpdate()},()=>{ops=null;opsFail=true;warnUpdate()});
 }
 
 /* ---------- tambah / hapus baris ---------- */
@@ -471,7 +546,7 @@ onAuthStateChanged(auth,async u=>{
   me={uid:u.uid,...d.data()};
   $('who').textContent=(me.nama||u.email)+' ('+me.role+')';
   $('bNew').hidden=!isR('mandor');
-  loadList();loadMaster();
+  loadList();loadMaster();loadOpsMaster();
  }catch(e){$('ld').hidden=false;$('ld').textContent='Gagal terhubung: '+(e.code||e.message)+'. Kembali ke Beranda lalu login ulang.'}
 });
 $('bHome').onclick=()=>{location.href='index.html'};
@@ -482,7 +557,7 @@ $('bList').onclick=loadList;
 const stOf=x=>x.status==='closed'?'closed':'open';            // status lama (draft/dibuat/dst) dianggap open
 const rowsOfDoc=x=>x.v>=2?(x.rows||[]):(x.f?fromLegacy(x.f).rows:[]);
 const startOfDoc=x=>x.v>=2?((x.s&&x.s[iStart])||''):((x.f&&x.f[5])||'');
-const descsOf=x=>[...new Set(rowsOfDoc(x).map(r=>String(r.desc||'').trim()).filter(Boolean))];
+const descsOf=x=>[...new Set(rowsOfDoc(x).map(r=>String(r.desc||'').trim().replace(/\s*-\s*\d{5,}$/,'')).filter(Boolean))];   // buang kode di belakang desc
 const shortDesc=ds=>{const f=ds[0].length>30?ds[0].slice(0,30).trimEnd()+'\u2026':ds[0];return ds.length>1?f+' (+'+(ds.length-1)+')':f};
 const dFull=s=>{const p=dParts(s);return p?p.d+' '+MON[p.m]+' '+p.y:''};
 const todayStr=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())};
@@ -533,6 +608,7 @@ $('bNew').onclick=()=>{
  const d=new Date(),p=n=>String(n).padStart(2,'0');
  S()[0].value='WO-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes());
  if(!master)loadMaster();
+ if(!ops)loadOpsMaster();
  ui();startEl.focus();
 };
 function ui(){
@@ -555,12 +631,12 @@ async function save(status){
  }catch(e){msg(e);return false}
 }
 $('bSave').onclick=async()=>{
- if(cur.mode!=='view'){const err=validate();if(err){alert(err);return}}
+ if(cur.mode!=='view'){const err=validate();if(err){alert(err);return}const w=opWarn();if(w&&!confirm(w))return}
  if(!cur.id&&!$('dOpen').value)$('dOpen').value=todayStr();   // Tanggal Open WO = hari WO pertama disimpan
  if(await save('open')){toast('WO tersimpan');loadList()}
 };
 $('bClose').onclick=async()=>{
- if(cur.mode!=='view'){const err=validate();if(err){alert(err);return}}
+ if(cur.mode!=='view'){const err=validate();if(err){alert(err);return}const w=opWarn();if(w&&!confirm(w))return}
  const has=opRows().some(tr=>v(tr.querySelector('.close')));
  if(!confirm((has?'':'Belum ada realisasi (kolom Close) yang diisi.\n')+'Simpan dan Close WO ini?\nSetelah di-close, WO tidak bisa diubah.'))return;
  if(!$('dClose').value)$('dClose').value=todayStr();
