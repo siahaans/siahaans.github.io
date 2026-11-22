@@ -107,7 +107,7 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
  <colgroup><col style="width:3%"><col style="width:8%"><col style="width:22%"><col style="width:11%"><col style="width:5.5%"><col style="width:4.5%"><col style="width:4%"><col style="width:5.5%"><col style="width:5.5%"><col style="width:4.5%"><col style="width:26.5%"></colgroup>
  <thead>
   <tr><th colspan="11">Operation</th></tr>
-  <tr><th rowspan="3">No</th><th colspan="2">Pekerjaan</th><th colspan="2">Field</th><th rowspan="3">Jml HK</th><th rowspan="3">UoM</th><th colspan="3">Target Kerja</th><th rowspan="3">Keterangan</th></tr>
+  <tr><th rowspan="3">No</th><th colspan="2">Pekerjaan</th><th colspan="2">Field</th><th rowspan="3">Jlh HK Support</th><th rowspan="3">Jlh Realisasi</th><th colspan="3">Target Kerja</th><th rowspan="3">Keterangan</th></tr>
   <tr><th rowspan="2">Op Code</th><th rowspan="2">Desc</th><th rowspan="2">Paddock / Block</th><th rowspan="2">Luas Area</th><th rowspan="2">Open</th><th colspan="2">Luas Area</th></tr>
   <tr><th>Close</th><th>%</th></tr>
  </thead>
@@ -121,10 +121,11 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
  <colgroup><col style="width:3%"><col style="width:11%"><col style="width:8%"><col style="width:15.5%"><col style="width:6.5%"><col style="width:6%"><col style="width:3%"><col style="width:11%"><col style="width:8%"><col style="width:15.5%"><col style="width:6.5%"><col style="width:6%"></colgroup>
  <thead>
   <tr><th colspan="12">Unit Kerja</th></tr>
-  <tr><th rowspan="2">No</th><th rowspan="2">Unit Kerja<br>Kode Unit</th><th colspan="2">Data Karyawan</th><th rowspan="2">Est<br>HM/KM/Rit</th><th rowspan="2">Est HK</th><th rowspan="2">No</th><th rowspan="2">Unit Kerja<br>Kode Unit</th><th colspan="2">Data Karyawan</th><th rowspan="2">Est<br>HM/KM/Rit</th><th rowspan="2">Est HK</th></tr>
-  <tr><th>NIK</th><th>Nama</th><th>NIK</th><th>Nama</th></tr>
+  <tr><th rowspan="2">No</th><th rowspan="2">Unit Kerja<br>Kode Unit</th><th colspan="2">Data Unit/Opt</th><th rowspan="2">Est<br>HM/KM/Rit</th><th rowspan="2">Realisasi<br>HM/Rit</th><th rowspan="2">No</th><th rowspan="2">Shift</th><th colspan="2">Data Material</th><th rowspan="2">Total<br>Kebutuhan</th><th rowspan="2">Total<br>Realisasi</th></tr>
+  <tr><th>Jlh Unit/Opt</th><th>Jlh Realisasi</th><th>Dosis</th><th>Material</th></tr>
  </thead>
  <tbody></tbody>
+ <tfoot><tr><td></td><td class="t">Total</td><td class="t" id="u_unik"></td><td class="t" id="u_unama"></td><td class="t" id="u_uest"></td><td class="t" id="u_uhk"></td><td></td><td></td><td></td><td></td><td class="t" id="u_vest"></td><td class="t" id="u_vhk"></td></tr></tfoot>
 </table>
 <table id="mp" style="border-top:0">
  <colgroup><col style="width:3%"><col style="width:9%"><col style="width:20%"><col style="width:11%"><col style="width:7%"><col style="width:3%"><col style="width:9%"><col style="width:20%"><col style="width:11%"><col style="width:7%"></colgroup>
@@ -260,7 +261,13 @@ function calc(){
  $('tLuas').textContent=fm(sum('luas'));$('tHK').textContent=fm(sum('hk'));
  $('tOpen').textContent=fm(o);$('tClose').textContent=fm(c);
  $('tPct').textContent=o?String(f2(c/o*100)).replace('.',',')+'%':'';
+ calcUK();
 }
+// total kolom angka di Unit Kerja
+function calcUK(){
+ ['unik','unama','uest','uhk','vest','vhk'].forEach(k=>{let t=0;ukBody.querySelectorAll('[data-k='+k+']').forEach(e=>{t+=v(e)});$('u_'+k).textContent=fm(t)});
+}
+document.getElementById('uk').addEventListener('input',calcUK);
 
 /* ---------- master paddock: autocomplete + luas otomatis ---------- */
 const nk=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -642,6 +649,20 @@ $('bClose').onclick=async()=>{
  if(!$('dClose').value)$('dClose').value=todayStr();
  if(await save('closed')){toast('WO di-close');loadList()}
 };
+</script>
+<script>
+/* Nama file PDF saat cetak: "nomor WO - Pekerjaan/Desc" (browser memakai judul halaman sebagai nama file) */
+(function(){
+ var asli=document.title;
+ function bersih(t){return t.replace(/[\\\/:*?"<>|]+/g,'-').replace(/\s+/g,' ').trim()}
+ addEventListener('beforeprint',function(){
+  var no=(document.querySelector('.kv input')||{}).value||'',ds=[];
+  document.querySelectorAll('#op tbody [data-k=desc]').forEach(function(e){var d=e.value.trim();if(d&&ds.indexOf(d)<0)ds.push(d)});
+  var t=bersih([no.trim(),ds.join(' + ')].filter(Boolean).join(' - '));
+  document.title=(t||'Work Order').slice(0,120);
+ });
+ addEventListener('afterprint',function(){document.title=asli});
+})();
 </script>
 </body>
 </html>
