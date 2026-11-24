@@ -117,6 +117,18 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 .tl .cr{display:flex;gap:6px;font-size:10.5px}.tl .cr i{font-style:normal;color:#7a8294;min-width:54px}
 .tl .mute{color:#7a8294}.tl .pbar{height:5px;background:var(--line);border-radius:3px;margin-top:3px}.tl .pbar div{height:100%;border-radius:3px}
 @media print{.tabs{display:none!important}.tl-scroll{overflow:visible}}
+
+/* --- tab Summary --- */
+.sy .tl-box span{display:block}.tl-box.bad b{color:#cf222e}
+.sy-bar{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin:0 0 12px;font-size:13px}
+.sy-bar input[type=number]{width:62px;padding:3px 6px;border:1px solid var(--line);border-radius:5px;background:var(--paper);color:var(--ink)}
+.sy-t{border-collapse:collapse;width:100%;min-width:960px;font-size:11.5px}
+.sy-t th{background:var(--head);color:#fff;padding:6px;text-align:left}
+.sy-t td{border:1px solid var(--line);padding:5px 6px;vertical-align:top}
+.sy-t tr.gh td{background:var(--grey);font-weight:700}.sy-t tr.gh small{font-weight:400;color:#7a8294}
+.sy-sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.sy-m{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:center;margin-bottom:3px}.sy-l{color:#7a8294;font-size:10px;min-width:52px}
+.sy .tl-legend .tl-note{margin:0}
 </style>
 </head>
 <body>
@@ -125,7 +137,7 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 <div id="list" class="wrap" hidden><div class="paper"><h2 style="margin:0 0 8px">Daftar Work Order</h2><table id="lt"><colgroup><col style="width:29%"><col style="width:11%"><col style="width:8%"><col style="width:8%"><col style="width:7%"><col style="width:12%"><col style="width:25%"></colgroup><thead><tr><th>No WO - Pekerjaan</th><th>Forecast Start</th><th>Divisi</th><th>Mandor</th><th>Status</th><th>Diubah</th><th>Aksi</th></tr></thead><tbody></tbody></table><p id="lmsg"></p></div></div>
 <div id="formv" hidden>
 <div class="bar"><span id="stat" style="margin-right:auto;align-self:center;font-weight:700"></span><button class="g" id="bSave">Simpan</button><button class="dg" id="bClose">Close WO</button><button class="g" id="bXls">Export Excel</button><button class="g" onclick="window.print()">Cetak / PDF</button></div>
-<div class="tabs"><button type="button" id="tWo" class="on">Work Order</button><button type="button" id="tTl">Timeline</button></div>
+<div class="tabs"><button type="button" id="tWo" class="on">Work Order</button><button type="button" id="tTl">Timeline</button><button type="button" id="tSm">Summary</button></div>
 <div class="warn" id="mwarn" hidden>Master paddock tidak bisa dimuat. Luas Area diisi manual dan paddock tidak divalidasi.</div>
 <div class="wrap"><div class="paper">
 
@@ -186,6 +198,7 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 
 </div></div>
 <div id="tlv" class="tlwrap" hidden><div class="tlbox"><div id="tlp"></div></div></div>
+<div id="smv" class="tlwrap" hidden><div class="tlbox"><div id="smp"></div></div></div>
 </div>
 <div id="toast" hidden></div>
 <script type="module">
@@ -196,6 +209,7 @@ import {loadPaddocks,searchPaddocks,getPaddock,fmtLuas} from "./paddock.js";
 import {loadOps,searchOps,getOpByCode,getOpByDesc} from "./operation.js";
 import {buildTimeline,renderTimeline} from "./timeline.js";
 import {exportWorkbook} from "./export-excel.js";
+import {buildSummary,renderSummary} from "./summary.js";
 
 /* ====== ISI DENGAN firebaseConfig ANDA (Project settings > Your apps) ====== */
 const cfg={apiKey:"AIzaSyDEsM1oAvOw_7Zd14wd2SmlnOAqAgwbQIU",authDomain:"gpa---work-order.firebaseapp.com",projectId:"gpa---work-order",storageBucket:"gpa---work-order.firebasestorage.app",messagingSenderId:"352208521958",appId:"1:352208521958:web:895d25863e8ec918070927"};
@@ -658,13 +672,17 @@ $('bNew').onclick=()=>{
 /* ---------- Timeline & Export Excel ---------- */
 const tlModel=()=>buildTimeline({start:startEl.value,end:endEl.value,rows:collect().rows,today:todayStr()});
 const tlTitle=()=>{const no=(S()[0].value||'').trim(),ds=[...new Set(opRows().map(tr=>tr.querySelector('[data-k=desc]').value.trim()).filter(Boolean))];return [no,ds.join(' + ')].filter(Boolean).join(' - ')};
-function tab(t){
- const tl=t==='tl';
- $('tlv').hidden=!tl;paper.parentElement.hidden=tl;
- $('tWo').classList.toggle('on',!tl);$('tTl').classList.toggle('on',tl);
- if(tl)renderTimeline($('tlp'),tlModel(),{title:tlTitle()});
+const sumOpt={tol:5,only:false};
+function sumDraw(){
+ renderSummary($('smp'),buildSummary({start:startEl.value,rows:collect().rows,today:todayStr(),tol:sumOpt.tol}),{title:tlTitle()},sumOpt,o=>{Object.assign(sumOpt,o);sumDraw()});
 }
-$('tWo').onclick=()=>tab('wo');$('tTl').onclick=()=>tab('tl');
+function tab(t){
+ $('tlv').hidden=t!=='tl';$('smv').hidden=t!=='sm';paper.parentElement.hidden=t!=='wo';
+ [['wo','tWo'],['tl','tTl'],['sm','tSm']].forEach(([k,id])=>$(id).classList.toggle('on',k===t));
+ if(t==='tl')renderTimeline($('tlp'),tlModel(),{title:tlTitle()});
+ if(t==='sm')sumDraw();
+}
+$('tWo').onclick=()=>tab('wo');$('tTl').onclick=()=>tab('tl');$('tSm').onclick=()=>tab('sm');
 $('bXls').onclick=()=>{
  try{exportWorkbook({root:paper,timeline:tlModel(),tlInfo:{title:tlTitle()},filename:tlTitle()||'Work Order'})}
  catch(e){alert('Gagal export Excel: '+(e.message||e))}
