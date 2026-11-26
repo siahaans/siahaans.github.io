@@ -80,6 +80,26 @@ button.dg{background:#b3261e;border-color:#b3261e;color:#fff}
 .box{max-width:340px;margin:40px auto;background:var(--paper);border:1px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:10px}
 .box input{border:1px solid var(--line);padding:8px;font-size:14px;background:var(--inp);color:var(--ink)}
 .box h2{margin:0 0 4px}.err{color:#c00;margin:0;font-size:12px}
+/* --- filter daftar WO --- */
+.flt{border:1px solid var(--line);border-radius:8px;padding:10px 12px 8px;margin-bottom:10px;background:var(--auto);display:flex;flex-direction:column;gap:8px}
+.flt-row{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap}
+.flt-lb{width:96px;flex:none;font-size:11px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.04em}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:11.5px;line-height:1.3;display:inline-flex;align-items:center;gap:6px;transition:background .12s,color .12s}
+.chips button:hover{border-color:var(--head);color:var(--head)}
+.chips button.on{background:var(--head);border-color:var(--head);color:#fff}
+.chips .ct{font-size:10px;font-weight:700;min-width:16px;padding:0 5px;border-radius:999px;background:var(--grey);color:var(--ink);text-align:center}
+.chips button.on .ct{background:rgba(255,255,255,.25);color:#fff}
+.flt-dates{display:flex;align-items:center;gap:6px}
+.flt-dates label{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--mute)}
+.flt-dates input[type=date]{width:130px;height:28px;border:1px solid var(--line);border-radius:6px;padding:0 6px;background:var(--paper)}
+.flt-dates input.has{border-color:var(--head);box-shadow:0 0 0 1px var(--head)}
+.flt-sep{color:var(--mute)}
+.flt-foot{display:flex;align-items:center;justify-content:space-between;border-top:1px dashed var(--line);padding-top:6px;font-size:11.5px;color:var(--mute)}
+.flt-reset{background:none;border:0;color:var(--head);padding:2px 0;font-size:11.5px;text-decoration:underline;text-underline-offset:2px}
+.flt-reset:disabled{color:var(--mute);text-decoration:none;cursor:default;opacity:.6}
+#lt tr.empty td{text-align:center;color:var(--mute);padding:18px 6px;cursor:default}
+@media print{.flt{display:none}}
 #lt tbody tr{cursor:pointer}#lt tbody tr:hover{background:var(--grey)}#lt td{padding:5px 6px;height:auto}
 input:disabled{color:var(--ink);opacity:1;background:transparent}
 @media print{#nav,#login,#list{display:none!important}}
@@ -165,7 +185,16 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 <body>
 <p id="ld" style="text-align:center;padding:30px">Memuat...</p>
 <div class="bar" id="nav" hidden><span id="who" style="margin-right:auto;align-self:center"></span><button class="g" id="bHome">&larr; Beranda</button><button class="g" id="bList">Daftar WO</button><button id="bNew">+ WO Baru</button><button class="g" id="bOut">Keluar</button></div>
-<div id="list" class="wrap" hidden><div class="paper"><h2 style="margin:0 0 8px">Daftar Work Order</h2><table id="lt"><colgroup><col style="width:29%"><col style="width:11%"><col style="width:8%"><col style="width:8%"><col style="width:7%"><col style="width:12%"><col style="width:25%"></colgroup><thead><tr><th>No WO - Pekerjaan</th><th>Forecast Start</th><th>Department</th><th>Mandor</th><th>Status</th><th>Diubah</th><th>Aksi</th></tr></thead><tbody></tbody></table><p id="lmsg"></p></div></div>
+<div id="list" class="wrap" hidden><div class="paper"><h2 style="margin:0 0 8px">Daftar Work Order</h2>
+<div class="flt" id="flt">
+ <div class="flt-row"><span class="flt-lb">Department</span><div class="chips" id="fDept"></div></div>
+ <div class="flt-row"><span class="flt-lb">Forecast Start</span>
+  <div class="flt-dates"><label>Dari<input type="date" id="fFrom"></label><span class="flt-sep">&ndash;</span><label>Sampai<input type="date" id="fTo"></label></div>
+  <div class="chips" id="fQuick"><button type="button" data-q="today">Hari ini</button><button type="button" data-q="week">Minggu ini</button><button type="button" data-q="month">Bulan ini</button></div>
+ </div>
+ <div class="flt-foot"><span id="fCount"></span><button type="button" class="flt-reset" id="fReset">Reset filter</button></div>
+</div>
+<table id="lt"><colgroup><col style="width:29%"><col style="width:11%"><col style="width:8%"><col style="width:8%"><col style="width:7%"><col style="width:12%"><col style="width:25%"></colgroup><thead><tr><th>No WO - Pekerjaan</th><th>Forecast Start</th><th>Department</th><th>Mandor</th><th>Status</th><th>Diubah</th><th>Aksi</th></tr></thead><tbody></tbody></table><p id="lmsg"></p></div></div>
 <div id="formv" hidden>
 <div class="bar"><span id="stat" style="margin-right:auto;align-self:center;font-weight:700"></span><button class="g" id="bSave">Simpan</button><button class="dg" id="bClose">Close WO</button><button class="g" id="bXls">Export Excel</button><button class="g" onclick="window.print()">Cetak / PDF</button></div>
 <div class="tabs"><button type="button" id="tWo" class="on">Work Order</button><button type="button" id="tTl">Timeline</button><button type="button" id="tSm">Summary</button><button type="button" id="tCs">Costing</button></div>
@@ -667,13 +696,43 @@ const dFull=s=>{const p=dParts(s);return p?p.d+' '+MON[p.m]+' '+p.y:''};
 const todayStr=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())};
 function toast(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>{e.hidden=true},2200)}
 
-async function loadList(){
- show('list');const tb=document.querySelector('#lt tbody');tb.innerHTML='';$('lmsg').textContent='Memuat...';
- try{
-  const q=await getDocs(query(collection(db,'workOrders'),orderBy('updatedAt','desc'),limit(100)));
-  $('lmsg').textContent=q.empty?'Belum ada Work Order.':'';
-  q.forEach(d=>{
-   const x=d.data(),st=stOf(x),tr=document.createElement('tr');
+/* ---------- daftar WO + filter Department & tanggal ---------- */
+const DEPTS=['Agri - Land Development','Agri - Upkeep & Manuring','Agri - Planting','Agri - Road & Drainage Maintenance','Agri - Seed Planting'];
+const FKEY='woListFilter';
+let listDocs=[],flt={dept:'',from:'',to:''};
+try{Object.assign(flt,JSON.parse(localStorage.getItem(FKEY)||'{}'))}catch(e){}
+const ymd=d=>{const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())};
+const deptOf=x=>String(x.divisi||'').trim();
+function saveFlt(){try{localStorage.setItem(FKEY,JSON.stringify(flt))}catch(e){}}
+function passDate(x){const s=startOfDoc(x)||'';if(!flt.from&&!flt.to)return true;if(!s)return false;return(!flt.from||s>=flt.from)&&(!flt.to||s<=flt.to)}
+function renderChips(){
+ const box=$('fDept');box.innerHTML='';
+ const base=listDocs.filter(d=>passDate(d.x));
+ const extra=[...new Set(listDocs.map(d=>deptOf(d.x)).filter(v=>v&&!DEPTS.includes(v)))].sort();
+ const opts=[['','Semua']].concat(DEPTS.map(v=>[v,v.replace(/^Agri - /,'')]),extra.map(v=>[v,v]));
+ if(listDocs.some(d=>!deptOf(d.x)))opts.push(['-','Tanpa department']);
+ opts.forEach(([v,lb])=>{
+  const n=base.filter(d=>v===''||(v==='-'?!deptOf(d.x):deptOf(d.x)===v)).length;
+  const b=document.createElement('button');b.type='button';b.title=v&&v!=='-'?v:'';
+  b.className=flt.dept===v?'on':'';b.append(lb);
+  const c=document.createElement('span');c.className='ct';c.textContent=n;b.appendChild(c);
+  b.onclick=()=>{flt.dept=v;saveFlt();renderList()};box.appendChild(b);
+ });
+}
+function renderList(){
+ $('fFrom').value=flt.from;$('fTo').value=flt.to;
+ $('fFrom').classList.toggle('has',!!flt.from);$('fTo').classList.toggle('has',!!flt.to);
+ $('fTo').min=flt.from||'';$('fFrom').max=flt.to||'';
+ renderChips();
+ const q=quickNow();$('fQuick').querySelectorAll('button').forEach(b=>b.classList.toggle('on',q===b.dataset.q));
+ const tb=document.querySelector('#lt tbody');tb.innerHTML='';
+ const rows=listDocs.filter(d=>passDate(d.x)&&(flt.dept===''||(flt.dept==='-'?!deptOf(d.x):deptOf(d.x)===flt.dept)));
+ const active=!!(flt.dept||flt.from||flt.to);
+ $('fReset').disabled=!active;
+ $('fCount').textContent=active?'Menampilkan '+rows.length+' dari '+listDocs.length+' WO':listDocs.length+' WO';
+ if(listDocs.length&&!rows.length){const tr=document.createElement('tr');tr.className='empty';tr.innerHTML='<td colspan="7">Tidak ada WO yang cocok dengan filter.</td>';tb.appendChild(tr)}
+ rows.forEach(({id,x})=>{
+   const st=stOf(x),tr=document.createElement('tr');
    const cell=t=>{const c=document.createElement('td');if(t!=null)c.textContent=t;tr.appendChild(c);return c};
    const c0=cell(),b=document.createElement('b');b.textContent=x.no||'(tanpa nomor)';c0.appendChild(b);
    const ds=descsOf(x);if(ds.length){c0.append(' - '+shortDesc(ds));c0.title=ds.join('\n')}
@@ -682,11 +741,34 @@ async function loadList(){
    cell(x.updatedAt?x.updatedAt.toDate().toLocaleString('id-ID'):'');
    const ca=cell();ca.className='act';
    const btn=(label,cls,fn)=>{const e=document.createElement('button');e.type='button';e.className='sm '+cls;e.textContent=label;e.onclick=ev=>{ev.stopPropagation();fn()};ca.appendChild(e)};
-   if(st!=='closed'&&isR('mandor')){btn('Input Realisasi','',()=>openWO(d.id,x,'real'));btn('Close WO','g',()=>closeWO(d.id,x))}
-   if(me.role==='admin')btn('Hapus','dg',()=>delWO(d.id,x));
+   if(st!=='closed'&&isR('mandor')){btn('Input Realisasi','',()=>openWO(id,x,'real'));btn('Close WO','g',()=>closeWO(id,x))}
+   if(me.role==='admin')btn('Hapus','dg',()=>delWO(id,x));
    if(st==='closed')tr.style.opacity='.7';
-   tr.onclick=()=>openWO(d.id,x);tb.appendChild(tr);
-  });
+   tr.onclick=()=>openWO(id,x);tb.appendChild(tr);
+ });
+}
+function quickRange(k){
+ const d=new Date();
+ if(k==='today')return[ymd(d),ymd(d)];
+ if(k==='week'){const s=new Date(d);s.setDate(d.getDate()-((d.getDay()+6)%7));const e=new Date(s);e.setDate(s.getDate()+6);return[ymd(s),ymd(e)]}
+ const s=new Date(d.getFullYear(),d.getMonth(),1),e=new Date(d.getFullYear(),d.getMonth()+1,0);return[ymd(s),ymd(e)];
+}
+function quickNow(){return['today','week','month'].find(k=>{const[a,b]=quickRange(k);return flt.from===a&&flt.to===b})||''}
+$('fQuick').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+ if(quickNow()===b.dataset.q){flt.from='';flt.to=''}else{[flt.from,flt.to]=quickRange(b.dataset.q)}
+ saveFlt();renderList();
+});
+$('fFrom').onchange=e=>{flt.from=e.target.value;if(flt.to&&flt.from>flt.to)flt.to=flt.from;saveFlt();renderList()};
+$('fTo').onchange=e=>{flt.to=e.target.value;if(flt.from&&flt.to<flt.from)flt.from=flt.to;saveFlt();renderList()};
+$('fReset').onclick=()=>{flt={dept:'',from:'',to:''};saveFlt();renderList()};
+
+async function loadList(){
+ show('list');document.querySelector('#lt tbody').innerHTML='';$('lmsg').textContent='Memuat...';
+ try{
+  const q=await getDocs(query(collection(db,'workOrders'),orderBy('updatedAt','desc'),limit(100)));
+  $('lmsg').textContent=q.empty?'Belum ada Work Order.':'';
+  listDocs=[];q.forEach(d=>listDocs.push({id:d.id,x:d.data()}));
+  renderList();
  }catch(e){$('lmsg').textContent='Gagal memuat: '+(e.code||e.message)}
 }
 
