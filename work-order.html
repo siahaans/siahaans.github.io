@@ -217,6 +217,23 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 .sx-t2 td{border-bottom:1px solid var(--line);padding:4px 6px}.sx-t2 .r{text-align:right}
 .sx-t2 tr.sx-out td:first-child{color:#8250df}.sx-t2 tr.sx-tot td{font-weight:700;background:var(--grey)}
 @media print{.sx-c{box-shadow:none;break-inside:avoid}}
+
+/* --- unit kerja (rekap 1 baris, isi lewat pop-up; mirip material) --- */
+#uk td.uc{white-space:pre-line;vertical-align:top;padding:1px 3px;line-height:15px;position:relative;overflow-wrap:anywhere}
+#uk td.ucj,#uk td.uce,#uk td.ucv{text-align:center}
+.paper.on #uk td.ucn,.paper.on #uk td.ucj,.paper.on #uk td.uce,.paper.on.real #uk td.ucr,.paper.on.real #uk td.ucv{cursor:pointer}
+.paper.on #uk tr:hover td.ucn,.paper.on #uk tr:hover td.ucj,.paper.on #uk tr:hover td.uce,.paper.on.real #uk tr:hover td.ucr,.paper.on.real #uk tr:hover td.ucv{background:rgba(77,163,255,.1)}
+.paper.on #uk td.ucn:empty::before,.paper.on.real #uk td.ucr:empty::before{display:inline-block;margin:1px 0;padding:0 8px;border-radius:999px;background:var(--head);color:#fff;font-size:10px;line-height:14px;font-weight:600;white-space:nowrap}
+.paper.on #uk td.ucn:empty::before{content:"+ Isi Rencana"}
+.paper.on.real #uk td.ucr:empty::before{content:"+ Isi";background:#1a7f4b}
+.paper.on #uk td.ucn:not(:empty):hover::after,.paper.on.real #uk td.ucr:not(:empty):hover::after{content:"\270E";position:absolute;top:1px;right:3px;font-size:10px;color:var(--head)}
+.ubox{width:min(800px,100%)}
+.ubox .mbody{overflow:auto}
+.ubox .mtab{min-width:560px}
+.ubox .mtab td.ro{line-height:15px}
+.ubox.real .madd{display:block}
+.ubox .mnote{margin-top:8px;font-size:11.5px;color:var(--mute);line-height:1.5}
+@media print{#uk td.uc::before{display:none!important}}
 </style>
 </head>
 <body>
@@ -266,8 +283,8 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
  <colgroup><col style="width:3%"><col style="width:11%"><col style="width:8%"><col style="width:15.5%"><col style="width:6.5%"><col style="width:6%"><col style="width:3%"><col style="width:11%"><col style="width:8%"><col style="width:15.5%"><col style="width:6.5%"><col style="width:6%"></colgroup>
  <thead>
   <tr><th colspan="12">Unit Kerja</th></tr>
-  <tr><th rowspan="2">No</th><th rowspan="2">Unit Kerja<br>Kode Unit</th><th colspan="2">Data Unit/Opt</th><th rowspan="2">Est<br>HM/KM/Rit</th><th rowspan="2">Realisasi<br>HM/Rit</th><th rowspan="2">No</th><th rowspan="2">Shift</th><th colspan="2">Data Material</th><th rowspan="2">Total<br>Kebutuhan</th><th rowspan="2">Total<br>Realisasi</th></tr>
-  <tr><th>Jlh Unit/Opt</th><th>Jlh Realisasi</th><th>Dosis</th><th>Material</th></tr>
+  <tr><th rowspan="2">No</th><th rowspan="2">Unit Kerja<br>Kode Unit / Implement</th><th colspan="2">Data Unit/Opt</th><th rowspan="2">Est<br>HM/KM/Rit</th><th rowspan="2">Realisasi<br>HM/Rit</th><th rowspan="2">No</th><th rowspan="2">Shift</th><th colspan="2">Data Material</th><th rowspan="2">Total<br>Kebutuhan</th><th rowspan="2">Total<br>Realisasi</th></tr>
+  <tr><th>Jlh Unit/Opt</th><th>Realisasi<br>Unit &times; Jlh</th><th>Dosis</th><th>Material</th></tr>
  </thead>
  <tbody></tbody>
  <tfoot><tr><td></td><td class="t">Total</td><td class="t" id="u_unik"></td><td class="t" id="u_unama"></td><td class="t" id="u_uest"></td><td class="t" id="u_uhk"></td><td></td><td></td><td></td><td class="mt" id="u_vnama"></td><td class="mt t" id="u_vest"></td><td class="mt t" id="u_vhk"></td></tr></tfoot>
@@ -306,6 +323,13 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
   <button type="button" class="madd" id="mAdd">+ Tambah Material</button><div class="mnote" id="mNote"></div></div>
  <div class="mfoot"><button type="button" class="g" id="mCancel">Batal</button><button type="button" id="mOk">Simpan</button></div>
 </div></div>
+<div id="udlg" class="mdlg" hidden><div class="mbox ubox" role="dialog" aria-modal="true" aria-labelledby="uTitle">
+ <div class="mhead"><div><div class="mkind" id="uKind"></div><h3 id="uTitle"></h3><div class="msub" id="uSub"></div></div><button type="button" class="mx" id="uX" aria-label="Tutup">&times;</button></div>
+ <div class="mbody"><table class="mtab" id="uTab"><thead></thead><tbody></tbody></table><div class="mempty" id="uEmpty" hidden></div>
+  <button type="button" class="madd" id="uAdd"></button><div class="mnote" id="uNote"></div></div>
+ <div class="mfoot"><button type="button" class="g" id="uCancel">Batal</button><button type="button" id="uOk">Simpan</button></div>
+</div></div>
+<datalist id="dlUnit"></datalist><datalist id="dlImpl"></datalist>
 <datalist id="dlMat"></datalist>
 <div id="toast" hidden></div>
 <script type="module">
@@ -314,6 +338,7 @@ import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "htt
 import {initializeFirestore,doc,getDoc,setDoc,addDoc,collection,query,orderBy,limit,getDocs,serverTimestamp,deleteField,deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {loadPaddocks,searchPaddocks,getPaddock,fmtLuas} from "./paddock.js";
 import {loadOps,searchOps,getOpByCode,getOpByDesc,opsForDept,normDept,DEPTS as OP_DEPTS} from "./operation.js";
+import {loadUnits,unitsOf,getUnit} from "./unit.js";
 import {buildTimeline,renderTimeline} from "./timeline.js";
 import {exportWorkbook} from "./export-excel.js";
 import {buildSummary,renderSummary} from "./summary.js";
@@ -374,7 +399,7 @@ const OPROW='<tr class="r"><td class="n"></td>'+
  '<td>'+T+'data-k="open" class="open"></td><td>'+T+'data-k="close" class="close"></td>'+
  '<td class="pct"></td>'+
  '<td class="kc"><select class="sh" title="Pilih shift">'+OPT+'</select>'+T+'class="ket" spellcheck="false" title="Bisa diedit. Format: Shift 1 - 17 November 2026"></td></tr>';
-const UKROW='<tr><td class="n"></td><td>'+T+'data-k="ukode"></td><td>'+T+'data-k="unik"></td><td>'+T+'data-k="unama"></td><td>'+T+'data-k="uest"></td><td>'+T+'data-k="uhk"></td>'+
+const UKROW='<tr><td class="n"></td><td class="uc ucn"></td><td class="uc ucj"></td><td class="uc ucr"></td><td class="uc uce"></td><td class="uc ucv"></td>'+
  '<td class="n"></td><td>'+T+'class="uk2" readonly tabindex="-1"></td><td class="mc md"></td><td class="mc mn"></td><td class="mc mk"></td><td class="mc mr"></td></tr>';
 
 const MPROW='<tr><td class="n"></td><td>'+T+'data-k="mnik"></td><td>'+T+'data-k="mnama"></td><td>'+T+'data-k="mjab"></td><td>'+T+'data-k="mhk"></td>'+
@@ -394,6 +419,7 @@ function mkRow(r){
  o.dataset.date=r.date||'';   // tanggal khusus baris (kosong = ikut Forecast Start)
  o.querySelector('.luas').readOnly=luasRO;
  setMats(u,matsFrom(r));
+ setUnits(u,unitsFrom(r));
  return o;
 }
 function markSel(){
@@ -436,7 +462,9 @@ function calc(){
 // total kolom angka di Unit Kerja
 function calcUK(){
  matCalc();
- ['unik','unama','uest','uhk'].forEach(k=>{let t=0;ukBody.querySelectorAll('[data-k='+k+']').forEach(e=>{t+=v(e)});$('u_'+k).textContent=fm(t)});
+ const t={unik:0,unama:0,uest:0,uhk:0};
+ ukRows().forEach(u=>getUnits(u).forEach(e=>{for(const k in UT)t[k]+=nf(e[UT[k]])||0}));
+ for(const k in t)$('u_'+k).textContent=fm(t[k]);
 }
 document.getElementById('uk').addEventListener('input',calcUK);
 
@@ -562,6 +590,156 @@ ukBody.addEventListener('click',e=>{
  if(td.classList.contains('mr')){if(paper.classList.contains('real')&&getMats(ukRows()[i]).length)mOpen(i,'real');}
  else mOpen(i,'plan');
 });
+
+/* ---------- unit kerja: banyak unit + implement per baris, diisi lewat pop-up ---------- */
+// data per baris: [{code,impl,jlh,est, rcode,rimpl,rjlh,rhm, x}] disimpan di rows[i].units
+//   code/impl/jlh/est   = RENCANA (unit, implement/gandengan, jumlah unit/opt, estimasi HM/KM/Rit)
+//   rcode/rimpl/rjlh/rhm = REALISASI yang menempel pada baris rencana yang sama (boleh unit pengganti)
+//   x=true              = unit DI LUAR RENCANA (hanya punya realisasi)
+// kolom lama ukode/unik/unama/uest/uhk tetap diisi (ringkasan per baris) supaya Timeline/Summary/Costing/Export tetap jalan
+const UE=()=>({code:'',impl:'',jlh:'',est:'',rcode:'',rimpl:'',rjlh:'',rhm:'',x:false});
+const UT={unik:'jlh',unama:'rjlh',uest:'est',uhk:'rhm'};
+const UTYPE={code:'unit',rcode:'unit',impl:'impl',rimpl:'impl'};
+let umaster=null;
+function loadUnitMaster(){loadUnits().then(l=>{umaster=l},()=>{umaster=null})}
+function unitsFrom(r){
+ if(Array.isArray(r.units))return r.units.map(e=>Object.assign(UE(),e));
+ const any=['ukode','unik','unama','uest','uhk'].some(k=>String(r[k]||'').trim());
+ if(!any)return[];
+ const e=Object.assign(UE(),{code:String(r.ukode||'').trim(),jlh:String(r.unik||'').trim(),rjlh:String(r.unama||'').trim(),est:String(r.uest||'').trim(),rhm:String(r.uhk||'').trim()});
+ if(e.code&&(e.rjlh||e.rhm))e.rcode=e.code;
+ return[e];
+}
+const getUnits=u=>{try{return JSON.parse((u&&u.dataset.units)||'[]')}catch(e){return[]}};
+function unitsOut(us){
+ const sm=k=>{let t=0,any=false;us.forEach(e=>{const x=nf(e[k]);if(x!=null){t+=x;any=true}});return any?nTxt(t):''};
+ return{units:us,ukode:us.map(e=>e.code||e.rcode).filter(Boolean).join(' + '),unik:sm('jlh'),unama:sm('rjlh'),uest:sm('est'),uhk:sm('rhm')};
+}
+function setUnits(u,us){
+ u.dataset.units=JSON.stringify(us);
+ const c=u.querySelectorAll('td.uc'),col=[[],[],[],[],[]];let anyR=false;
+ us.forEach(e=>{
+  const pl=e.x?['(luar rencana)']:[e.code||(e.impl?'–':'')].concat(e.impl?['↳ '+e.impl]:[]);
+  const hasR=!!(e.rcode||e.rimpl||e.rjlh||e.rhm);if(hasR)anyR=true;
+  const rl=hasR?[(e.rcode||'–')+(e.rjlh!==''?' × '+e.rjlh:'')].concat(e.rimpl?['↳ '+e.rimpl]:[]):[];
+  const n=Math.max(pl.length,rl.length,1),pad=a=>{while(a.length<n)a.push('');return a};
+  col[0].push(...pad(pl));col[1].push(...pad([e.x?'':e.jlh]));col[2].push(...pad(rl));col[3].push(...pad([e.x?'':e.est]));col[4].push(...pad([e.rhm]));
+ });
+ const tx=a=>a.map(x=>x===''||x==null?' ':x).join('\n');
+ c[0].textContent=us.length?tx(col[0]):'';
+ c[1].textContent=us.length?tx(col[1]):'';
+ c[2].textContent=anyR?tx(col[2]):'';
+ c[3].textContent=us.length?tx(col[3]):'';
+ c[4].textContent=anyR?tx(col[4]):'';
+}
+let uCur=null;   // {i, kind:'plan'|'real', list:[...]}
+function uOpen(i,kind){
+ const u=ukRows()[i],tr=opRows()[i];if(!u||!tr)return;
+ const plan=kind==='plan',list=getUnits(u).map(e=>Object.assign(UE(),e));
+ if(plan&&!list.some(e=>!e.x))list.unshift(UE());
+ uCur={i:i,kind:kind,list:list};
+ const q=s=>tr.querySelector(s).value.trim(),o=openOf(i);
+ $('uKind').textContent=plan?'Rencana Unit':'Realisasi Unit';
+ $('uTitle').textContent='Baris '+(i+1)+(q('[data-k=desc]')?' · '+q('[data-k=desc]'):'');
+ $('uSub').textContent=[q('[data-k=code]'),q('[data-k=paddock]')&&'Paddock '+q('[data-k=paddock]'),'Target Open '+(o!=null?nTxt(o):'–'),u.querySelector('.uk2').value].filter(Boolean).join(' · ');
+ document.querySelector('.ubox').classList.toggle('real',!plan);
+ const opt=t=>umaster?unitsOf(umaster,t,!plan).map(it=>'<option value="'+esc(it.code)+'"'+(it.active?'':' label="nonaktif"')+'>').join(''):'';
+ $('dlUnit').innerHTML=opt('unit');$('dlImpl').innerHTML=opt('impl');
+ $('uAdd').textContent=plan?'+ Tambah Unit':'+ Tambah Unit di Luar Rencana';
+ $('uNote').textContent=plan
+  ?'Jlh Unit/Opt = jumlah unit/operator. Est = perkiraan HM/KM/Rit. Implement boleh dikosongkan. Pilih dari saran agar sesuai Master Unit.'
+  :'Kolom "Aktual" yang dikosongkan dianggap sama dengan rencana (cukup isi HM/Rit). Isi Unit/Implement aktual jika diganti; ketik "-" pada Implement jika tidak memakai implement. Unit yang tidak ada di rencana: klik "+ Tambah Unit di Luar Rencana".';
+ uDraw();$('udlg').hidden=false;
+ const f=$('uTab').querySelector('input');if(f)f.focus();
+}
+function uDraw(){
+ const {kind,list}=uCur,plan=kind==='plan',th=$('uTab').tHead,tb=$('uTab').tBodies[0];
+ th.innerHTML=plan
+  ?'<tr><th>Kode Unit</th><th>Implement / Gandengan</th><th style="width:76px">Jlh Unit/Opt</th><th style="width:100px">Est HM/KM/Rit</th><th style="width:30px"></th></tr>'
+  :'<tr><th style="width:150px">Rencana</th><th>Unit Aktual</th><th>Implement Aktual</th><th style="width:64px">Jlh</th><th style="width:90px">HM/Rit</th><th style="width:30px"></th></tr>';
+ tb.innerHTML='';
+ let shown=0;
+ const fld=(f,val,ph,dl,num)=>'<td><input data-f="'+f+'"'+(dl?' list="'+dl+'" autocomplete="off"':'')+(num?' class="num" inputmode="decimal"':'')+' placeholder="'+esc(ph)+'" value="'+esc(val)+'"></td>';
+ list.forEach((m,k)=>{
+  if(plan&&m.x)return;
+  shown++;
+  const tr=document.createElement('tr');
+  if(plan){
+   tr.innerHTML=fld('code',m.code,'Kode unit','dlUnit')+fld('impl',m.impl,'Implement','dlImpl')+fld('jlh',m.jlh,'1','',1)+fld('est',m.est,'0','',1)+'<td><button type="button" class="del" title="Hapus unit">&times;</button></td>';
+  }else{
+   const lab=m.x?'<i>Di luar rencana</i>':'<b>'+esc(m.code||'–')+'</b>'+(m.impl?'<br><span class="msub">↳ '+esc(m.impl)+'</span>':'')+((m.jlh||m.est)?'<br><span class="msub">'+esc([m.jlh&&m.jlh+' unit',m.est&&'Est '+m.est].filter(Boolean).join(' · '))+'</span>':'');
+   tr.innerHTML='<td class="ro">'+lab+'</td>'+fld('rcode',m.rcode,m.x?'Kode unit':(m.code||'Kode unit'),'dlUnit')+fld('rimpl',m.rimpl,m.x?'Implement':(m.impl||'Implement'),'dlImpl')+fld('rjlh',m.rjlh,m.x?'1':(m.jlh||'1'),'',1)+fld('rhm',m.rhm,'0','',1)+'<td>'+(m.x?'<button type="button" class="del" title="Hapus unit">&times;</button>':'')+'</td>';
+  }
+  const chk=(e,fix)=>{
+   const t=UTYPE[e.dataset.f];if(!t||!umaster)return;
+   const v=e.value.trim(),hit=v&&v!=='-'?getUnit(umaster,v,t):null;
+   if(hit&&fix&&hit.code!==e.value){e.value=hit.code;m[e.dataset.f]=hit.code}
+   const bad=!!v&&v!=='-'&&!hit;e.classList.toggle('bad',bad);e.title=bad?'Tidak ada di Master Unit (tetap bisa disimpan)':'';
+  };
+  tr.querySelectorAll('input[data-f]').forEach(e=>{
+   e.addEventListener('input',()=>{
+    m[e.dataset.f]=e.value;
+    if(plan&&e.dataset.f==='code'&&e.value.trim()&&!String(m.jlh).trim()){m.jlh='1';tr.querySelector('[data-f=jlh]').value='1'}
+    chk(e,false);
+   });
+   e.addEventListener('change',()=>chk(e,true));
+   chk(e,false);
+  });
+  const del=tr.querySelector('.del');
+  if(del)del.onclick=()=>{
+   if(plan&&(m.rcode||m.rimpl||m.rjlh||m.rhm)&&!confirm('Unit ini sudah punya realisasi. Hapus beserta realisasinya?'))return;
+   list.splice(k,1);uDraw();
+  };
+  tb.appendChild(tr);
+ });
+ $('uTab').hidden=!shown;$('uEmpty').hidden=!!shown;
+ $('uEmpty').textContent=plan?'Belum ada unit. Klik "+ Tambah Unit".':'Belum ada rencana unit di baris ini. Tambahkan unit yang dipakai di lapangan.';
+}
+function uClose(){$('udlg').hidden=true;uCur=null}
+$('uAdd').onclick=()=>{
+ const x=uCur.kind==='real';uCur.list.push(Object.assign(UE(),{x:x}));uDraw();
+ const rows=$('uTab').tBodies[0].rows,l=rows[rows.length-1];const f=l&&l.querySelector('input');if(f)f.focus();
+};
+$('uX').onclick=$('uCancel').onclick=uClose;
+$('udlg').addEventListener('mousedown',e=>{if(e.target===$('udlg'))uClose()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&uCur)uClose()});
+$('uOk').onclick=()=>{
+ const u=ukRows()[uCur.i];if(!u)return uClose();
+ const t=s=>String(s==null?'':s).trim();
+ let out=[];
+ if(uCur.kind==='plan'){
+  const pl=uCur.list.filter(e=>!e.x).map(e=>Object.assign({},e,{code:t(e.code),impl:t(e.impl),jlh:t(e.jlh),est:t(e.est)})).filter(e=>e.code||e.impl||e.jlh||e.est);
+  out=pl.concat(uCur.list.filter(e=>e.x));
+ }else{
+  uCur.list.forEach(e=>{
+   const n=Object.assign({},e,{rcode:t(e.rcode),rimpl:t(e.rimpl),rjlh:t(e.rjlh),rhm:t(e.rhm)});
+   const has=n.rcode||n.rimpl||n.rjlh||n.rhm;
+   if(e.x){if(has){if(n.rcode&&!n.rjlh)n.rjlh='1';out.push(n)}return}
+   if(has){n.rcode=n.rcode||n.code;n.rimpl=n.rimpl==='-'?'':(n.rimpl||n.impl);n.rjlh=n.rjlh||n.jlh||'1'}
+   else{n.rcode=n.rimpl=n.rjlh=n.rhm=''}
+   out.push(n);
+  });
+ }
+ setUnits(u,out);uClose();calcUK();
+};
+// klik kolom Unit: Kode/Jlh Unit/Est = Isi Rencana; Realisasi Unit/HM = Isi Realisasi (hanya mode Realisasi)
+ukBody.addEventListener('click',e=>{
+ const td=e.target.closest('td.uc');if(!td||!paper.classList.contains('on'))return;
+ const i=ukRows().indexOf(td.parentElement);if(i<0)return;
+ if(td.classList.contains('ucr')||td.classList.contains('ucv')){if(paper.classList.contains('real'))uOpen(i,'real')}
+ else uOpen(i,'plan');
+});
+// peringatan (tidak memblokir) jika ada unit / implement yang tidak ada di Master Unit
+function unitWarn(){
+ if(!umaster)return '';
+ const bad=[];
+ ukRows().forEach((u,i)=>{if(getUnits(u).some(e=>[[e.code,'unit'],[e.rcode,'unit'],[e.impl,'impl'],[e.rimpl,'impl']].some(p=>p[0]&&!getUnit(umaster,p[0],p[1]))))bad.push(i+1)});
+ return bad.length?'Unit / Implement tidak ada di Master Unit pada baris: '+bad.join(', ')+'.':'';
+}
+function warnAll(){
+ const a=[opWarn().replace(/\nTetap simpan\?$/,''),unitWarn()].filter(Boolean);
+ return a.length?a.join('\n')+'\nTetap simpan?':'';
+}
 
 /* ---------- master paddock: autocomplete + luas otomatis ---------- */
 const nk=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -773,7 +951,7 @@ $('bDel').onclick=()=>{
  const n=opRows().length;
  if(n<=1){alert('Minimal 1 baris.');return}
  const i=sel>=0&&sel<n?sel:n-1,tr=opRows()[i],ur=ukRows()[i],mr=mpRows()[i];
- const has=[tr,ur,mr].some(t=>[...t.querySelectorAll('[data-k]')].some(e=>e.value))||tr.querySelector('.sh').value;
+ const has=[tr,ur,mr].some(t=>[...t.querySelectorAll('[data-k]')].some(e=>e.value))||tr.querySelector('.sh').value||getUnits(ur).length||getMats(ur).length;
  if(has&&!confirm('Hapus baris '+(i+1)+' beserta isinya (Operation, Unit Kerja, dan Man Power Support)?'))return;
  tr.remove();ur.remove();mr.remove();sel=-1;renum();calc();
 };
@@ -796,6 +974,7 @@ function collect(){
    [tr,ur[i],mr[i]].forEach(t=>t.querySelectorAll('[data-k]').forEach(e=>{o[e.dataset.k]=e.value}));
    o.shift=tr.querySelector('.sh').value;
    Object.assign(o,matsOut(getMats(ur[i])));
+   Object.assign(o,unitsOut(getUnits(ur[i])));
    o.date=tr.dataset.date||'';
    return o;
   })
@@ -874,7 +1053,7 @@ onAuthStateChanged(auth,async u=>{
   me={uid:u.uid,...d.data()};
   $('who').textContent=(me.nama||u.email)+' ('+me.role+')';
   $('bNew').hidden=!isR('mandor');
-  loadList();loadMaster();loadOpsMaster();
+  loadList();loadMaster();loadOpsMaster();loadUnitMaster();
  }catch(e){$('ld').hidden=false;$('ld').textContent='Gagal terhubung: '+(e.code||e.message)+'. Kembali ke Beranda lalu login ulang.'}
 });
 $('bHome').onclick=()=>{location.href='index.html'};
@@ -990,6 +1169,7 @@ $('bNew').onclick=()=>{
  S()[0].value='WO-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes());
  if(!master)loadMaster();
  if(!ops)loadOpsMaster();
+ if(!umaster)loadUnitMaster();
  ui();startEl.focus();
 };
 /* ---------- Timeline & Export Excel ---------- */
@@ -1040,12 +1220,12 @@ async function save(status){
  }catch(e){msg(e);return false}
 }
 $('bSave').onclick=async()=>{
- if(cur.mode!=='view'){const err=validate();if(err){alert(err);return}const w=opWarn();if(w&&!confirm(w))return}
+ if(cur.mode!=='view'){const err=validate();if(err){alert(err);return}const w=warnAll();if(w&&!confirm(w))return}
  if(!cur.id&&!$('dOpen').value)$('dOpen').value=todayStr();   // Tanggal Open WO = hari WO pertama disimpan
  if(await save('open')){toast('WO tersimpan');loadList()}
 };
 $('bClose').onclick=async()=>{
- if(cur.mode!=='view'){const err=validate();if(err){alert(err);return}const w=opWarn();if(w&&!confirm(w))return}
+ if(cur.mode!=='view'){const err=validate();if(err){alert(err);return}const w=warnAll();if(w&&!confirm(w))return}
  const has=opRows().some(tr=>v(tr.querySelector('.close')));
  if(!confirm((has?'':'Belum ada realisasi (kolom Close) yang diisi.\n')+'Simpan dan Close WO ini?\nSetelah di-close, WO tidak bisa diubah.'))return;
  if(!$('dClose').value)$('dClose').value=todayStr();
