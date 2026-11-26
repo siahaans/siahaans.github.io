@@ -19,7 +19,7 @@ button.sm{padding:2px 8px;font-size:11px}
 .wrap{overflow-x:auto;max-width:820px;margin:0 auto}
 .paper{background:var(--paper);width:100%;min-width:760px;padding:14px 16px 12px;border:1px solid var(--line)}
 .hd{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:start;margin-bottom:8px}
-.kv{display:grid;grid-template-columns:50px 8px 1fr;gap:3px 0;align-items:end;max-width:200px}
+.kv{display:grid;grid-template-columns:82px 8px 1fr;gap:3px 0;align-items:end;max-width:250px}
 .kv.f{grid-template-columns:78px 8px 110px}
 h1{margin:0 0 6px;font-size:13px;text-align:center}
 .ctr{display:flex;flex-direction:column;align-items:center}
@@ -165,7 +165,7 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 <body>
 <p id="ld" style="text-align:center;padding:30px">Memuat...</p>
 <div class="bar" id="nav" hidden><span id="who" style="margin-right:auto;align-self:center"></span><button class="g" id="bHome">&larr; Beranda</button><button class="g" id="bList">Daftar WO</button><button id="bNew">+ WO Baru</button><button class="g" id="bOut">Keluar</button></div>
-<div id="list" class="wrap" hidden><div class="paper"><h2 style="margin:0 0 8px">Daftar Work Order</h2><table id="lt"><colgroup><col style="width:29%"><col style="width:11%"><col style="width:8%"><col style="width:8%"><col style="width:7%"><col style="width:12%"><col style="width:25%"></colgroup><thead><tr><th>No WO - Pekerjaan</th><th>Forecast Start</th><th>Divisi</th><th>Mandor</th><th>Status</th><th>Diubah</th><th>Aksi</th></tr></thead><tbody></tbody></table><p id="lmsg"></p></div></div>
+<div id="list" class="wrap" hidden><div class="paper"><h2 style="margin:0 0 8px">Daftar Work Order</h2><table id="lt"><colgroup><col style="width:29%"><col style="width:11%"><col style="width:8%"><col style="width:8%"><col style="width:7%"><col style="width:12%"><col style="width:25%"></colgroup><thead><tr><th>No WO - Pekerjaan</th><th>Forecast Start</th><th>Department</th><th>Mandor</th><th>Status</th><th>Diubah</th><th>Aksi</th></tr></thead><tbody></tbody></table><p id="lmsg"></p></div></div>
 <div id="formv" hidden>
 <div class="bar"><span id="stat" style="margin-right:auto;align-self:center;font-weight:700"></span><button class="g" id="bSave">Simpan</button><button class="dg" id="bClose">Close WO</button><button class="g" id="bXls">Export Excel</button><button class="g" onclick="window.print()">Cetak / PDF</button></div>
 <div class="tabs"><button type="button" id="tWo" class="on">Work Order</button><button type="button" id="tTl">Timeline</button><button type="button" id="tSm">Summary</button><button type="button" id="tCs">Costing</button></div>
@@ -173,7 +173,9 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 <div class="wrap"><div class="paper">
 
 <div class="hd">
- <div class="kv"><b>No</b>:<input type="text" data-s><b>PT</b>:<input type="text" data-s><b>Divisi</b>:<input type="text" data-s><b>Front</b>:<input type="text" data-s><b>Mandor</b>:<input type="text" data-s></div>
+ <div class="kv"><b>No</b>:<input type="text" data-s><b>PT</b>:<input type="text" data-s list="dlPT" data-fix="dlPT" autocomplete="off"><b>Department</b>:<input type="text" data-s list="dlDept" data-fix="dlDept" autocomplete="off"><b>Front</b>:<input type="text" data-s><b>Mandor Shift 1</b>:<input type="text" data-s><b>Mandor Shift 2</b>:<input type="text" id="mandor2"></div>
+ <datalist id="dlPT"><option value="Global Papua Abadi"><option value="Murni Nusantara Mandiri"></datalist>
+ <datalist id="dlDept"><option value="Agri - Land Development"><option value="Agri - Upkeep &amp; Manuring"><option value="Agri - Planting"><option value="Agri - Road &amp; Drainage Maintenance"><option value="Agri - Seed Planting"></datalist>
  <div class="ctr"><h1>Work Order</h1>
   <div class="kv f"><b>Forecast Start</b>:<input type="date" id="fStart" data-s><b>Forecast End</b>:<input type="date" id="fEnd" data-s></div>
   <div class="hint" id="hint" hidden>Isi Forecast Start terlebih dahulu</div></div>
@@ -268,6 +270,16 @@ const opRows=()=>[...opBody.querySelectorAll('tr.r')];          // baris Operati
 const ukRows=()=>[...ukBody.children];                          // baris Unit Kerja (selalu sama banyak)
 const mpRows=()=>[...mpBody.children];                          // baris Man Power Support (selalu sama banyak)
 
+/* ---------- autocorrect PT & Department: ketikan disesuaikan ke pilihan baku ---------- */
+paper.querySelectorAll('[data-fix]').forEach(el=>{
+ const opts=[...$(el.dataset.fix).options].map(o=>o.value);
+ const key=v=>v.toLowerCase().replace(/[^a-z0-9]/g,'');
+ el.addEventListener('change',()=>{
+  const k=key(el.value);if(!k)return;
+  const hit=opts.find(o=>key(o)===k)||(()=>{const m=opts.filter(o=>key(o).includes(k));return m.length===1?m[0]:null})();
+  if(hit)el.value=hit;
+ });
+});
 const iStart=S().indexOf(startEl),iClose=S().indexOf($('dClose'));   // posisi Forecast Start & Tanggal Closing di array s
 
 /* ---------- tanggal & shift ---------- */
@@ -594,6 +606,7 @@ const norm=x=>x.v===3?x:(x.v===2?upgrade(x):(x.f?upgrade(fromLegacy(x.f)):null))
 function apply(d){
  const s=d&&d.s;
  S().forEach((e,i)=>{const x=s?s[i]:undefined;if(e.type==='checkbox')e.checked=!!x;else e.value=x==null?(e.defaultValue||''):x});
+ $('mandor2').value=(d&&d.mandor2)||'';
  opRows().forEach(tr=>tr.remove());ukBody.innerHTML='';mpBody.innerHTML='';sel=-1;
  const rows=d&&d.rows&&d.rows.length?d.rows:[{},{},{},{},{}];
  rows.forEach(r=>mkRow(r));
@@ -741,7 +754,7 @@ function ui(){
 }
 async function save(status){
  const c=collect(),s=c.s;
- const data={v:3,s:s,rows:c.rows,no:s[0],divisi:s[2],mandor:s[4],status:status,updatedAt:serverTimestamp(),updatedBy:me.nama||me.uid};
+ const data={v:3,s:s,rows:c.rows,no:s[0],divisi:s[2],mandor:s[4],mandor2:$('mandor2').value,status:status,updatedAt:serverTimestamp(),updatedBy:me.nama||me.uid};
  if(status==='closed'){data.closedAt=serverTimestamp();data.closedBy=me.nama||me.uid}
  try{
   if(!cur.id){data.createdBy=me.uid;data.createdAt=serverTimestamp();cur.id=(await addDoc(collection(db,'workOrders'),data)).id}
