@@ -313,7 +313,7 @@ import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase
 import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {initializeFirestore,doc,getDoc,setDoc,addDoc,collection,query,orderBy,limit,getDocs,serverTimestamp,deleteField,deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {loadPaddocks,searchPaddocks,getPaddock,fmtLuas} from "./paddock.js";
-import {loadOps,searchOps,getOpByCode,getOpByDesc} from "./operation.js";
+import {loadOps,searchOps,getOpByCode,getOpByDesc,opsForDept,normDept,DEPTS as OP_DEPTS} from "./operation.js";
 import {buildTimeline,renderTimeline} from "./timeline.js";
 import {exportWorkbook} from "./export-excel.js";
 import {buildSummary,renderSummary} from "./summary.js";
@@ -593,26 +593,50 @@ function resolveOp(tr,from){
  if(from==='code'){
   if(!cv)return;
   it=getOpByCode(ops,cv);
-  if(!it){const m=ops.filter(o=>o.code.includes(cv));if(m.length===1)it=m[0]}   // koreksi otomatis jika hanya 1 yang cocok
-  if(it){setOp(tr,it);return}
+  if(!it){const m=opsList().filter(o=>o.code.includes(cv));if(m.length===1)it=m[0]}   // koreksi otomatis jika hanya 1 yang cocok
+  if(it){setOp(tr,it);deptCheck(tr);return}
   ci.classList.add('bad');ci.title='Op Code tidak ada di master';
  }else{
   if(!dv)return;
-  it=getOpByDesc(ops,dv);
-  if(!it){const m=searchOps(ops,dv);if(m.length===1)it=m[0]}
-  if(it){setOp(tr,it);return}
+  const L=opsList();
+  it=getOpByDesc(L,dv)||getOpByDesc(ops,dv);
+  if(!it){const m=searchOps(L,dv);if(m.length===1)it=m[0]}
+  if(it){setOp(tr,it);deptCheck(tr);return}
   di.classList.add('bad');di.title='Desc tidak ada di master';
  }
 }
+/* ---------- Op Code per Department ---------- */
+const deptVal=()=>normDept(S()[2].value);
+const deptOn=()=>OP_DEPTS.includes(deptVal());
+const opsList=()=>ops?opsForDept(ops,deptVal()):[];      // aktif + sesuai Department di header
+// tandai Op Code milik department lain / sudah nonaktif (tidak memblokir)
+function deptMsg(tr){
+ if(!ops)return '';
+ const it=getOpByCode(ops,tr.querySelector('[data-k=code]').value.trim());
+ if(!it)return '';
+ if(deptOn()&&it.dept&&it.dept!==deptVal())return 'Op Code ini milik '+it.dept;
+ if(!it.active)return 'Op Code ini sudah nonaktif di master';
+ return '';
+}
+function deptCheck(tr){
+ const ci=tr.querySelector('[data-k=code]'),m=deptMsg(tr);
+ if(ci.classList.contains('bad')&&!ci.dataset.dw)return;
+ ci.classList.toggle('bad',!!m);ci.title=m;if(m)ci.dataset.dw='1';else delete ci.dataset.dw;
+}
+S()[2].addEventListener('change',()=>opRows().forEach(deptCheck));
 // peringatan (tidak memblokir) jika ada Op Code / Desc yang tidak ada di master, mis. WO lama
 function opWarn(){
  if(!ops)return '';
- const bad=[];
+ const bad=[],oth=[];
  opRows().forEach((tr,i)=>{
   const c=tr.querySelector('[data-k=code]').value.trim(),d=tr.querySelector('[data-k=desc]').value.trim();
   if((c&&!getOpByCode(ops,c))||(d&&!getOpByDesc(ops,d)))bad.push(i+1);
+  else if(c&&deptMsg(tr))oth.push(i+1);
  });
- return bad.length?'Op Code / Desc tidak ada di master pada baris: '+bad.join(', ')+'.\nTetap simpan?':'';
+ const m=[];
+ if(bad.length)m.push('Op Code / Desc tidak ada di master pada baris: '+bad.join(', ')+'.');
+ if(oth.length)m.push('Op Code bukan milik '+(deptOn()?deptVal():'department ini')+' atau sudah nonaktif pada baris: '+oth.join(', ')+'.');
+ return m.length?m.join('\n')+'\nTetap simpan?':'';
 }
 
 /* ---------- dropdown saran (dipakai Paddock, Op Code, dan Desc) ---------- */
@@ -622,8 +646,8 @@ const AC={
  paddock:{ready:()=>!!master,find:cand,onFocus:true,w:260,none:'Tidak ada paddock yang cocok',
   label:it=>[it.paddock,[it.varietas,it.luas!=null?fmtLuas(it.luas)+' Ha':''].filter(Boolean).join(' \u00b7 ')],
   pick:(tr,it)=>{tr.querySelector('[data-k=paddock]').value=it.paddock;resolvePad(tr)}},
- code:{ready:()=>!!ops,find:q=>searchOps(ops,q),w:440,none:'Tidak ada Op Code yang cocok',label:it=>[it.code,it.desc],pick:setOp},
- desc:{ready:()=>!!ops,find:q=>searchOps(ops,q),w:440,none:'Tidak ada Desc yang cocok',label:it=>[it.desc,it.code],pick:setOp}
+ code:{ready:()=>!!ops,find:q=>searchOps(opsList(),q),w:440,none:()=>'Tidak ada Op Code yang cocok'+(deptOn()?' di '+deptVal():''),label:it=>[it.code,deptOn()?it.desc:it.desc+(it.dept?' \u00b7 '+it.dept.replace(/^Agri - /,''):'')],pick:(tr,it)=>{setOp(tr,it);deptCheck(tr)}},
+ desc:{ready:()=>!!ops,find:q=>searchOps(opsList(),q),w:440,none:()=>'Tidak ada Desc yang cocok'+(deptOn()?' di '+deptVal():''),label:it=>[it.desc,it.code],pick:(tr,it)=>{setOp(tr,it);deptCheck(tr)}}
 };
 const acHide=()=>{ac.hidden=true;acIn=null;acKind=null};
 const acPaint=()=>[...ac.querySelectorAll('.it')].forEach((el,i)=>el.classList.toggle('on',i===acIdx));
@@ -632,7 +656,7 @@ function acShow(inp){
  if(!cfg||!cfg.ready()||!q){acHide();return}
  const all=cfg.find(q);acItems=all.slice(0,8);acIdx=0;acIn=inp;acKind=kind;
  ac.textContent='';
- if(!acItems.length){const n=document.createElement('div');n.className='more';n.textContent=cfg.none;ac.appendChild(n)}
+ if(!acItems.length){const n=document.createElement('div');n.className='more';n.textContent=typeof cfg.none==='function'?cfg.none():cfg.none;ac.appendChild(n)}
  acItems.forEach((it,i)=>{
   const d=document.createElement('div');d.className='it';d.dataset.i=i;
   const lb=cfg.label(it),b=document.createElement('b');b.textContent=lb[0];
@@ -736,7 +760,7 @@ function loadMaster(){
  });
 }
 function loadOpsMaster(){
- loadOps().then(l=>{ops=l;opsFail=false;warnUpdate()},()=>{ops=null;opsFail=true;warnUpdate()});
+ loadOps().then(l=>{ops=l;opsFail=false;warnUpdate();opRows().forEach(deptCheck)},()=>{ops=null;opsFail=true;warnUpdate()});
 }
 
 /* ---------- tambah / hapus baris ---------- */
@@ -810,6 +834,7 @@ function apply(d){
  const rows=d&&d.rows&&d.rows.length?d.rows:[{},{},{},{},{}];
  rows.forEach(r=>mkRow(r));
  renum();sync();calc();
+ if(ops)opRows().forEach(deptCheck);
 }
 
 /* ---------- kunci form: Forecast Start wajib diisi pertama ---------- */
