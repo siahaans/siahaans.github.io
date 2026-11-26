@@ -77,6 +77,43 @@ button.dg{background:#b3261e;border-color:#b3261e;color:#fff}
 :root:root:root{--bg:#fff;--paper:#fff;--ink:#111;--line:#222;--grey:#d9d9d9;--inp:#fff;--auto:#fff}
 .ctl,.sh,#hint,#ac,#mwarn,#toast{display:none!important}.kc .ket{width:100%}td.n.sel{background:var(--grey)!important}}
 [hidden]{display:none!important}
+/* --- material (rekap 1 baris, isi lewat pop-up) --- */
+#uk td.mc,#uk td.mt{white-space:pre-line;vertical-align:top;padding:1px 3px;line-height:15px;position:relative;overflow-wrap:anywhere}
+#uk td.md,#uk td.mk,#uk td.mr,#uk td.mt.t{text-align:center}
+#uk td.mt#u_vnama{font-weight:700}
+.paper.on #uk td.md,.paper.on #uk td.mn,.paper.on #uk td.mk,.paper.on.real #uk td.mr{cursor:pointer}
+.paper.on #uk tr:hover td.md,.paper.on #uk tr:hover td.mn,.paper.on #uk tr:hover td.mk,.paper.on.real #uk tr:hover td.mr{background:rgba(77,163,255,.1)}
+.paper.on #uk td.mn:empty::before,.paper.on.real #uk td.mr.can:empty::before{display:inline-block;margin:1px 0;padding:0 8px;border-radius:999px;background:var(--head);color:#fff;font-size:10px;line-height:14px;font-weight:600;white-space:nowrap}
+.paper.on #uk td.mn:empty::before{content:"+ Isi Rencana"}
+.paper.on.real #uk td.mr.can:empty::before{content:"+ Isi";background:#1a7f4b;padding:0 8px}
+.paper.on #uk td.mn:not(:empty):hover::after,.paper.on.real #uk td.mr.can:not(:empty):hover::after{content:"\270E";position:absolute;top:1px;right:3px;font-size:10px;color:var(--head)}
+.mdlg{position:fixed;inset:0;z-index:80;background:rgba(10,15,30,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+.mbox{background:var(--paper);color:var(--ink);width:min(640px,100%);max-height:calc(100vh - 32px);display:flex;flex-direction:column;border-radius:10px;box-shadow:0 20px 50px rgba(0,0,0,.35);overflow:hidden}
+.mhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:14px 16px 10px;border-bottom:1px solid var(--grey)}
+.mkind{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:var(--head);border-radius:999px;padding:1px 8px}
+.mbox.real .mkind{background:#1a7f4b}
+.mhead h3{margin:6px 0 2px;font-size:15px}
+.msub{font-size:11.5px;color:var(--mute)}
+.mx{background:none;border:0;color:var(--mute);font-size:22px;line-height:1;padding:0 4px}
+.mbody{padding:12px 16px;overflow:auto}
+.mtab{width:100%;border-collapse:separate;border-spacing:0 6px;table-layout:auto}
+.mtab th{background:none;color:var(--mute);border:0;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;text-align:left;padding:0 4px}
+.mtab td{border:0;height:auto;padding:0 4px;vertical-align:middle;font-size:12.5px}
+.mtab input,.mtab select{width:100%;height:30px;border:1px solid var(--line);border-radius:6px;padding:0 8px;background:var(--paper);color:var(--ink);font:inherit;font-size:12.5px}
+.mtab input:focus,.mtab select:focus{outline:2px solid #4da3ff;outline-offset:-1px;background:var(--paper);color:var(--ink)}
+.mtab input[readonly]{background:var(--auto);border-color:transparent}
+.mtab .num{text-align:right}
+.mtab .del{background:none;border:0;color:#b3261e;font-size:18px;padding:0 6px}
+.mtab .ro{padding:0 4px}
+.madd{margin-top:4px;background:none;color:var(--head);border:1px dashed var(--head);border-radius:6px;width:100%;padding:7px}
+.mbox.real .madd{display:none}
+.mempty{padding:18px;text-align:center;color:var(--mute);font-size:12.5px}
+.mnote{margin-top:8px;font-size:11px;color:var(--mute)}
+.mnote.warn2{color:#b06a00}
+.mfoot{display:flex;justify-content:flex-end;gap:8px;padding:10px 16px;border-top:1px solid var(--grey)}
+.mfoot button{padding:7px 16px;border-radius:6px}
+.mbox.real #mOk{background:#1a7f4b;border-color:#1a7f4b}
+@media print{.mdlg{display:none!important}#uk td.mc::before,#uk td.mc::after{content:none!important}#uk tr:hover td.mc{background:none!important}}
 .box{max-width:340px;margin:40px auto;background:var(--paper);border:1px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:10px}
 .box input{border:1px solid var(--line);padding:8px;font-size:14px;background:var(--inp);color:var(--ink)}
 .box h2{margin:0 0 4px}.err{color:#c00;margin:0;font-size:12px}
@@ -233,7 +270,7 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
   <tr><th>Jlh Unit/Opt</th><th>Jlh Realisasi</th><th>Dosis</th><th>Material</th></tr>
  </thead>
  <tbody></tbody>
- <tfoot><tr><td></td><td class="t">Total</td><td class="t" id="u_unik"></td><td class="t" id="u_unama"></td><td class="t" id="u_uest"></td><td class="t" id="u_uhk"></td><td></td><td></td><td></td><td></td><td class="t" id="u_vest"></td><td class="t" id="u_vhk"></td></tr></tfoot>
+ <tfoot><tr><td></td><td class="t">Total</td><td class="t" id="u_unik"></td><td class="t" id="u_unama"></td><td class="t" id="u_uest"></td><td class="t" id="u_uhk"></td><td></td><td></td><td></td><td class="mt" id="u_vnama"></td><td class="mt t" id="u_vest"></td><td class="mt t" id="u_vhk"></td></tr></tfoot>
 </table>
 <table id="mp" style="border-top:0">
  <colgroup><col style="width:3%"><col style="width:9%"><col style="width:20%"><col style="width:11%"><col style="width:7%"><col style="width:3%"><col style="width:9%"><col style="width:20%"><col style="width:11%"><col style="width:7%"></colgroup>
@@ -263,6 +300,13 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 <div id="smv" class="tlwrap" hidden><div class="tlbox"><div id="smp"></div></div></div>
 <div id="csv" class="tlwrap" hidden><div class="tlbox"><div id="csp"></div></div></div>
 </div>
+<div id="mdlg" class="mdlg" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+ <div class="mhead"><div><div class="mkind" id="mKind"></div><h3 id="mTitle"></h3><div class="msub" id="mSub"></div></div><button type="button" class="mx" id="mX" aria-label="Tutup">&times;</button></div>
+ <div class="mbody"><table class="mtab" id="mTab"><thead></thead><tbody></tbody></table><div class="mempty" id="mEmpty" hidden></div>
+  <button type="button" class="madd" id="mAdd">+ Tambah Material</button><div class="mnote" id="mNote"></div></div>
+ <div class="mfoot"><button type="button" class="g" id="mCancel">Batal</button><button type="button" id="mOk">Simpan</button></div>
+</div></div>
+<datalist id="dlMat"></datalist>
 <div id="toast" hidden></div>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -331,7 +375,7 @@ const OPROW='<tr class="r"><td class="n"></td>'+
  '<td class="pct"></td>'+
  '<td class="kc"><select class="sh" title="Pilih shift">'+OPT+'</select>'+T+'class="ket" spellcheck="false" title="Bisa diedit. Format: Shift 1 - 17 November 2026"></td></tr>';
 const UKROW='<tr><td class="n"></td><td>'+T+'data-k="ukode"></td><td>'+T+'data-k="unik"></td><td>'+T+'data-k="unama"></td><td>'+T+'data-k="uest"></td><td>'+T+'data-k="uhk"></td>'+
- '<td class="n"></td><td>'+T+'class="uk2" readonly tabindex="-1"></td><td>'+T+'data-k="vnik"></td><td>'+T+'data-k="vnama"></td><td>'+T+'data-k="vest"></td><td>'+T+'data-k="vhk"></td></tr>';
+ '<td class="n"></td><td>'+T+'class="uk2" readonly tabindex="-1"></td><td class="mc md"></td><td class="mc mn"></td><td class="mc mk"></td><td class="mc mr"></td></tr>';
 
 const MPROW='<tr><td class="n"></td><td>'+T+'data-k="mnik"></td><td>'+T+'data-k="mnama"></td><td>'+T+'data-k="mjab"></td><td>'+T+'data-k="mhk"></td>'+
  '<td class="n"></td><td>'+T+'data-k="pnik"></td><td>'+T+'data-k="pnama"></td><td>'+T+'data-k="pjab"></td><td>'+T+'data-k="phk"></td></tr>';
@@ -349,6 +393,7 @@ function mkRow(r){
  const di=o.querySelector('[data-k=desc]');di.title=di.value;
  o.dataset.date=r.date||'';   // tanggal khusus baris (kosong = ikut Forecast Start)
  o.querySelector('.luas').readOnly=luasRO;
+ setMats(u,matsFrom(r));
  return o;
 }
 function markSel(){
@@ -390,9 +435,133 @@ function calc(){
 }
 // total kolom angka di Unit Kerja
 function calcUK(){
- ['unik','unama','uest','uhk','vest','vhk'].forEach(k=>{let t=0;ukBody.querySelectorAll('[data-k='+k+']').forEach(e=>{t+=v(e)});$('u_'+k).textContent=fm(t)});
+ matCalc();
+ ['unik','unama','uest','uhk'].forEach(k=>{let t=0;ukBody.querySelectorAll('[data-k='+k+']').forEach(e=>{t+=v(e)});$('u_'+k).textContent=fm(t)});
 }
 document.getElementById('uk').addEventListener('input',calcUK);
+
+/* ---------- material: banyak material per baris, diisi lewat pop-up ---------- */
+// data per baris: [{mat,sat,dosis,keb,real}] disimpan di rows[i].mats; kolom lama vnik/vnama/vest/vhk tetap diisi (teks bertumpuk) untuk modul lain
+const SATS=['','L','ml','Kg','gr','Unit'];
+const nf=s=>{const x=parseFloat(String(s==null?'':s).replace(',','.'));return isFinite(x)?x:null};
+const nTxt=x=>x==null||x===''?'':String(Math.round(x*1000)/1000).replace('.',',');
+function matsFrom(r){
+ if(Array.isArray(r.mats))return r.mats.map(m=>Object.assign({mat:'',sat:'',dosis:'',keb:'',real:''},m));
+ const any=['vnik','vnama','vest','vhk'].some(k=>String(r[k]||'').trim());
+ if(!any)return[];
+ const sp=k=>String(r[k]||'').split('\n');const a=sp('vnik'),b=sp('vnama'),c=sp('vest'),d=sp('vhk');
+ const n=Math.max(a.length,b.length,c.length,d.length),out=[];
+ for(let i=0;i<n;i++)out.push({mat:(b[i]||'').trim(),sat:'',dosis:(a[i]||'').trim(),keb:(c[i]||'').trim(),real:(d[i]||'').trim()});
+ return out;
+}
+const getMats=u=>{try{return JSON.parse((u&&u.dataset.mats)||'[]')}catch(e){return[]}};
+const withSat=(x,s)=>x===''||x==null?'':x+(s?' '+s:'');
+function matsOut(ms){
+ const j=k=>ms.map(m=>m[k]==null?'':String(m[k])).join('\n');
+ return{mats:ms,vnik:j('dosis'),vnama:j('mat'),vest:j('keb'),vhk:j('real')};
+}
+function setMats(u,ms){
+ u.dataset.mats=JSON.stringify(ms);
+ const c=u.querySelectorAll('td.mc'),L=f=>ms.map(m=>{const x=f(m);return x===''?'\u00a0':x}).join('\n');
+ c[0].textContent=ms.length?L(m=>m.dosis):'';
+ c[1].textContent=ms.length?L(m=>m.mat):'';
+ c[2].textContent=ms.length?L(m=>withSat(m.keb,m.sat)):'';
+ c[3].textContent=ms.some(m=>String(m.real).trim())?L(m=>withSat(m.real,m.sat)):'';
+ c[3].classList.toggle('can',ms.length>0);
+}
+const openOf=i=>{const tr=opRows()[i];return tr?nf(tr.querySelector('.open').value):null};
+// Total Kebutuhan = Dosis x Target Open (luas) baris itu
+function recalcMats(){
+ ukRows().forEach((u,i)=>{
+  const ms=getMats(u);if(!ms.length)return;const o=openOf(i);let ch=false;
+  ms.forEach(m=>{const d=nf(m.dosis),k=d!=null&&o!=null?nTxt(d*o):'';if(k!==m.keb){m.keb=k;ch=true}});
+  if(ch)setMats(u,ms);
+ });
+}
+// rekap per material di baris Total
+function matCalc(){
+ recalcMats();
+ const g=new Map();
+ ukRows().forEach(u=>getMats(u).forEach(m=>{
+  const name=String(m.mat||'').trim();if(!name)return;
+  const key=name.toLowerCase()+'|'+m.sat;
+  if(!g.has(key))g.set(key,{name:name,sat:m.sat,keb:0,real:0,hasR:false});
+  const x=g.get(key);x.keb+=nf(m.keb)||0;const rv=nf(m.real);if(rv!=null){x.real+=rv;x.hasR=true}
+ }));
+ const a=[...g.values()];
+ $('u_vnama').textContent=a.map(x=>x.name).join('\n');
+ $('u_vest').textContent=a.map(x=>withSat(nTxt(x.keb)||'0',x.sat)).join('\n');
+ $('u_vhk').textContent=a.some(x=>x.hasR)?a.map(x=>x.hasR?withSat(nTxt(x.real),x.sat):'\u00a0').join('\n'):'';
+}
+
+let mCur=null;   // {i, kind:'plan'|'real', list:[...]}
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function mOpen(i,kind){
+ const u=ukRows()[i],tr=opRows()[i];if(!u||!tr)return;
+ const list=getMats(u);
+ if(kind==='plan'&&!list.length)list.push({mat:'',sat:'',dosis:'',keb:'',real:''});
+ mCur={i:i,kind:kind,list:list};
+ const q=s=>tr.querySelector(s).value.trim(),o=openOf(i);
+ $('mKind').textContent=kind==='plan'?'Rencana Material':'Realisasi Material';
+ $('mTitle').textContent='Baris '+(i+1)+(q('[data-k=desc]')?' \u00b7 '+q('[data-k=desc]'):'');
+ $('mSub').textContent=[q('[data-k=code]'),q('[data-k=paddock]')&&'Paddock '+q('[data-k=paddock]'),'Target Open '+(o!=null?nTxt(o):'\u2013'),u.querySelector('.uk2').value].filter(Boolean).join(' \u00b7 ');
+ document.querySelector('.mbox').classList.toggle('real',kind==='real');
+ // daftar nama material yang sudah dipakai di WO ini (untuk saran ketik)
+ const names=new Set();ukRows().forEach(x=>getMats(x).forEach(m=>{if(m.mat)names.add(m.mat)}));
+ $('dlMat').innerHTML=[...names].sort().map(n=>'<option value="'+esc(n)+'">').join('');
+ mDraw();$('mdlg').hidden=false;
+ const f=$('mTab').querySelector('input:not([readonly])');if(f)f.focus();
+}
+function mDraw(){
+ const {kind,list}=mCur,o=openOf(mCur.i),th=$('mTab').tHead,tb=$('mTab').tBodies[0];
+ const plan=kind==='plan';
+ th.innerHTML=plan?'<tr><th>Material</th><th style="width:78px">Satuan</th><th style="width:90px">Dosis / ha</th><th style="width:110px">Total Kebutuhan</th><th style="width:30px"></th></tr>'
+  :'<tr><th>Material</th><th style="width:110px">Kebutuhan</th><th style="width:130px">Realisasi</th></tr>';
+ tb.innerHTML='';
+ list.forEach((m,k)=>{
+  const tr=document.createElement('tr');
+  if(plan){
+   tr.innerHTML='<td><input data-f="mat" list="dlMat" placeholder="Nama material" value="'+esc(m.mat)+'"></td>'+
+    '<td><select data-f="sat">'+SATS.map(s=>'<option'+(s===m.sat?' selected':'')+' value="'+s+'">'+(s||'\u2013')+'</option>').join('')+'</select></td>'+
+    '<td><input data-f="dosis" class="num" inputmode="decimal" placeholder="0" value="'+esc(m.dosis)+'"></td>'+
+    '<td><input class="num keb" readonly tabindex="-1"></td>'+
+    '<td><button type="button" class="del" title="Hapus material">&times;</button></td>';
+   const upd=()=>{const d=nf(m.dosis);tr.querySelector('.keb').value=d!=null&&o!=null?withSat(nTxt(d*o),m.sat):''};
+   tr.querySelectorAll('[data-f]').forEach(e=>e.addEventListener('input',()=>{m[e.dataset.f]=e.value;upd()}));
+   tr.querySelector('.del').onclick=()=>{list.splice(k,1);mDraw()};
+   upd();
+  }else{
+   tr.innerHTML='<td class="ro"><b>'+esc(m.mat||'(tanpa nama)')+'</b></td><td class="ro">'+esc(withSat(m.keb,m.sat)||'\u2013')+'</td>'+
+    '<td><input data-f="real" class="num" inputmode="decimal" placeholder="'+esc(m.sat||'0')+'" value="'+esc(m.real)+'"></td>';
+   tr.querySelector('input').addEventListener('input',e=>{m.real=e.target.value});
+  }
+  tb.appendChild(tr);
+ });
+ $('mTab').hidden=!list.length;
+ $('mEmpty').hidden=!!list.length;
+ $('mEmpty').textContent=plan?'Belum ada material. Klik "+ Tambah Material".':'Belum ada rencana material di baris ini. Isi Rencana terlebih dahulu.';
+ const n=$('mNote');n.classList.toggle('warn2',plan&&o==null);
+ n.textContent=plan?(o==null?'Target Open baris ini belum diisi, jadi Total Kebutuhan belum bisa dihitung.':'Total Kebutuhan = Dosis/ha \u00d7 Target Open ('+nTxt(o)+').'):'Isi jumlah material yang benar-benar terpakai di lapangan.';
+ $('mOk').disabled=!plan&&!list.length;
+}
+function mClose(){$('mdlg').hidden=true;mCur=null}
+$('mAdd').onclick=()=>{mCur.list.push({mat:'',sat:'',dosis:'',keb:'',real:''});mDraw();const ins=$('mTab').querySelectorAll('input[data-f=mat]');if(ins.length)ins[ins.length-1].focus()};
+$('mX').onclick=$('mCancel').onclick=mClose;
+$('mdlg').addEventListener('mousedown',e=>{if(e.target===$('mdlg'))mClose()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&mCur)mClose()});
+$('mOk').onclick=()=>{
+ const u=ukRows()[mCur.i];if(!u)return mClose();
+ const ms=mCur.list.map(m=>({mat:String(m.mat||'').trim(),sat:m.sat||'',dosis:String(m.dosis||'').trim(),keb:m.keb||'',real:String(m.real||'').trim()}))
+  .filter(m=>m.mat||m.dosis||m.real);
+ setMats(u,ms);mClose();calcUK();
+};
+// klik kolom material: Dosis/Material/Kebutuhan = Isi Rencana, Total Realisasi = Isi Realisasi (hanya mode Realisasi)
+ukBody.addEventListener('click',e=>{
+ const td=e.target.closest('td.mc');if(!td||!paper.classList.contains('on'))return;
+ const i=ukRows().indexOf(td.parentElement);if(i<0)return;
+ if(td.classList.contains('mr')){if(paper.classList.contains('real')&&getMats(ukRows()[i]).length)mOpen(i,'real');}
+ else mOpen(i,'plan');
+});
 
 /* ---------- master paddock: autocomplete + luas otomatis ---------- */
 const nk=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -602,6 +771,7 @@ function collect(){
    const o={};
    [tr,ur[i],mr[i]].forEach(t=>t.querySelectorAll('[data-k]').forEach(e=>{o[e.dataset.k]=e.value}));
    o.shift=tr.querySelector('.sh').value;
+   Object.assign(o,matsOut(getMats(ur[i])));
    o.date=tr.dataset.date||'';
    return o;
   })
