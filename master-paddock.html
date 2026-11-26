@@ -69,7 +69,7 @@ dialog input:focus{outline:2px solid #4da3ff;outline-offset:-1px}
 <body>
 <p id="ld" style="text-align:center;padding:30px">Memuat...</p>
 <div id="app" hidden>
- <div class="top"><span id="who"></span><button class="g" id="bGh" hidden>&#9881; GitHub</button><button class="g" id="bHome">&larr; Beranda</button><button class="g" id="bWO">Work Order</button><button class="g" id="bOut">Keluar</button></div>
+ <div class="top"><span id="who"></span><button class="g" id="bGh" hidden>&#9881; GitHub</button><button class="g" id="bHome">&larr; Beranda</button><button class="g" id="bWO">Work Order</button><button class="g" id="bOps">Master Operation</button><button class="g" id="bOut">Keluar</button></div>
  <div class="paper">
   <div class="h1r"><h1>Master Paddock</h1><button id="bAdd" hidden>+ Tambah Paddock</button></div>
   <div class="tools">
@@ -241,6 +241,7 @@ $('bReset').onclick=()=>{$('q').value='';$('fv').value='';$('fs').value='';sortK
 document.querySelectorAll('th[data-k]').forEach(th=>th.onclick=()=>{const k=th.dataset.k;sortD=sortK===k?-sortD:1;sortK=k;render()});
 $('bHome').onclick=()=>{location.href='index.html'};
 $('bWO').onclick=()=>{location.href='work-order.html'};
+$('bOps').onclick=()=>{location.href='master-operation.html'};
 $('bOut').onclick=()=>signOut(auth);
 
 /* ---------- dialog edit / tambah paddock ---------- */
