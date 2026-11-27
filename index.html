@@ -41,8 +41,10 @@
 @keyframes rot{to{transform:rotate(360deg)}}
 .card .err{min-height:16px;margin:0;text-align:center;font-size:12.5px;color:#ff8a9a}
 .ft{margin:0;text-align:center;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#55648f}
+#boot{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:14px;color:#8fa3d6;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+#boot i{width:34px;height:34px;border:3px solid rgba(120,160,255,.25);border-top-color:#6fb3ff;border-radius:50%;animation:rot .8s linear infinite}
 #stage.home::before{display:none}#stage.home .orb{animation:none;filter:blur(60px);opacity:.25}
-@media (prefers-reduced-motion:reduce){#stage::before,.card,.card::before,.logo,#bIn,.orb{animation:none!important}}
+@media (prefers-reduced-motion:reduce){#stage::before,.card,.card::before,.logo,#bIn,.orb,#boot i{animation:none!important}}
 
 #home{position:relative;z-index:2;width:100%;max-width:980px;max-height:100vh;overflow-y:auto;padding:26px 20px 40px;animation:rise .8s both}
 .hh{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:28px}
@@ -69,7 +71,8 @@ a.app:hover::after{left:140%}
 <body>
 <div id="stage">
 <canvas id="fx"></canvas><div class="orb o1"></div><div class="orb o2"></div>
-<form id="lf" class="card" novalidate>
+<div id="boot"><i></i><span>Memuat...</span></div>
+<form id="lf" class="card" novalidate hidden>
  <div class="logo"><span>WO</span></div>
  <h2>Work Order</h2><p class="sub">Planning Upkeep &middot; Digital System</p>
  <label class="fld"><input id="em" type="email" placeholder=" " autocomplete="username"><span>Email</span></label>
@@ -96,31 +99,51 @@ a.app:hover::after{left:140%}
  </div>
 </section>
 </div>
+<script>
+/* tampil instan: bila profil sudah tersimpan, beranda langsung muncul sebelum Firebase selesai dimuat */
+try{var p=JSON.parse(localStorage.getItem('woProfile')||'null'),s=JSON.parse(localStorage.getItem('woStats')||'null'),g=function(i){return document.getElementById(i)};
+if(p){g('boot').hidden=true;g('home').hidden=false;g('stage').className='home';g('nm').textContent=p.nama||p.email;g('who').textContent=(p.role||'')+' \u00b7 '+p.email;
+if(s){g('s_open').textContent=s.open;g('s_closed').textContent=s.closed;g('s_total').textContent=s.total}}}catch(e){}
+</script>
 <script type="module">
 import {auth,signInWithEmailAndPassword,signOut,onAuthStateChanged,connect,collection,query,where,getCountFromServer} from "./firebase.js";
 import {ls} from "./util.js";
 const $=id=>document.getElementById(id);
 let db;
-const view=v=>{$('lf').hidden=v!=='login';$('home').hidden=v!=='home';$('stage').classList.toggle('home',v==='home');v==='home'?fx.stop():fx.start()};
+const view=v=>{$('lf').hidden=v!=='login';$('home').hidden=v!=='home';$('boot').hidden=v!=='boot';$('stage').classList.toggle('home',v==='home');v==='home'?fx.stop():fx.start()};
 const ERR={'auth/invalid-credential':'Email atau password salah.','auth/invalid-email':'Format email tidak valid.','auth/missing-password':'Password belum diisi.','auth/user-disabled':'Akun ini dinonaktifkan.','auth/too-many-requests':'Terlalu banyak percobaan. Coba lagi beberapa menit.','auth/network-request-failed':'Koneksi internet bermasalah.','auth/unauthorized-domain':'Domain situs ini belum ditambahkan di Firebase (Authorized domains).','permission-denied':'Akses ditolak oleh Firestore Rules.','unavailable':'Tidak bisa terhubung ke database Firestore. Cek koneksi/ID database, atau matikan ekstensi pemblokir iklan.'};
 const say=e=>{$('err').textContent=typeof e==='string'?e:(ERR[e.code]||e.code||e.message);const c=$('lf');c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake')};
 const busy=b=>{$('bIn').disabled=b;$('bIn').classList.toggle('ld',b)};
 
+/* Profil & angka terakhir disimpan di browser supaya beranda tampil langsung (tanpa kilatan form login).
+ * Datanya hanya tampilan; akses sebenarnya tetap diperiksa Firebase + Firestore Rules. */
+const PK='woProfile',SK='woStats';
+const jget=k=>{try{return JSON.parse(ls(k)||'null')}catch(e){return null}};
+const forget=()=>{ls(PK,null);ls(SK,null)};
+const paint=p=>{$('nm').textContent=p.nama||p.email;$('who').textContent=(p.role||'')+' \u00b7 '+p.email};
+const paintStats=s=>{if(!s)return;$('s_open').textContent=s.open;$('s_closed').textContent=s.closed;$('s_total').textContent=s.total};
+let shown=false;
+
 onAuthStateChanged(auth,async u=>{
- if(!u){busy(false);view('login');return}
+ if(!u){forget();shown=false;busy(false);view('login');return}
+ let p=jget(PK);
+ if(p&&p.uid!==u.uid){forget();p=null;if(shown){shown=false;view('boot')}}   // akun berbeda: jangan tampilkan data akun sebelumnya
  try{
-  const c=await connect(u.uid);db=c.db;const d=c.snap;
-  if(!d.exists()){await signOut(auth);say('Akun belum punya role. Buat dokumen users/'+u.uid+' di Firestore.');return}
-  const me=d.data();
-  $('nm').textContent=me.nama||u.email;$('who').textContent=(me.role||'')+' \u00b7 '+u.email;
-  busy(false);view('home');stats();
- }catch(e){await signOut(auth);say(e)}
+  const c=await connect(u.uid);db=c.db;
+  if(!c.snap.exists()){forget();shown=false;await signOut(auth);say('Akun belum punya role. Buat dokumen users/'+u.uid+' di Firestore.');return}
+  const me=c.snap.data();
+  p={uid:u.uid,nama:me.nama||'',role:me.role||'',email:u.email||''};ls(PK,JSON.stringify(p));
+  paint(p);busy(false);view('home');shown=true;stats();
+ }catch(e){
+  if(shown&&e.code==='unavailable'){busy(false);return}      // offline: tetap pakai data tersimpan
+  forget();shown=false;await signOut(auth);say(e)
+ }
 });
 async function stats(){
  try{const col=collection(db,'workOrders');
   const [all,done]=await Promise.all([getCountFromServer(col),getCountFromServer(query(col,where('status','==','closed')))]);
   const total=all.data().count,closed=done.data().count;      // status lama (draft/dibuat/dst) dihitung Open
-  $('s_open').textContent=total-closed;$('s_closed').textContent=closed;$('s_total').textContent=total}catch(e){}
+  const s={total,closed,open:total-closed};ls(SK,JSON.stringify(s));paintStats(s)}catch(e){}
 }
 $('lf').addEventListener('submit',async ev=>{
  ev.preventDefault();$('err').textContent='';
@@ -141,7 +164,9 @@ const fx=(function(){const c=$('fx'),x=c.getContext('2d'),mq=matchMedia('(prefer
  document.addEventListener('visibilitychange',()=>{if(!on)return;if(document.hidden)cancelAnimationFrame(raf);else if(!mq.matches)loop()});
  rs();addEventListener('resize',()=>{rs();if(on&&mq.matches)draw(false)});
  return{start,stop}})();
-$('bOut').onclick=()=>signOut(auth);
+$('bOut').onclick=()=>{forget();signOut(auth)};
+// tampilan awal: beranda langsung bila sudah pernah login di browser ini, selain itu layar "Memuat..." sampai status login jelas
+{const c=jget(PK);if(c){paint(c);paintStats(jget(SK));view('home');shown=true}else view('boot')}
 </script>
 </body>
 </html>
