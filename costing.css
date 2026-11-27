@@ -1,0 +1,36 @@
+.cs-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}.cs-top h2{flex:1;margin:0;font-size:18px}
+.cs-btn{padding:7px 14px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;cursor:pointer;font:inherit}
+.cs-btn.pri{background:var(--head);color:#fff;border-color:var(--head)}.cs-btn:disabled{opacity:.5;cursor:not-allowed}
+.cs-warn{border:1px solid #d4a72c;background:rgba(212,167,44,.12);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12px}
+.cs-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:16px}
+.cs-k{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--grey)}
+.cs-k small{display:block;color:#7a8294;font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+.cs-k b{display:block;font-size:20px;margin:2px 0}.cs-k span{display:block;font-size:11px;color:#7a8294}
+.cs-k .up{color:#cf222e}.cs-k .dn{color:#2da44e}.cs-k.tot{border-color:var(--head);background:var(--paper)}
+.cs-pn{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:14px}
+.cs-pn h3{margin:0 0 6px;font-size:14px}.cs-sc{overflow-x:auto}
+.cs-t{width:100%;border-collapse:collapse;font-size:12px;min-width:760px}
+.cs-t th{background:var(--head);color:#fff;padding:5px 7px;text-align:left;font-size:11px}
+.cs-t td{border-bottom:1px solid var(--line);padding:4px 7px;vertical-align:top}.cs-t .r{text-align:right;white-space:nowrap}
+.cs-t tr.tt td{font-weight:700;background:var(--grey)}.cs-t .mu{color:#7a8294}.cs-t .hit{color:#2da44e;font-weight:700}.cs-t .nop{color:#cf222e}
+.cs-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:flex;justify-content:center;align-items:flex-start;overflow:auto;padding:20px 10px}
+.cs-md{background:var(--paper);color:var(--ink);width:min(920px,100%);border-radius:12px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.cs-md h3{margin:16px 0 4px;font-size:14px;border-bottom:2px solid var(--line);padding-bottom:4px}.cs-md h2{margin:0}
+.cs-md .hint{font-size:11px;color:#7a8294;margin:2px 0 6px}
+.cs-md table{width:100%;border-collapse:collapse;font-size:12px}.cs-md th{text-align:left;font-size:10px;color:#7a8294;padding:2px 4px}
+.cs-md td{padding:2px 3px}.cs-md input[type=text],.cs-md input[type=number]{width:100%;padding:6px;border:1px solid var(--line);border-radius:5px;background:var(--paper);color:var(--ink);font:inherit}
+.cs-md .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:6px 0}.cs-md .row label{display:flex;align-items:center;gap:6px}.cs-md .row input[type=number]{width:140px}
+.cs-md .acts{display:flex;gap:8px;margin-top:6px}.cs-md .foot{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;align-items:center}
+
+/* Tabel costing → kartu saat layar sempit */
+@media (max-width:760px){
+  .cs-t{min-width:0}
+  .cs-t thead{display:none}
+  .cs-t tr{display:block;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;padding:6px 10px;background:var(--paper)}
+  .cs-t td{display:block;border:0;padding:3px 0}
+  .cs-t td::before{content:attr(data-label) ": ";color:#7a8294;font-size:10px;font-weight:600;display:inline-block;min-width:110px}
+  .cs-t .r{text-align:left}
+  .cs-t tr.tt td{background:none}
+}
+
+@media print{.cs-ov{display:none}}
