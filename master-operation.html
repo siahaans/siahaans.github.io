@@ -4,88 +4,66 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Master Operation</title>
+<link rel="stylesheet" href="css/theme.css">
+<link rel="manifest" href="manifest.webmanifest">
 <style>
-:root{--bg:#e9ebef;--paper:#fff;--ink:#111;--mute:#5b6270;--line:#c9cdd4;--head:#1f3a73;--grey:#f1f3f6;--inp:#fff;--hl:#fff8c6;--chg:rgba(46,160,67,.16);--ok:#1a7f4b;--off:#8c959f;--bad:#b3261e;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root{--bg:#15171b;--paper:#1e2127;--ink:#e8e8e8;--mute:#9aa0aa;--line:#3a3f48;--head:#2c4f94;--grey:#262a31;--inp:#1e2127;--hl:#4a4520;--chg:rgba(46,160,67,.28)}}
-*{box-sizing:border-box}
-html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:14px/1.4 Arial,Helvetica,sans-serif;padding:10px}
-[hidden]{display:none!important}
-.top{max-width:1040px;margin:0 auto 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.top #who{margin-right:auto;color:var(--mute);font-size:13px}
-button{padding:7px 12px;border:1px solid var(--line);background:var(--head);color:#fff;border-radius:4px;cursor:pointer;font:inherit;font-size:13px}
-button.g{background:var(--paper);color:var(--ink)}
-button.sm{padding:3px 9px;font-size:12px}
-button.dg{background:var(--bad);border-color:var(--bad);color:#fff}
-button:disabled{opacity:.6;cursor:wait}
-.paper{max-width:1040px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px}
-.h1r{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-h1{margin:0 auto 0 0;font-size:20px}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.tabs button{background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 13px;display:inline-flex;align-items:center;gap:7px}
-.tabs button:hover{border-color:var(--head)}
-.tabs button.on{background:var(--head);border-color:var(--head);color:#fff}
-.tabs .ct{font-size:11px;font-weight:700;min-width:20px;padding:0 6px;border-radius:999px;background:var(--grey);color:var(--ink);text-align:center}
-.tabs button.on .ct{background:rgba(255,255,255,.25);color:#fff}
-.tools{display:grid;grid-template-columns:2fr 1fr auto;gap:8px;margin-bottom:12px}
-.tools input,.tools select{width:100%;height:38px;padding:0 10px;border:1px solid var(--line);border-radius:4px;background:var(--inp);color:var(--ink);font:inherit}
-.tools input:focus,.tools select:focus{outline:2px solid #4da3ff;outline-offset:-1px}
-.dup{margin-bottom:12px;padding:10px 12px;border:1px solid var(--bad);background:rgba(179,38,30,.1);border-radius:6px;font-size:13px}
-.dup b{color:var(--bad)}
-.dup ul{margin:6px 0 0;padding-left:18px}
-.pend{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding:10px 12px;border:1px solid #2ea043;background:var(--chg);border-radius:6px;font-size:13px}
-.pend span{margin-right:auto}
-.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-.st{flex:1 1 140px;padding:10px 12px;background:var(--grey);border-radius:6px}
-.st b{display:block;font-size:20px}.st small{color:var(--mute);text-transform:uppercase;letter-spacing:.06em;font-size:11px}
-.scroll{overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:640px}
-th{background:var(--head);color:#fff;text-align:left;padding:8px 10px;font-size:13px;user-select:none;white-space:nowrap}
-th[data-k]{cursor:pointer}
-td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-td.act{text-align:right;white-space:nowrap;width:1%}
-td.code{font-family:Consolas,Menlo,monospace;white-space:nowrap}
-td small{display:block;color:var(--mute);font-size:12px}
-tbody tr.alt{background:var(--grey)}
-tbody tr.chg td{background:var(--chg)}
-tbody tr.off td{color:var(--mute)}
-tbody tr.dupr td.code{color:var(--bad);font-weight:700}
-.badge{display:inline-block;padding:1px 9px;border-radius:999px;font-size:11px;font-weight:700;color:#fff;background:var(--ok);white-space:nowrap}
-.badge.off{background:var(--off)}
-mark{background:var(--hl);color:inherit;padding:0 1px;border-radius:2px}
-#msg{margin:10px 0 0;color:var(--mute);font-size:13px}
-dialog{width:min(680px,94vw);padding:16px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
-dialog::backdrop{background:rgba(0,0,0,.45)}
-dialog h2{margin:0 0 12px;font-size:17px}
-dialog label{display:block;font-size:12px;color:var(--mute);margin-bottom:10px}
-dialog input[type=text],dialog input[type=password],dialog select{width:100%;height:36px;padding:0 9px;margin-top:3px;border:1px solid var(--line);border-radius:4px;background:var(--inp);color:var(--ink);font:inherit;font-size:14px}
-dialog input:focus,dialog select:focus{outline:2px solid #4da3ff;outline-offset:-1px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
-.g3{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:0 12px}
-.more summary{cursor:pointer;font-size:12px;color:var(--head);margin:2px 0 10px}
-.derr{min-height:18px;margin:6px 0;color:#d33;font-size:13px}
-.dbtn{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.ghx,.hlp{font-size:12px;color:var(--mute);line-height:1.5;margin:0 0 10px}
-.ghx b{color:var(--ink)}
-.imp{font-size:13px;margin:0 0 10px;padding:10px 12px;background:var(--grey);border-radius:6px}
-.imp ul{margin:4px 0 0;padding-left:18px}
-.imp .bad{color:var(--bad)}
-.chk{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--ink)!important}
-.chk input{margin-top:2px}
-#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;border-radius:4px;font-size:13px;z-index:70;max-width:92vw;text-align:center}
-@media(max-width:640px){.tools{grid-template-columns:1fr 1fr}.tools input{grid-column:1/-1}.g2,.g3{grid-template-columns:1fr}}
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.tabs button { background: var(--paper); color: var(--ink); border: 1px solid var(--line);
+  border-radius: 999px; padding: 6px 13px; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+.tabs button:hover { border-color: var(--head-hi); }
+.tabs button.on { background: var(--head); border-color: var(--head); color: #fff; }
+.tabs .ct { font-size: 11px; font-weight: 700; min-width: 20px; padding: 0 6px;
+  border-radius: 999px; background: var(--grey); color: var(--ink); text-align: center; }
+.tabs button.on .ct { background: rgba(255,255,255,.25); color: #fff; }
+.tools { display: grid; grid-template-columns: 2fr 1fr auto; gap: 8px; margin-bottom: 12px; }
+.tools input, .tools select { height: 38px; }
+.dup { margin-bottom: 12px; padding: 10px 12px; border: 1px solid var(--bad);
+  background: rgba(220,38,38,.08); border-radius: 6px; font-size: 13px; }
+.dup b { color: var(--bad); }
+.dup ul { margin: 6px 0 0; padding-left: 18px; }
+.pend { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+  padding: 10px 12px; border: 1px solid var(--ok); background: var(--chg); border-radius: 6px; font-size: 13px; }
+.pend span { margin-right: auto; }
+.stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.st { flex: 1 1 140px; padding: 10px 12px; background: var(--grey); border-radius: 6px; }
+.st b { display: block; font-size: 20px; }
+.st small { color: var(--mute); text-transform: uppercase; letter-spacing: .06em; font-size: 11px; }
+td.code { font-family: Consolas, Menlo, monospace; white-space: nowrap; }
+td small { display: block; color: var(--mute); font-size: 12px; }
+td.act { text-align: right; white-space: nowrap; width: 1%; }
+tbody tr.dupr td.code { color: var(--bad); font-weight: 700; }
+mark { background: var(--hl); color: inherit; padding: 0 1px; border-radius: 2px; }
+#msg { margin: 10px 0 0; color: var(--mute); font-size: 13px; }
+.more summary { cursor: pointer; font-size: 12px; color: var(--head-hi); margin: 2px 0 10px; }
+.imp { font-size: 13px; margin: 0 0 10px; padding: 10px 12px; background: var(--grey); border-radius: 6px; }
+.imp ul { margin: 4px 0 0; padding-left: 18px; }
+.imp .bad { color: var(--bad); }
+.chk { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--ink) !important; }
+.chk input { margin-top: 2px; }
+.h1r { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.h1r h1 { margin: 0 auto 0 0; }
+#ld { max-width: 1100px; margin: 20px auto; }
+@media (max-width: 640px) {
+  .tools { grid-template-columns: 1fr 1fr; }
+  .tools input { grid-column: 1 / -1; }
+}
 </style>
 </head>
 <body>
-<p id="ld" style="text-align:center;padding:30px">Memuat...</p>
+<div id="topbar"></div>
+<div id="ld">
+  <div class="skel" style="width:40%"></div>
+  <div class="skel" style="width:70%"></div>
+  <div class="skel" style="width:55%"></div>
+  <div class="skel" style="width:80%"></div>
+</div>
 <div id="app" hidden>
- <div class="top"><span id="who"></span><button class="g" id="bGh" hidden>&#9881; GitHub</button><button class="g" id="bHome">&larr; Beranda</button><button class="g" id="bWO">Work Order</button><button class="g" id="bPad">Master Paddock</button><button class="g" id="bOut">Keluar</button></div>
  <div class="paper">
   <div class="h1r"><h1>Master Operation</h1>
-   <button class="g" id="bDl" title="Unduh CSV department yang sedang dibuka (tab Semua = seluruh file)">&#11015; Download CSV</button>
-   <button class="g" id="bImp" hidden>&#11014; Import CSV</button>
-   <button id="bAdd" hidden>+ Tambah Operation</button>
+   <button class="btn" id="bGh" hidden title="Pengaturan GitHub">⚙ GitHub</button>
+   <button class="btn" id="bDl" title="Unduh CSV department yang sedang dibuka">⬇ Download CSV</button>
+   <button class="btn" id="bImp" hidden>⬆ Import CSV</button>
+   <button class="btn pri" id="bAdd" hidden>+ Tambah Operation</button>
    <input type="file" id="fImp" accept=".csv,text/csv,text/plain" hidden>
   </div>
   <div class="tabs" id="tabs"></div>
@@ -93,15 +71,15 @@ dialog input:focus,dialog select:focus{outline:2px solid #4da3ff;outline-offset:
   <div class="tools">
    <input id="q" type="search" placeholder="Cari Op Code, deskripsi (ENG / INA), atau COA..." autocomplete="off">
    <select id="fs"><option value="">Semua status</option><option value="on">Aktif</option><option value="off">Nonaktif</option></select>
-   <button class="g" id="bReset">Reset</button>
+   <button class="btn" id="bReset">Reset</button>
   </div>
-  <div class="pend" id="pend" hidden><span id="pendTxt"></span><button id="bPush">Simpan ke GitHub</button><button class="g" id="bDiscard">Batalkan</button></div>
+  <div class="pend" id="pend" hidden><span id="pendTxt"></span><button class="btn pri" id="bPush">Simpan ke GitHub</button><button class="btn" id="bDiscard">Batalkan</button></div>
   <div class="stats">
    <div class="st"><b id="sN">-</b><small>Jumlah operation</small></div>
    <div class="st"><b id="sA">-</b><small>Aktif</small></div>
    <div class="st"><b id="sO">-</b><small>Nonaktif</small></div>
   </div>
-  <div class="scroll"><table>
+  <div class="table-wrap"><table class="data">
    <thead><tr><th data-k="code">Op Code<i></i></th><th data-k="desc">Description<i></i></th><th data-k="dept" id="thDept">Department<i></i></th><th data-k="coa">COA<i></i></th><th data-k="st">Status<i></i></th><th id="thAct" hidden></th></tr></thead>
    <tbody id="tb"></tbody>
   </table></div>
@@ -121,7 +99,7 @@ dialog input:focus,dialog select:focus{outline:2px solid #4da3ff;outline-offset:
  <details class="more" id="dMoreBox"><summary>Kolom lainnya</summary><div class="g2" id="dMore"></div></details>
  <p class="hlp">Op Code hanya boleh dipakai di satu department. Nonaktif = tidak muncul di Work Order baru, tetapi WO lama tetap terbaca.</p>
  <p class="derr" id="dErr"></p>
- <div class="dbtn"><button type="button" class="dg" id="dDel">Hapus</button><span style="flex:1"></span><button type="button" class="g" id="dCancel">Batal</button><button type="button" id="dOk">Simpan Perubahan</button></div>
+ <div class="dbtn"><button type="button" class="btn dg" id="dDel">Hapus</button><span style="flex:1"></span><button type="button" class="btn" id="dCancel">Batal</button><button type="button" class="btn pri" id="dOk">Simpan Perubahan</button></div>
 </dialog>
 
 <dialog id="dlgImp">
@@ -131,392 +109,429 @@ dialog input:focus,dialog select:focus{outline:2px solid #4da3ff;outline-offset:
  <div class="imp" id="iSum"></div>
  <label class="chk"><input type="checkbox" id="iOff"><span id="iOffTxt"></span></label>
  <p class="derr" id="iErr"></p>
- <div class="dbtn"><span style="flex:1"></span><button type="button" class="g" id="iCancel">Batal</button><button type="button" id="iOk">Terapkan</button></div>
+ <div class="dbtn"><span style="flex:1"></span><button type="button" class="btn" id="iCancel">Batal</button><button type="button" class="btn pri" id="iOk">Terapkan</button></div>
 </dialog>
 
 <dialog id="dlgGh">
  <h2>Pengaturan GitHub</h2>
- <p class="ghx">Perubahan master operation disimpan sebagai <b>commit</b> ke file CSV di GitHub (token yang sama dengan Master Paddock). Token butuh akses <b>Contents: Read and write</b> hanya untuk repo ini dan disimpan di browser ini saja.</p>
+ <p class="ghx">Perubahan master operation disimpan sebagai <b>commit</b> ke file CSV di GitHub. Token butuh akses <b>Contents: Read and write</b> hanya untuk repo ini dan disimpan di browser ini saja.</p>
  <label>Repo (pemilik/nama)<input id="ghRepo" type="text" autocomplete="off" placeholder="siahaans/siahaans.github.io"></label>
  <label>Branch (kosongkan = branch utama)<input id="ghBranch" type="text" autocomplete="off"></label>
  <label>Path file CSV<input id="ghPath" type="text" autocomplete="off" placeholder="operation.csv"></label>
  <label>Token<input id="ghToken" type="password" autocomplete="off" placeholder="github_pat_..."></label>
  <p class="derr" id="ghMsg"></p>
- <div class="dbtn"><button type="button" class="g" id="ghTest">Uji Koneksi</button><button type="button" class="dg" id="ghClear">Hapus Token</button><span style="flex:1"></span><button type="button" class="g" id="ghClose">Tutup</button><button type="button" id="ghSave">Simpan</button></div>
+ <div class="dbtn"><button type="button" class="btn" id="ghTest">Uji Koneksi</button><button type="button" class="btn dg" id="ghClear">Hapus Token</button><span style="flex:1"></span><button type="button" class="btn" id="ghClose">Tutup</button><button type="button" class="btn pri" id="ghSave">Simpan</button></div>
 </dialog>
 
-<div id="toast" hidden></div>
 <script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {getAuth,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {initializeFirestore,doc,getDoc} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import {DEPTS,normDept,isInactive,loadOpsText,parseOpsSource,serializeOps,itemOf,findDuplicates,setPendingOps} from "./operation.js";
+import { requireLogin, logout } from './js/auth.js';
+import { ls, lsDel } from './js/fb.js';
+import { toast, mountTopbar } from './js/ui.js';
+import { gh, ghErr, ghReadFile, ghWriteFile } from './js/gh.js';
+import { DEPTS, loadOpsText, parseOpsSource, serializeOps, itemOf, findDuplicates, setPendingOps } from "./operation.js";
 
-const cfg={apiKey:"AIzaSyDEsM1oAvOw_7Zd14wd2SmlnOAqAgwbQIU",authDomain:"gpa---work-order.firebaseapp.com",projectId:"gpa---work-order",storageBucket:"gpa---work-order.firebasestorage.app",messagingSenderId:"352208521958",appId:"1:352208521958:web:895d25863e8ec918070927"};
-const $=id=>document.getElementById(id);
-const fbApp=initializeApp(cfg),auth=getAuth(fbApp);
-const ls=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};
-const lsDel=k=>{try{localStorage.removeItem(k)}catch(e){}};
-const MAX=500,NODEPT='(tanpa department)';
-const hk=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
-const short=d=>d===NODEPT?'Tanpa department':String(d).replace(/^Agri - /,'');
-let base=null,edits=[],work=null,items=[],sm=null,isAdmin=false,email='',tab='',sortK=null,sortD=1,timer;
-try{tab=ls('opsTab')||''}catch(e){}
+const $ = id => document.getElementById(id);
+const MAX = 500, NODEPT = '(tanpa department)';
+const hk = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+const short = d => d === NODEPT ? 'Tanpa department' : String(d).replace(/^Agri - /, '');
 
-function toast(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>{e.hidden=true},3800)}
+let base = null, edits = [], work = null, items = [], sm = null;
+let tab = '', sortK = null, sortD = 1, timer, isAdmin = false, email = '';
+try { tab = ls('opsTab') || ''; } catch { /* ignore */ }
 
-/* ---------- peran admin (sama seperti halaman Work Order) ---------- */
-async function getRole(u){
- try{
-  const ids=[...new Set([ls('woDb'),'(default)','default'].filter(Boolean))];
-  for(const id of ids){
-   const t=initializeFirestore(fbApp,{experimentalForceLongPolling:true},id);
-   try{const d=await getDoc(doc(t,'users',u.uid));ls('woDb',id);return d.exists()?(d.data().role||''):''}
-   catch(e){if(e.code!=='unavailable'&&e.code!=='not-found')throw e}
+/* ---------- bootstrap ---------- */
+(async () => {
+  const { user, role } = await requireLogin();
+  isAdmin = role === 'admin';
+  email = user.email || '';
+  mountTopbar($('topbar'), {
+    email,
+    onLogout: () => logout(),
+    links: [
+      { label: 'Work Order',       href: 'work-order.html' },
+      { label: 'Master Operation', href: 'master-operation.html', active: true },
+      { label: 'Master Paddock',   href: 'master-paddock.html' },
+    ],
+  });
+  try {
+    const text = await loadOpsText();
+    setBase(text);
+    $('bGh').hidden = !isAdmin;
+    $('bAdd').hidden = $('bImp').hidden = $('thAct').hidden = !isAdmin;
+    $('ld').hidden = true;
+    $('app').hidden = false;
+    recompute();
+    $('q').focus();
+  } catch (e) {
+    $('ld').innerHTML = '';
+    $('ld').textContent = 'Gagal memuat operation.csv: ' + e.message;
   }
- }catch(e){}
- return '';
-}
+})();
 
-onAuthStateChanged(auth,async u=>{
- if(!u){location.replace('index.html');return}
- email=u.email||'';$('who').textContent=email;
- try{
-  const [role,text]=await Promise.all([getRole(u),loadOpsText()]);
-  isAdmin=role==='admin';
-  setBase(text);
-  $('bGh').hidden=$('bAdd').hidden=$('bImp').hidden=$('thAct').hidden=!isAdmin;
-  $('ld').hidden=true;$('app').hidden=false;
-  recompute();$('q').focus();
- }catch(e){$('ld').textContent='Gagal memuat operation.csv: '+e.message+'. Pastikan file operation.csv ada di folder yang sama.'}
-});
+/* ---------- helpers data ---------- */
+function setBase(text) { base = { text, ...parseOpsSource(text) }; }
+const col = (meta, k) => meta.idx[k] !== undefined ? meta.header[meta.idx[k]] : undefined;
 
-/* ---------- data: sumber mentah + perubahan yang belum disimpan ---------- */
-// satu perubahan = {key: Op Code lama (null = baru), nth: urutan baris ke-n dengan Op Code itu (untuk kode ganda), data: {NamaKolom: nilai} | null (hapus)}
-function setBase(text){base={text,...parseOpsSource(text)}}
-const col=(meta,k)=>meta.header[meta.idx[k]];
-const rowObj=(meta,r)=>{const o={};meta.header.forEach((h,i)=>{o[h]=r[i]==null?'':r[i]});return o};
-function applyEdits(meta,rows,eds){
- meta={...meta,header:meta.header.slice(),idx:{...meta.idx}};
- let out=rows.map(r=>r.slice());
- const ci=()=>meta.idx.code;
- eds.forEach(e=>{
-  if(e.data)Object.keys(e.data).forEach(h=>{if(!meta.header.some(x=>hk(x)===hk(h))){meta.header.push(h);out=out.map(r=>r.concat(''))}});
-  let at=-1;if(e.key!=null){let n=0;at=out.findIndex(r=>String(r[ci()]).trim()===e.key&&n++===(e.nth||0));if(at<0)at=out.findIndex(r=>String(r[ci()]).trim()===e.key)}
-  if(!e.data){if(at>-1)out.splice(at,1);return}
-  const prev=at>-1?out[at]:meta.header.map(()=>'');
-  const row=meta.header.map((h,i)=>{const k=Object.keys(e.data).find(x=>hk(x)===hk(h));return k!==undefined?String(e.data[k]):prev[i]});
-  if(at>-1)out[at]=row;else out.push(row);
- });
- return{meta,rows:out};
+function applyEdits(meta, rows, eds) {
+  meta = { ...meta, header: meta.header.slice(), idx: { ...meta.idx } };
+  let out = rows.map(r => r.slice());
+  const ci = () => meta.idx.code;
+  eds.forEach(e => {
+    if (e.data) Object.keys(e.data).forEach(h => {
+      if (h == null) return;
+      if (!meta.header.some(x => hk(x) === hk(h))) { meta.header.push(h); out = out.map(r => r.concat('')); }
+    });
+    let at = -1;
+    if (e.key != null) {
+      let n = 0;
+      at = out.findIndex(r => String(r[ci()]).trim() === e.key && n++ === (e.nth || 0));
+      if (at < 0) at = out.findIndex(r => String(r[ci()]).trim() === e.key);
+    }
+    if (!e.data) { if (at > -1) out.splice(at, 1); return; }
+    const prev = at > -1 ? out[at] : meta.header.map(() => '');
+    const row = meta.header.map((h, i) => {
+      const k = Object.keys(e.data).find(x => hk(x) === hk(h));
+      return k !== undefined ? String(e.data[k]) : prev[i];
+    });
+    if (at > -1) out[at] = row; else out.push(row);
+  });
+  return { meta, rows: out };
 }
-const sig=(meta,r)=>meta.header.map((h,i)=>hk(h)+'='+String(r[i]||'').trim()).join('|');
-function recompute(){
- work=applyEdits(base.meta,base.rows,edits);
- items=work.rows.map((r,i)=>{const it=itemOf(work.meta,r);it.i=i;it.r=r;it.coa=String(r[work.meta.header.findIndex(h=>hk(h)==='coa')]||'').trim();it.deptKey=it.dept||NODEPT;return it}).filter(it=>it.code);
- // ringkasan perubahan dibanding versi tersimpan
- const bm=new Map(),wm=new Map();
- base.rows.forEach(r=>{const c=String(r[base.meta.idx.code]).trim();if(c&&!bm.has(c))bm.set(c,sig(work.meta,work.meta.header.map(h=>{const j=base.meta.header.findIndex(x=>hk(x)===hk(h));return j>-1?r[j]:''})))});
- work.rows.forEach(r=>{const c=String(r[work.meta.idx.code]).trim();if(c&&!wm.has(c))wm.set(c,sig(work.meta,r))});
- let a=0,c=0,d=0;const touched=new Set();
- wm.forEach((v,k)=>{if(!bm.has(k)){a++;touched.add(k)}else if(bm.get(k)!==v){c++;touched.add(k)}});
- bm.forEach((v,k)=>{if(!wm.has(k))d++});
- sm={a,c,d,n:a+c+d,touched,txt:[a&&a+' baru',c&&c+' diubah',d&&d+' dihapus'].filter(Boolean).join(', ')};
- $('pend').hidden=!sm.n;
- $('pendTxt').textContent=sm.n+' perubahan belum disimpan ke GitHub ('+sm.txt+')';
- drawTabs();drawDup();render();
+const sig = (meta, r) => meta.header.map((h, i) => hk(h) + '=' + String(r[i] || '').trim()).join('|');
+
+function recompute() {
+  work = applyEdits(base.meta, base.rows, edits);
+  items = work.rows.map((r, i) => {
+    const it = itemOf(work.meta, r);
+    it.i = i; it.r = r;
+    const coaIdx = work.meta.header.findIndex(h => hk(h) === 'coa');
+    it.coa = coaIdx > -1 ? String(r[coaIdx] || '').trim() : '';
+    it.deptKey = it.dept || NODEPT;
+    return it;
+  }).filter(it => it.code);
+
+  const bm = new Map(), wm = new Map();
+  base.rows.forEach(r => {
+    const c = String(r[base.meta.idx.code]).trim();
+    if (c && !bm.has(c)) bm.set(c, sig(work.meta, work.meta.header.map(h => {
+      const j = base.meta.header.findIndex(x => hk(x) === hk(h));
+      return j > -1 ? r[j] : '';
+    })));
+  });
+  work.rows.forEach(r => {
+    const c = String(r[work.meta.idx.code]).trim();
+    if (c && !wm.has(c)) wm.set(c, sig(work.meta, r));
+  });
+  let a = 0, c = 0, d = 0; const touched = new Set();
+  wm.forEach((v, k) => { if (!bm.has(k)) { a++; touched.add(k); } else if (bm.get(k) !== v) { c++; touched.add(k); } });
+  bm.forEach((v, k) => { if (!wm.has(k)) d++; });
+  sm = { a, c, d, n: a + c + d, touched, txt: [a && a + ' baru', c && c + ' diubah', d && d + ' dihapus'].filter(Boolean).join(', ') };
+  $('pend').hidden = !sm.n;
+  $('pendTxt').textContent = sm.n + ' perubahan belum disimpan ke GitHub (' + sm.txt + ')';
+  drawTabs(); drawDup(); render();
 }
-addEventListener('beforeunload',e=>{if(sm&&sm.n){e.preventDefault();e.returnValue=''}});
+addEventListener('beforeunload', e => { if (sm && sm.n) { e.preventDefault(); e.returnValue = ''; } });
 
 /* ---------- tab department ---------- */
-function deptList(){
- const extra=[...new Set(items.map(it=>it.deptKey).filter(d=>!DEPTS.includes(d)&&d!==NODEPT))].sort();
- const l=DEPTS.concat(extra);if(items.some(it=>it.deptKey===NODEPT))l.push(NODEPT);
- return l;
+function deptList() {
+  const extra = [...new Set(items.map(it => it.deptKey).filter(d => !DEPTS.includes(d) && d !== NODEPT))].sort();
+  const l = DEPTS.concat(extra);
+  if (items.some(it => it.deptKey === NODEPT)) l.push(NODEPT);
+  return l;
 }
-function drawTabs(){
- const box=$('tabs');box.replaceChildren();
- const l=deptList();if(tab&&!l.includes(tab))tab='';
- [['','Semua']].concat(l.map(d=>[d,short(d)])).forEach(([v,lb])=>{
-  const b=document.createElement('button');b.type='button';b.className=tab===v?'on':'';b.title=v;
-  b.append(lb);const c=document.createElement('span');c.className='ct';c.textContent=v?items.filter(it=>it.deptKey===v).length:items.length;b.appendChild(c);
-  b.onclick=()=>{tab=v;ls('opsTab',v);drawTabs();render()};box.appendChild(b);
- });
- $('thDept').hidden=!!tab;
+function drawTabs() {
+  const box = $('tabs'); box.replaceChildren();
+  const l = deptList(); if (tab && !l.includes(tab)) tab = '';
+  [['', 'Semua']].concat(l.map(d => [d, short(d)])).forEach(([v, lb]) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = tab === v ? 'on' : ''; b.title = v;
+    b.append(lb);
+    const c = document.createElement('span'); c.className = 'ct';
+    c.textContent = v ? items.filter(it => it.deptKey === v).length : items.length;
+    b.appendChild(c);
+    b.onclick = () => { tab = v; ls('opsTab', v); drawTabs(); render(); };
+    box.appendChild(b);
+  });
+  $('thDept').hidden = !!tab;
 }
-let dups=[];
-function drawDup(){
- dups=findDuplicates(items);
- const box=$('dup');box.hidden=!dups.length;box.replaceChildren();if(!dups.length)return;
- const b=document.createElement('b');b.textContent='⚠ Peringatan: '+dups.length+' Op Code dipakai lebih dari sekali.';box.appendChild(b);
- box.append(' Op Code harus unik dan hanya milik satu department. Work Order memakai baris pertama; perbaiki atau hapus baris gandanya.');
- const ul=document.createElement('ul');
- dups.slice(0,20).forEach(d=>{const li=document.createElement('li');li.textContent=d.code+' — '+(d.depts.length>1?'di '+d.depts.map(short).join(', '):d.n+'x di '+short(d.depts[0]));ul.appendChild(li)});
- if(dups.length>20){const li=document.createElement('li');li.textContent='dan '+(dups.length-20)+' lainnya';ul.appendChild(li)}
- box.appendChild(ul);
+let dups = [];
+function drawDup() {
+  dups = findDuplicates(items);
+  const box = $('dup'); box.hidden = !dups.length; box.replaceChildren();
+  if (!dups.length) return;
+  const b = document.createElement('b'); b.textContent = '⚠ Peringatan: ' + dups.length + ' Op Code dipakai lebih dari sekali.'; box.appendChild(b);
+  box.append(' Op Code harus unik dan hanya milik satu department. Work Order memakai baris pertama; perbaiki atau hapus baris gandanya.');
+  const ul = document.createElement('ul');
+  dups.slice(0, 20).forEach(d => { const li = document.createElement('li'); li.textContent = d.code + ' — ' + (d.depts.length > 1 ? 'di ' + d.depts.map(short).join(', ') : d.n + 'x di ' + short(d.depts[0])); ul.appendChild(li); });
+  if (dups.length > 20) { const li = document.createElement('li'); li.textContent = 'dan ' + (dups.length - 20) + ' lainnya'; ul.appendChild(li); }
+  box.appendChild(ul);
 }
 
 /* ---------- tabel ---------- */
-function hl(el,text,terms){
- const low=text.toLowerCase();let pos=0;const hits=[];
- terms.forEach(t=>{let i=low.indexOf(t);if(i>-1)hits.push([i,i+t.length])});
- hits.sort((a,b)=>a[0]-b[0]);
- hits.forEach(([s,e])=>{if(s<pos)return;el.append(text.slice(pos,s));const m=document.createElement('mark');m.textContent=text.slice(s,e);el.append(m);pos=e});
- el.append(text.slice(pos));
+function hl(el, text, terms) {
+  const low = text.toLowerCase(); let pos = 0; const hits = [];
+  terms.forEach(t => { let i = low.indexOf(t); if (i > -1) hits.push([i, i + t.length]); });
+  hits.sort((a, b) => a[0] - b[0]);
+  hits.forEach(([s, e]) => { if (s < pos) return; el.append(text.slice(pos, s)); const m = document.createElement('mark'); m.textContent = text.slice(s, e); el.append(m); pos = e; });
+  el.append(text.slice(pos));
 }
-function visible(){
- const terms=$('q').value.toLowerCase().split(/\s+/).filter(Boolean),fs=$('fs').value;
- let res=items.filter(it=>(!tab||it.deptKey===tab)&&(!fs||(fs==='on')===it.active)&&terms.every(t=>(it._k+' '+it.coa.toLowerCase()).includes(t)));
- if(sortK)res=res.slice().sort((a,b)=>{
-  const v=it=>sortK==='st'?(it.active?0:1):sortK==='dept'?it.deptKey:it[sortK]||'';
-  return String(v(a)).localeCompare(String(v(b)),'id',{numeric:true})*sortD;
- });
- return{res,terms};
+function visible() {
+  const terms = $('q').value.toLowerCase().split(/\s+/).filter(Boolean), fs = $('fs').value;
+  let res = items.filter(it => (!tab || it.deptKey === tab) && (!fs || (fs === 'on') === it.active) && terms.every(t => (it._k + ' ' + it.coa.toLowerCase()).includes(t)));
+  if (sortK) res = res.slice().sort((a, b) => {
+    const v = it => sortK === 'st' ? (it.active ? 0 : 1) : sortK === 'dept' ? it.deptKey : it[sortK] || '';
+    return String(v(a)).localeCompare(String(v(b)), 'id', { numeric: true }) * sortD;
+  });
+  return { res, terms };
 }
-function render(){
- const {res,terms}=visible();
- $('sN').textContent=res.length;$('sA').textContent=res.filter(x=>x.active).length;$('sO').textContent=res.filter(x=>!x.active).length;
- const dupSet=new Set(dups.map(d=>d.code)),fr=document.createDocumentFragment();
- res.slice(0,MAX).forEach((it,i)=>{
-  const tr=document.createElement('tr');
-  tr.className=[i%2?'alt':'',sm.touched.has(it.code)?'chg':'',it.active?'':'off',dupSet.has(it.code)?'dupr':''].filter(Boolean).join(' ');
-  const c0=document.createElement('td');c0.className='code';hl(c0,it.code,terms);if(dupSet.has(it.code))c0.title='Op Code ganda';
-  const c1=document.createElement('td');hl(c1,it.desc||'–',terms);if(it.ina){const s=document.createElement('small');hl(s,it.ina,terms);c1.appendChild(s)}
-  const c2=document.createElement('td');c2.textContent=short(it.deptKey);c2.hidden=!!tab;
-  const c3=document.createElement('td');hl(c3,it.coa,terms);
-  const c4=document.createElement('td');const bd=document.createElement('span');bd.className='badge'+(it.active?'':' off');bd.textContent=it.active?'Aktif':'Nonaktif';c4.appendChild(bd);
-  tr.append(c0,c1,c2,c3,c4);
-  if(isAdmin){
-   const ca=document.createElement('td');ca.className='act';
-   const b=document.createElement('button');b.type='button';b.className='g sm';b.textContent='✎ Edit';b.onclick=()=>openDlg(it);ca.appendChild(b);tr.appendChild(ca);
-   tr.ondblclick=()=>openDlg(it);
-  }
-  fr.appendChild(tr);
- });
- $('tb').replaceChildren(fr);
- $('msg').textContent=!res.length?(items.length?'Tidak ada operation yang cocok.':'Belum ada operation.'):res.length>MAX?'Menampilkan '+MAX+' dari '+res.length+'. Persempit pencarian untuk melihat sisanya.':'';
- document.querySelectorAll('th[data-k]').forEach(th=>{th.querySelector('i').textContent=th.dataset.k===sortK?(sortD>0?' ▲':' ▼'):''});
+function render() {
+  const { res, terms } = visible();
+  $('sN').textContent = res.length;
+  $('sA').textContent = res.filter(x => x.active).length;
+  $('sO').textContent = res.filter(x => !x.active).length;
+  const dupSet = new Set(dups.map(d => d.code)), fr = document.createDocumentFragment();
+  res.slice(0, MAX).forEach((it, i) => {
+    const tr = document.createElement('tr');
+    tr.className = [i % 2 ? 'alt' : '', sm.touched.has(it.code) ? 'chg' : '', it.active ? '' : 'off', dupSet.has(it.code) ? 'dupr' : ''].filter(Boolean).join(' ');
+    const c0 = document.createElement('td'); c0.className = 'code'; c0.dataset.label = 'Op Code'; hl(c0, it.code, terms); if (dupSet.has(it.code)) c0.title = 'Op Code ganda';
+    const c1 = document.createElement('td'); c1.dataset.label = 'Description'; hl(c1, it.desc || '–', terms);
+    if (it.ina) { const s = document.createElement('small'); hl(s, it.ina, terms); c1.appendChild(s); }
+    const c2 = document.createElement('td'); c2.dataset.label = 'Department'; c2.textContent = short(it.deptKey); c2.hidden = !!tab;
+    const c3 = document.createElement('td'); c3.dataset.label = 'COA'; hl(c3, it.coa, terms);
+    const c4 = document.createElement('td'); c4.dataset.label = 'Status';
+    const bd = document.createElement('span'); bd.className = 'badge' + (it.active ? '' : ' off'); bd.textContent = it.active ? 'Aktif' : 'Nonaktif'; c4.appendChild(bd);
+    tr.append(c0, c1, c2, c3, c4);
+    if (isAdmin) {
+      const ca = document.createElement('td'); ca.className = 'act';
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'btn sm'; b.textContent = '✎ Edit'; b.onclick = () => openDlg(it); ca.appendChild(b);
+      tr.appendChild(ca);
+      tr.ondblclick = () => openDlg(it);
+    }
+    fr.appendChild(tr);
+  });
+  $('tb').replaceChildren(fr);
+  $('msg').textContent = !res.length ? (items.length ? 'Tidak ada operation yang cocok.' : 'Belum ada operation.')
+    : res.length > MAX ? 'Menampilkan ' + MAX + ' dari ' + res.length + '. Persempit pencarian untuk melihat sisanya.' : '';
+  document.querySelectorAll('th[data-k]').forEach(th => {
+    th.querySelector('i').textContent = th.dataset.k === sortK ? (sortD > 0 ? ' ▲' : ' ▼') : '';
+  });
 }
-$('q').addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(render,120)});
-$('fs').onchange=render;
-$('bReset').onclick=()=>{$('q').value='';$('fs').value='';sortK=null;sortD=1;render();$('q').focus()};
-document.querySelectorAll('th[data-k]').forEach(th=>th.onclick=()=>{const k=th.dataset.k;sortD=sortK===k?-sortD:1;sortK=k;render()});
-$('bHome').onclick=()=>{location.href='index.html'};
-$('bWO').onclick=()=>{location.href='work-order.html'};
-$('bPad').onclick=()=>{location.href='master-paddock.html'};
-$('bOut').onclick=()=>signOut(auth);
+$('q').addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(render, 120); });
+$('fs').onchange = render;
+$('bReset').onclick = () => { $('q').value = ''; $('fs').value = ''; sortK = null; sortD = 1; render(); $('q').focus(); };
+document.querySelectorAll('th[data-k]').forEach(th => th.onclick = () => { const k = th.dataset.k; sortD = sortK === k ? -sortD : 1; sortK = k; render(); });
 
 /* ---------- download CSV ---------- */
-$('bDl').onclick=()=>{
- const rows=tab?work.rows.filter((r,i)=>{const it=items.find(x=>x.i===i);return it&&it.deptKey===tab}):work.rows;
- const text=serializeOps({...work.meta,bom:true,delim:work.meta.delim||';'},rows);
- const a=document.createElement('a');
- a.href=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));
- a.download=tab?'operation - '+short(tab).replace(/[\\/:*?"<>|]/g,'')+'.csv':'operation.csv';
- document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
- if(sm.n)toast('Catatan: file yang diunduh sudah termasuk '+sm.n+' perubahan yang belum disimpan ke GitHub.');
+$('bDl').onclick = () => {
+  const rows = tab ? work.rows.filter((r, i) => { const it = items.find(x => x.i === i); return it && it.deptKey === tab; }) : work.rows;
+  const text = serializeOps({ ...work.meta, bom: true, delim: work.meta.delim || ';' }, rows);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' }));
+  a.download = tab ? 'operation - ' + short(tab).replace(/[\\/:*?"<>|]/g, '') + '.csv' : 'operation.csv';
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  if (sm.n) toast('File yang diunduh sudah termasuk ' + sm.n + ' perubahan yang belum disimpan ke GitHub.');
 };
 
 /* ---------- dialog tambah / edit ---------- */
-let dCur=null;
-const CORE=['code','dept','desc','ina','status'];
-function openDlg(it){
- dCur={key:it?it.code:null,nth:it?items.filter(x=>x.code===it.code&&x.i<it.i).length:0};
- $('dTitle').textContent=it?'Edit Operation':'Tambah Operation';
- const m=work.meta,r=it?it.r:m.header.map(()=>'');
- $('dCode').value=it?it.code:'';
- const ds=$('dDept');ds.replaceChildren();
- const opts=DEPTS.slice();if(it&&it.dept&&!opts.includes(it.dept))opts.push(it.dept);
- [''].concat(opts).forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d||'– pilih department –';ds.appendChild(o)});
- ds.value=it?it.dept:(tab&&tab!==NODEPT?tab:'');
- $('dSt').value=it&&!it.active?'Nonaktif':'Aktif';
- $('dDesc').value=it?it.desc:'';$('dIna').value=it?it.ina:'';
- const core=new Set(CORE.map(k=>m.idx[k]));
- const box=$('dMore');box.replaceChildren();
- m.header.forEach((h,i)=>{if(core.has(i))return;const l=document.createElement('label');l.textContent=h;const inp=document.createElement('input');inp.type='text';inp.autocomplete='off';inp.dataset.h=h;inp.value=r[i]||'';l.appendChild(inp);box.appendChild(l)});
- $('dMoreBox').hidden=!box.children.length;$('dMoreBox').open=false;
- $('dDel').hidden=!it;$('dErr').textContent='';
- $('dlg').showModal();(it?$('dDesc'):$('dCode')).focus();
+let dCur = null;
+const CORE = ['code', 'dept', 'desc', 'ina', 'status'];
+function openDlg(it) {
+  dCur = { key: it ? it.code : null, nth: it ? items.filter(x => x.code === it.code && x.i < it.i).length : 0 };
+  $('dTitle').textContent = it ? 'Edit Operation' : 'Tambah Operation';
+  const m = work.meta, r = it ? it.r : m.header.map(() => '');
+  $('dCode').value = it ? it.code : '';
+  const ds = $('dDept'); ds.replaceChildren();
+  const opts = DEPTS.slice();
+  if (it && it.dept && !opts.includes(it.dept)) opts.push(it.dept);
+  [''].concat(opts).forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d || '– pilih department –'; ds.appendChild(o); });
+  ds.value = it ? it.dept : (tab && tab !== NODEPT ? tab : '');
+  $('dSt').value = it && !it.active ? 'Nonaktif' : 'Aktif';
+  $('dDesc').value = it ? it.desc : '';
+  $('dIna').value = it ? it.ina : '';
+  const core = new Set(CORE.map(k => m.idx[k]).filter(v => v !== undefined));
+  const box = $('dMore'); box.replaceChildren();
+  m.header.forEach((h, i) => {
+    if (core.has(i)) return;
+    const l = document.createElement('label'); l.textContent = h;
+    const inp = document.createElement('input'); inp.type = 'text'; inp.autocomplete = 'off'; inp.dataset.h = h; inp.value = r[i] || '';
+    l.appendChild(inp); box.appendChild(l);
+  });
+  $('dMoreBox').hidden = !box.children.length; $('dMoreBox').open = false;
+  $('dDel').hidden = !it; $('dErr').textContent = '';
+  $('dlg').showModal(); (it ? $('dDesc') : $('dCode')).focus();
 }
-$('bAdd').onclick=()=>openDlg(null);
-$('dCancel').onclick=()=>$('dlg').close();
-$('dOk').onclick=()=>{
- const err=t=>{$('dErr').textContent=t};
- const code=$('dCode').value.trim(),dept=$('dDept').value,desc=$('dDesc').value.trim();
- if(!code)return err('Op Code wajib diisi.');
- if(/[;"\r\n]/.test(code))return err('Op Code tidak boleh berisi ; atau tanda kutip.');
- if(!dept)return err('Pilih department.');
- if(!desc)return err('Description (ENG) wajib diisi.');
- const self=dCur.key==null?null:items.filter(x=>x.code===dCur.key)[dCur.nth];
- const other=items.find(x=>x.code===code&&x!==self);
- if(other)return err('Op Code '+code+' sudah dipakai di '+(other.dept||NODEPT)+'. Satu Op Code hanya boleh milik satu department.');
- const m=work.meta,data={};
- data[col(m,'code')]=code;data[col(m,'dept')]=dept;data[col(m,'desc')]=desc;data[col(m,'status')]=$('dSt').value;
- if(m.idx.ina!==undefined)data[col(m,'ina')]=$('dIna').value.trim();
- $('dMore').querySelectorAll('input').forEach(i=>{data[i.dataset.h]=i.value.trim()});
- edits.push({key:dCur.key,nth:dCur.nth,data});
- $('dlg').close();recompute();
- toast('Perubahan ditampung. Klik "Simpan ke GitHub" untuk menerapkannya.');
+$('bAdd').onclick = () => openDlg(null);
+$('dCancel').onclick = () => $('dlg').close();
+$('dOk').onclick = () => {
+  const err = t => { $('dErr').textContent = t; };
+  const code = $('dCode').value.trim(), dept = $('dDept').value, desc = $('dDesc').value.trim();
+  if (!code) return err('Op Code wajib diisi.');
+  if (/[;"\r\n]/.test(code)) return err('Op Code tidak boleh berisi ; atau tanda kutip.');
+  if (!dept) return err('Pilih department.');
+  if (!desc) return err('Description (ENG) wajib diisi.');
+  const self = dCur.key == null ? null : items.filter(x => x.code === dCur.key)[dCur.nth];
+  const other = items.find(x => x.code === code && x !== self);
+  if (other) return err('Op Code ' + code + ' sudah dipakai di ' + (other.dept || NODEPT) + '. Satu Op Code hanya boleh milik satu department.');
+  const m = work.meta, data = {};
+  data[col(m, 'code')] = code; data[col(m, 'dept')] = dept; data[col(m, 'desc')] = desc; data[col(m, 'status')] = $('dSt').value;
+  const inaCol = col(m, 'ina');
+  if (inaCol !== undefined) data[inaCol] = $('dIna').value.trim();
+  $('dMore').querySelectorAll('input').forEach(i => { data[i.dataset.h] = i.value.trim(); });
+  edits.push({ key: dCur.key, nth: dCur.nth, data });
+  $('dlg').close(); recompute();
+  toast('Perubahan ditampung. Klik "Simpan ke GitHub" untuk menerapkannya.');
 };
-$('dDel').onclick=()=>{
- if(!confirm('Hapus Op Code '+dCur.key+' dari master?\n\nSaran: jika Op Code ini pernah dipakai di Work Order, pilih Status "Nonaktif" saja supaya WO lama tetap terbaca.'))return;
- edits.push({key:dCur.key,nth:dCur.nth,data:null});
- $('dlg').close();recompute();
- toast('Operation dihapus (belum disimpan ke GitHub).');
+$('dDel').onclick = () => {
+  if (!confirm('Hapus Op Code ' + dCur.key + ' dari master?\n\nSaran: jika Op Code ini pernah dipakai di Work Order, pilih Status "Nonaktif" saja.')) return;
+  edits.push({ key: dCur.key, nth: dCur.nth, data: null });
+  $('dlg').close(); recompute();
+  toast('Operation dihapus (belum disimpan ke GitHub).');
 };
-$('bDiscard').onclick=()=>{if(confirm('Batalkan semua perubahan yang belum disimpan?')){edits=[];recompute()}};
+$('bDiscard').onclick = () => { if (confirm('Batalkan semua perubahan yang belum disimpan?')) { edits = []; recompute(); } };
 
-/* ---------- import CSV (perubahan massal dari Excel) ---------- */
-let imp=null;
-$('bImp').onclick=()=>{$('fImp').value='';$('fImp').click()};
-$('fImp').onchange=async()=>{
- const f=$('fImp').files[0];if(!f)return;
- let text=await f.text();
- if(text.includes('�')){try{text=new TextDecoder('windows-1252').decode(await f.arrayBuffer())}catch(e){}}
- const src=parseOpsSource(text);
- imp={name:f.name,src};
- const ds=$('iDept');ds.replaceChildren();
- DEPTS.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;ds.appendChild(o)});
- ds.value=tab&&DEPTS.includes(tab)?tab:DEPTS[1];
- $('iFile').textContent='File: '+f.name+' · '+src.rows.length+' baris · kolom: '+src.meta.header.join(', ');
- impPreview();$('dlgImp').showModal();
+/* ---------- import CSV ---------- */
+let imp = null;
+$('bImp').onclick = () => { $('fImp').value = ''; $('fImp').click(); };
+$('fImp').onchange = async () => {
+  const f = $('fImp').files[0]; if (!f) return;
+  let text = await f.text();
+  if (text.includes('\uFFFD')) { try { text = new TextDecoder('windows-1252').decode(await f.arrayBuffer()); } catch { /* ignore */ } }
+  const src = parseOpsSource(text);
+  imp = { name: f.name, src };
+  const ds = $('iDept'); ds.replaceChildren();
+  DEPTS.forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; ds.appendChild(o); });
+  ds.value = tab && DEPTS.includes(tab) ? tab : DEPTS[1];
+  $('iFile').textContent = 'File: ' + f.name + ' · ' + src.rows.length + ' baris · kolom: ' + src.meta.header.join(', ');
+  impPreview(); $('dlgImp').showModal();
 };
-function impPlan(){
- const {src}=imp,m=src.meta,fall=$('iDept').value,W=work.meta;
- const plan={add:[],chg:[],same:0,conflict:[],dupInFile:[],empty:0,eds:[],depts:new Set()};
- const seen=new Set();
- src.rows.forEach(r=>{
-  const it=itemOf(m,r);
-  if(!it.code){plan.empty++;return}
-  if(seen.has(it.code)){plan.dupInFile.push(it.code);return}
-  seen.add(it.code);
-  const dept=it.dept||fall;plan.depts.add(dept);
-  const cur=items.find(x=>x.code===it.code);
-  if(cur&&cur.dept&&cur.dept!==dept){plan.conflict.push(it.code+' (sudah milik '+short(cur.dept)+')');return}
-  // gabungkan: kolom di file menimpa, kolom yang tidak ada di file tetap
-  const data={};
-  m.header.forEach((h,i)=>{data[h]=String(r[i]==null?'':r[i]).trim()});
-  data[col(W,'dept')]=dept;
-  if(!String(r[m.idx.status]||'').trim())data[col(W,'status')]=cur?(cur.active?'Aktif':'Nonaktif'):'Aktif';
-  if(!cur){plan.add.push(it.code);plan.eds.push({key:null,data});return}
-  const merged=applyEdits(W,[cur.r],[{key:cur.code,data}]).rows[0];
-  if(sig(W,merged)===sig(W,cur.r.concat(Array(Math.max(0,merged.length-cur.r.length)).fill(''))))plan.same++;
-  else{plan.chg.push(it.code);plan.eds.push({key:cur.code,data})}
- });
- // operation di department yang sama tapi tidak ada di file
- plan.missing=items.filter(x=>x.active&&plan.depts.has(x.dept)&&!seen.has(x.code));
- return plan;
+function impPlan() {
+  const { src } = imp, m = src.meta, fall = $('iDept').value, W = work.meta;
+  const plan = { add: [], chg: [], same: 0, conflict: [], dupInFile: [], empty: 0, eds: [], depts: new Set() };
+  const seen = new Set();
+  src.rows.forEach(r => {
+    const it = itemOf(m, r);
+    if (!it.code) { plan.empty++; return; }
+    if (seen.has(it.code)) { plan.dupInFile.push(it.code); return; }
+    seen.add(it.code);
+    const dept = it.dept || fall; plan.depts.add(dept);
+    const cur = items.find(x => x.code === it.code);
+    if (cur && cur.dept && cur.dept !== dept) { plan.conflict.push(it.code + ' (sudah milik ' + short(cur.dept) + ')'); return; }
+    const data = {};
+    m.header.forEach((h, i) => { data[h] = String(r[i] == null ? '' : r[i]).trim(); });
+    data[col(W, 'dept')] = dept;
+    if (!String(r[m.idx.status] || '').trim()) data[col(W, 'status')] = cur ? (cur.active ? 'Aktif' : 'Nonaktif') : 'Aktif';
+    if (!cur) { plan.add.push(it.code); plan.eds.push({ key: null, data }); return; }
+    const merged = applyEdits(W, [cur.r], [{ key: cur.code, data }]).rows[0];
+    if (sig(W, merged) === sig(W, cur.r)) plan.same++;
+    else { plan.chg.push(it.code); plan.eds.push({ key: cur.code, data }); }
+  });
+  plan.missing = items.filter(x => x.active && plan.depts.has(x.dept) && !seen.has(x.code));
+  return plan;
 }
-function impPreview(){
- const p=impPlan(),box=$('iSum');box.replaceChildren();
- const li=(t,cls)=>{const e=document.createElement('li');e.textContent=t;if(cls)e.className=cls;ul.appendChild(e)};
- const ul=document.createElement('ul');
- li(p.add.length+' operation baru');li(p.chg.length+' operation diubah');li(p.same+' sama (tidak berubah)');
- if(p.conflict.length)li(p.conflict.length+' dilewati karena Op Code milik department lain: '+p.conflict.slice(0,8).join(', ')+(p.conflict.length>8?', ...':''),'bad');
- if(p.dupInFile.length)li(p.dupInFile.length+' baris ganda di file dilewati: '+[...new Set(p.dupInFile)].slice(0,8).join(', '),'bad');
- if(p.empty)li(p.empty+' baris tanpa Op Code dilewati');
- box.appendChild(ul);
- $('iOffTxt').textContent='Nonaktifkan '+p.missing.length+' operation aktif di '+[...p.depts].map(short).join(', ')+' yang tidak ada di file ini (untuk menyamakan master dengan file).';
- $('iOff').checked=false;$('iOff').parentElement.hidden=!p.missing.length;
- $('iErr').textContent='';
- $('iOk').disabled=!p.eds.length&&!p.missing.length;
- imp.plan=p;
+function impPreview() {
+  const p = impPlan(), box = $('iSum'); box.replaceChildren();
+  const ul = document.createElement('ul');
+  const li = (t, cls) => { const e = document.createElement('li'); e.textContent = t; if (cls) e.className = cls; ul.appendChild(e); };
+  li(p.add.length + ' operation baru'); li(p.chg.length + ' operation diubah'); li(p.same + ' sama (tidak berubah)');
+  if (p.conflict.length) li(p.conflict.length + ' dilewati (Op Code milik department lain): ' + p.conflict.slice(0, 8).join(', ') + (p.conflict.length > 8 ? ', ...' : ''), 'bad');
+  if (p.dupInFile.length) li(p.dupInFile.length + ' baris ganda di file dilewati: ' + [...new Set(p.dupInFile)].slice(0, 8).join(', '), 'bad');
+  if (p.empty) li(p.empty + ' baris tanpa Op Code dilewati');
+  box.appendChild(ul);
+  $('iOffTxt').textContent = 'Nonaktifkan ' + p.missing.length + ' operation aktif di ' + [...p.depts].map(short).join(', ') + ' yang tidak ada di file ini.';
+  $('iOff').checked = false; $('iOff').parentElement.hidden = !p.missing.length;
+  $('iErr').textContent = '';
+  $('iOk').disabled = !p.eds.length && !p.missing.length;
+  imp.plan = p;
 }
-$('iDept').onchange=impPreview;
-$('iCancel').onclick=()=>$('dlgImp').close();
-$('iOk').onclick=()=>{
- const p=imp.plan,W=work.meta;let n=p.eds.length;
- edits.push(...p.eds);
- if($('iOff').checked)p.missing.forEach(x=>{const d={};d[col(W,'status')]='Nonaktif';edits.push({key:x.code,data:d});n++});
- if(!n){$('iErr').textContent='Tidak ada perubahan untuk diterapkan.';return}
- $('dlgImp').close();recompute();
- toast(n+' perubahan dari '+imp.name+' ditampung. Periksa, lalu klik "Simpan ke GitHub".');
-};
-
-/* ---------- GitHub: simpan sebagai commit ---------- */
-function ghDefaults(){
- let repo='';try{repo=(JSON.parse(ls('ghCfg')||'{}').repo)||''}catch(e){}
- const h=location.hostname;
- if(!repo&&/\.github\.io$/.test(h)){const seg=location.pathname.split('/')[1]||'';repo=h.split('.')[0]+'/'+((seg&&!seg.includes('.'))?seg:h)}
- return{repo,branch:'',path:'operation.csv'};
-}
-function ghCfg(){let c={};try{c=JSON.parse(ls('ghCfgOps')||'{}')}catch(e){}return Object.assign(ghDefaults(),c)}
-const fileUrl=c=>'/repos/'+c.repo+'/contents/'+c.path.split('/').map(encodeURIComponent).join('/');
-const b64dec=s=>new TextDecoder('utf-8',{ignoreBOM:true}).decode(Uint8Array.from(atob(s.replace(/\s/g,'')),c=>c.charCodeAt(0)));
-const b64enc=t=>{const b=new TextEncoder().encode(t);let s='';for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode.apply(null,b.subarray(i,i+8192));return btoa(s)};
-async function gh(method,url,body){
- const t=ls('ghToken');
- if(!t){const e=new Error('Token GitHub belum diisi.');e.status=0;throw e}
- const r=await fetch('https://api.github.com'+url,{method,cache:'no-store',headers:Object.assign({Accept:'application/vnd.github+json',Authorization:'Bearer '+t},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined});
- const j=await r.json().catch(()=>({}));
- if(!r.ok){const e=new Error(j.message||('HTTP '+r.status));e.status=r.status;throw e}
- return j;
-}
-function ghErr(e){
- if(e.status===0)return 'Token GitHub belum diisi.';
- if(e.status===401)return 'Token tidak valid atau sudah kedaluwarsa.';
- if(e.status===403)return 'Token tidak punya izin (perlu Contents: Read and write) atau terkena batas permintaan GitHub.';
- if(e.status===404)return 'Repo, branch, atau file tidak ditemukan, atau token tidak punya akses ke repo ini.';
- if(e.status===409||e.status===422)return 'Konflik versi file di GitHub. Coba lagi.';
- return e.message||'Gagal terhubung ke GitHub.';
-}
-function openGh(msg){
- const c=ghCfg();$('ghRepo').value=c.repo;$('ghBranch').value=c.branch;$('ghPath').value=c.path;$('ghToken').value=ls('ghToken')||'';
- $('ghMsg').style.color='#d33';$('ghMsg').textContent=msg||'';$('dlgGh').showModal();
-}
-const readGh=()=>({repo:$('ghRepo').value.trim(),branch:$('ghBranch').value.trim(),path:$('ghPath').value.trim()||'operation.csv'});
-$('bGh').onclick=()=>openGh();
-$('ghClose').onclick=()=>$('dlgGh').close();
-$('ghSave').onclick=()=>{
- const c=readGh();
- if(!/^[\w.-]+\/[\w.-]+$/.test(c.repo)){$('ghMsg').style.color='#d33';$('ghMsg').textContent='Repo harus berformat pemilik/nama, contoh: siahaans/siahaans.github.io';return}
- ls('ghCfgOps',JSON.stringify(c));const t=$('ghToken').value.trim();if(t)ls('ghToken',t);
- $('dlgGh').close();toast('Pengaturan GitHub tersimpan.');
-};
-$('ghClear').onclick=()=>{lsDel('ghToken');$('ghToken').value='';$('ghMsg').style.color='';$('ghMsg').textContent='Token dihapus dari browser ini.'};
-$('ghTest').onclick=async()=>{
- const c=readGh(),msg=$('ghMsg');msg.style.color='';msg.textContent='Menguji...';
- const t=$('ghToken').value.trim();if(t)ls('ghToken',t);
- try{
-  const rp=await gh('GET','/repos/'+c.repo);
-  const f=await gh('GET',fileUrl(c)+(c.branch?'?ref='+encodeURIComponent(c.branch):''));
-  const w=rp.permissions?(rp.permissions.push?'akses tulis: ya':'akses tulis: TIDAK (token hanya baca)'):'akses tulis: tidak diketahui';
-  msg.style.color=rp.permissions&&!rp.permissions.push?'#d33':'#2ea043';
-  msg.textContent='Terhubung. File '+f.path+' ditemukan ('+f.size+' byte), '+w+'.';
- }catch(e){msg.style.color='#d33';msg.textContent=ghErr(e)}
+$('iDept').onchange = impPreview;
+$('iCancel').onclick = () => $('dlgImp').close();
+$('iOk').onclick = () => {
+  const p = imp.plan, W = work.meta; let n = p.eds.length;
+  edits.push(...p.eds);
+  if ($('iOff').checked) p.missing.forEach(x => { const d = {}; d[col(W, 'status')] = 'Nonaktif'; edits.push({ key: x.code, data: d }); n++; });
+  if (!n) { $('iErr').textContent = 'Tidak ada perubahan untuk diterapkan.'; return; }
+  $('dlgImp').close(); recompute();
+  toast(n + ' perubahan dari ' + imp.name + ' ditampung. Klik "Simpan ke GitHub".');
 };
 
-async function push(){
- if(!sm||!sm.n){toast('Tidak ada perubahan.');return}
- if(!ls('ghToken')){openGh('Isi token GitHub dulu untuk bisa menyimpan.');return}
- const c=ghCfg();
- if(!confirm('Simpan '+sm.txt+' ke GitHub?\n'+c.repo+' / '+c.path))return;
- const btn=$('bPush');btn.disabled=true;btn.textContent='Menyimpan...';
- const msg='Update master operation via web: '+sm.txt+(email?' ('+email+')':'');
- try{
-  let newText=null,done=false;
-  for(let attempt=0;attempt<2&&!done;attempt++){
-   const f=await gh('GET',fileUrl(c)+(c.branch?'?ref='+encodeURIComponent(c.branch):''));
-   const remoteText=b64dec(f.content);
-   const rem=parseOpsSource(remoteText);
-   // perubahan diterapkan ke versi terbaru di GitHub (digabung per Op Code)
-   const res=applyEdits(rem.meta,rem.rows,edits);
-   newText=serializeOps(res.meta,res.rows);
-   if(newText===remoteText){done=true;break}
-   try{
-    await gh('PUT',fileUrl(c),Object.assign({message:msg,content:b64enc(newText),sha:f.sha},c.branch?{branch:c.branch}:{}));
-    done=true;
-   }catch(e){if(!((e.status===409||e.status===422)&&attempt===0))throw e}
+/* ---------- GitHub settings dialog ---------- */
+function readGh() {
+  const saved = JSON.parse(ls('ghCfgOps') || '{}');
+  return {
+    repo:   $('ghRepo').value.trim()   || saved.repo   || '',
+    branch: $('ghBranch').value.trim() || saved.branch || '',
+    path:   $('ghPath').value.trim()   || saved.path   || 'operation.csv',
+  };
+}
+function openGh(msg) {
+  const saved = JSON.parse(ls('ghCfgOps') || '{}');
+  $('ghRepo').value   = saved.repo   || '';
+  $('ghBranch').value = saved.branch || '';
+  $('ghPath').value   = saved.path   || 'operation.csv';
+  $('ghToken').value  = ls('ghToken') || '';
+  $('ghMsg').style.color = '#d33';
+  $('ghMsg').textContent = msg || '';
+  $('dlgGh').showModal();
+}
+$('bGh').onclick = () => openGh();
+$('ghClose').onclick = () => $('dlgGh').close();
+$('ghSave').onclick = () => {
+  const c = readGh();
+  if (!/^[\w.-]+\/[\w.-]+$/.test(c.repo)) {
+    $('ghMsg').style.color = '#d33';
+    $('ghMsg').textContent = 'Repo harus berformat pemilik/nama, contoh: siahaans/siahaans.github.io';
+    return;
   }
-  if(!done)throw Object.assign(new Error('Konflik versi file di GitHub.'),{status:409});
-  setPendingOps(newText);
-  setBase(newText);edits=[];recompute();
-  toast('Tersimpan ke GitHub. Perubahan tampil untuk semua pengguna dalam 1-2 menit.');
- }catch(e){
-  if(e.status===0||e.status===401)openGh(ghErr(e));else alert('Gagal menyimpan ke GitHub:\n'+ghErr(e)+'\n\nPerubahan Anda masih tertampung di halaman ini.');
- }finally{btn.disabled=false;btn.textContent='Simpan ke GitHub'}
+  ls('ghCfgOps', JSON.stringify(c));
+  const t = $('ghToken').value.trim(); if (t) ls('ghToken', t);
+  $('dlgGh').close(); toast('Pengaturan GitHub tersimpan.');
+};
+$('ghClear').onclick = () => { lsDel('ghToken'); $('ghToken').value = ''; $('ghMsg').style.color = ''; $('ghMsg').textContent = 'Token dihapus dari browser ini.'; };
+$('ghTest').onclick = async () => {
+  const c = readGh(), msg = $('ghMsg');
+  msg.style.color = ''; msg.textContent = 'Menguji...';
+  const t = $('ghToken').value.trim(); if (t) ls('ghToken', t);
+  try {
+    const rp = await gh('GET', '/repos/' + c.repo);
+    const f  = await ghReadFile(c, c.path);
+    const w  = rp.permissions ? (rp.permissions.push ? 'akses tulis: ya' : 'akses tulis: TIDAK') : 'akses tulis: tidak diketahui';
+    msg.style.color = rp.permissions && !rp.permissions.push ? '#d33' : '#2ea043';
+    msg.textContent = 'Terhubung. File ' + f.path + ' ditemukan (' + f.size + ' byte), ' + w + '.';
+  } catch (e) { msg.style.color = '#d33'; msg.textContent = ghErr(e); }
+};
+
+/* ---------- push ke GitHub ---------- */
+async function push() {
+  if (!sm || !sm.n) { toast('Tidak ada perubahan.'); return; }
+  const tv = $('ghToken').value.trim(); if (tv) ls('ghToken', tv);
+  if (!ls('ghToken')) { openGh('Isi token GitHub dulu untuk bisa menyimpan.'); return; }
+  const c = readGh();
+  if (!c.repo) { openGh('Repo GitHub belum diatur.'); return; }
+  if (!confirm('Simpan ' + sm.txt + ' ke GitHub?\n' + c.repo + ' / ' + c.path)) return;
+  const btn = $('bPush'); btn.disabled = true; btn.textContent = 'Menyimpan...';
+  const message = 'Update master operation via web: ' + sm.txt + (email ? ' (' + email + ')' : '');
+  try {
+    let done = false;
+    for (let attempt = 0; attempt < 2 && !done; attempt++) {
+      const f = await ghReadFile(c, c.path);
+      const rem = parseOpsSource(f.text);
+      const res = applyEdits(rem.meta, rem.rows, edits);
+      const newText = serializeOps(res.meta, res.rows);
+      if (newText === f.text) { done = true; break; }
+      try { await ghWriteFile(c, c.path, newText, message, f.sha); done = true; }
+      catch (e) { if (!((e.status === 409 || e.status === 422) && attempt === 0)) throw e; }
+    }
+    if (!done) throw Object.assign(new Error('Konflik versi file di GitHub.'), { status: 409 });
+    setPendingOps(newText);
+    setBase(newText);
+    edits = []; recompute();
+    toast('Tersimpan ke GitHub. Perubahan tampil untuk semua pengguna dalam 1-2 menit.');
+  } catch (e) {
+    if (e.status === 0 || e.status === 401 || e.status === 404) openGh(ghErr(e));
+    else alert('Gagal menyimpan ke GitHub:\n' + ghErr(e) + '\n\nPerubahan Anda masih tertampung di halaman ini.');
+  } finally { btn.disabled = false; btn.textContent = 'Simpan ke GitHub'; }
 }
-$('bPush').onclick=push;
+$('bPush').onclick = push;
 </script>
 </body>
 </html>
