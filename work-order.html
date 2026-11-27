@@ -234,6 +234,10 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 .ubox.real .madd{display:block}
 .ubox .mnote{margin-top:8px;font-size:11.5px;color:var(--mute);line-height:1.5}
 @media print{#uk td.uc::before{display:none!important}}
+.mcopy{display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:8px 10px;background:var(--grey);border-radius:8px;font-size:12px;color:var(--mute);flex-wrap:wrap}
+.mcopy select{flex:1;min-width:180px;height:30px;border:1px solid var(--line);border-radius:6px;padding:0 8px;background:var(--paper);color:var(--ink);font:inherit;font-size:12.5px}
+.mcopy .cm{flex-basis:100%;color:var(--ok,#1a7f4b);font-size:11.5px}
+.mcopy .cm:empty{display:none}
 </style>
 </head>
 <body>
@@ -319,13 +323,13 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 </div>
 <div id="mdlg" class="mdlg" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mTitle">
  <div class="mhead"><div><div class="mkind" id="mKind"></div><h3 id="mTitle"></h3><div class="msub" id="mSub"></div></div><button type="button" class="mx" id="mX" aria-label="Tutup">&times;</button></div>
- <div class="mbody"><table class="mtab" id="mTab"><thead></thead><tbody></tbody></table><div class="mempty" id="mEmpty" hidden></div>
+ <div class="mbody"><div class="mcopy" id="mCopy" hidden><span>Salin material dari</span><select id="mCopySel"></select><button type="button" class="g sm" id="mCopyBtn">+ Salin</button><span class="cm" id="mCopyMsg"></span></div><table class="mtab" id="mTab"><thead></thead><tbody></tbody></table><div class="mempty" id="mEmpty" hidden></div>
   <button type="button" class="madd" id="mAdd">+ Tambah Material</button><div class="mnote" id="mNote"></div></div>
  <div class="mfoot"><button type="button" class="g" id="mCancel">Batal</button><button type="button" id="mOk">Simpan</button></div>
 </div></div>
 <div id="udlg" class="mdlg" hidden><div class="mbox ubox" role="dialog" aria-modal="true" aria-labelledby="uTitle">
  <div class="mhead"><div><div class="mkind" id="uKind"></div><h3 id="uTitle"></h3><div class="msub" id="uSub"></div></div><button type="button" class="mx" id="uX" aria-label="Tutup">&times;</button></div>
- <div class="mbody"><table class="mtab" id="uTab"><thead></thead><tbody></tbody></table><div class="mempty" id="uEmpty" hidden></div>
+ <div class="mbody"><div class="mcopy" id="uCopy" hidden><span>Salin unit dari</span><select id="uCopySel"></select><button type="button" class="g sm" id="uCopyBtn">+ Salin</button><span class="cm" id="uCopyMsg"></span></div><table class="mtab" id="uTab"><thead></thead><tbody></tbody></table><div class="mempty" id="uEmpty" hidden></div>
   <button type="button" class="madd" id="uAdd"></button><div class="mnote" id="uNote"></div></div>
  <div class="mfoot"><button type="button" class="g" id="uCancel">Batal</button><button type="button" id="uOk">Simpan</button></div>
 </div></div>
@@ -537,6 +541,7 @@ function mOpen(i,kind){
  // daftar nama material yang sudah dipakai di WO ini (untuk saran ketik)
  const names=new Set();ukRows().forEach(x=>getMats(x).forEach(m=>{if(m.mat)names.add(m.mat)}));
  $('dlMat').innerHTML=[...names].sort().map(n=>'<option value="'+esc(n)+'">').join('');
+ fillCopy('m',i,kind,u=>getMats(u).filter(m=>m.mat||m.dosis),'material');
  mDraw();$('mdlg').hidden=false;
  const f=$('mTab').querySelector('input:not([readonly])');if(f)f.focus();
 }
@@ -574,6 +579,21 @@ function mDraw(){
 }
 function mClose(){$('mdlg').hidden=true;mCur=null}
 $('mAdd').onclick=()=>{mCur.list.push({mat:'',sat:'',dosis:'',keb:'',real:''});mDraw();const ins=$('mTab').querySelectorAll('input[data-f=mat]');if(ins.length)ins[ins.length-1].focus()};
+$('mCopyBtn').onclick=()=>{
+ if(!mCur||mCur.kind!=='plan')return;
+ const u=ukRows()[+$('mCopySel').value];if(!u)return;
+ const list=mCur.list;
+ for(let k=list.length-1;k>=0;k--)if(!String(list[k].mat||'').trim()&&!String(list[k].dosis||'').trim())list.splice(k,1);
+ const key=m=>String(m.mat||'').trim().toLowerCase()+'|'+(m.sat||'');
+ const have=new Set(list.map(key));let add=0,skip=0;
+ getMats(u).filter(m=>m.mat||m.dosis).forEach(m=>{
+  const c={mat:m.mat,sat:m.sat||'',dosis:m.dosis||'',keb:'',real:''};
+  if(have.has(key(c))){skip++;return}
+  have.add(key(c));list.push(c);add++;
+ });
+ mDraw();
+ $('mCopyMsg').textContent=add+' material disalin'+(skip?', '+skip+' dilewati (sudah ada)':'')+'. Cek Dosis lalu Simpan.';
+};
 $('mX').onclick=$('mCancel').onclick=mClose;
 $('mdlg').addEventListener('mousedown',e=>{if(e.target===$('mdlg'))mClose()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&mCur)mClose()});
@@ -591,6 +611,17 @@ ukBody.addEventListener('click',e=>{
  else mOpen(i,'plan');
 });
 
+/* ---------- salin isi dari baris lain (pop-up Rencana Material & Rencana Unit) ---------- */
+function fillCopy(p,i,kind,getter,word){
+ const sel=$(p+'CopySel'),src=[];sel.innerHTML='';$(p+'CopyMsg').textContent='';
+ ukRows().forEach((u,j)=>{
+  if(j===i)return;const n=getter(u).length;if(!n)return;
+  const sh=u.querySelector('.uk2').value;
+  src.push(new Option('Baris '+(j+1)+(sh?' · '+sh:'')+' · '+n+' '+word,j));
+ });
+ src.forEach(o=>sel.add(o));
+ $(p+'Copy').hidden=kind!=='plan'||!src.length;
+}
 /* ---------- unit kerja: banyak unit + implement per baris, diisi lewat pop-up ---------- */
 // data per baris: [{code,impl,jlh,est, rcode,rimpl,rjlh,rhm, x}] disimpan di rows[i].units
 //   code/impl/jlh/est   = RENCANA (unit, implement/gandengan, jumlah unit/opt, estimasi HM/KM/Rit)
@@ -649,6 +680,7 @@ function uOpen(i,kind){
  $('uNote').textContent=plan
   ?'Jlh Unit/Opt = jumlah unit/operator. Est = perkiraan HM/KM/Rit. Implement boleh dikosongkan. Pilih dari saran agar sesuai Master Unit.'
   :'Kolom "Aktual" yang dikosongkan dianggap sama dengan rencana (cukup isi HM/Rit). Output + UOM (Ha / m / rit): total Output ber-UOM Ha mengisi kolom Close baris ini secara otomatis (Close masih bisa diubah manual). Isi Unit/Implement aktual jika diganti; ketik "-" pada Implement jika tidak memakai implement. Unit yang tidak ada di rencana: klik "+ Tambah Unit di Luar Rencana".';
+ fillCopy('u',i,kind,u=>getUnits(u).filter(e=>!e.x&&(e.code||e.impl)),'unit');
  uDraw();$('udlg').hidden=false;
  const f=$('uTab').querySelector('input');if(f)f.focus();
 }
@@ -701,6 +733,21 @@ function uClose(){$('udlg').hidden=true;uCur=null}
 $('uAdd').onclick=()=>{
  const x=uCur.kind==='real';uCur.list.push(Object.assign(UE(),{x:x}));uDraw();
  const rows=$('uTab').tBodies[0].rows,l=rows[rows.length-1];const f=l&&l.querySelector('input');if(f)f.focus();
+};
+$('uCopyBtn').onclick=()=>{
+ if(!uCur||uCur.kind!=='plan')return;
+ const u=ukRows()[+$('uCopySel').value];if(!u)return;
+ const list=uCur.list;
+ for(let k=list.length-1;k>=0;k--){const e=list[k];if(!e.x&&!String(e.code||'').trim()&&!String(e.impl||'').trim()&&!String(e.jlh||'').trim()&&!String(e.est||'').trim())list.splice(k,1)}
+ const key=e=>(String(e.code||'').trim()+'|'+String(e.impl||'').trim()).toLowerCase();
+ const have=new Set(list.filter(e=>!e.x).map(key));let add=0,skip=0;
+ getUnits(u).filter(e=>!e.x&&(e.code||e.impl)).forEach(e=>{
+  const c=Object.assign(UE(),{code:e.code,impl:e.impl,jlh:e.jlh,est:e.est,estu:e.estu||'HM'});
+  if(have.has(key(c))){skip++;return}
+  have.add(key(c));list.splice(list.findIndex(x=>x.x)<0?list.length:list.findIndex(x=>x.x),0,c);add++;
+ });
+ uDraw();
+ $('uCopyMsg').textContent=add+' unit disalin'+(skip?', '+skip+' dilewati (sudah ada)':'')+'. Cek Jlh/Est lalu Simpan.';
 };
 $('uX').onclick=$('uCancel').onclick=uClose;
 $('udlg').addEventListener('mousedown',e=>{if(e.target===$('udlg'))uClose()});
