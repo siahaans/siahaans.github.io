@@ -1,0 +1,30 @@
+/* base.css - gaya dasar bersama halaman Master (paddock, operation, unit) */
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.4 Arial,Helvetica,sans-serif;padding:10px}
+[hidden]{display:none!important}
+.top #who{margin-right:auto;color:var(--mute);font-size:13px}
+button{padding:7px 12px;border:1px solid var(--line);background:var(--head);color:#fff;border-radius:4px;cursor:pointer;font:inherit;font-size:13px}
+button.g{background:var(--paper);color:var(--ink)}
+button.sm{padding:3px 9px;font-size:12px}
+button:disabled{opacity:.6;cursor:wait}
+.tools input,.tools select{width:100%;height:38px;padding:0 10px;border:1px solid var(--line);border-radius:4px;background:var(--inp);color:var(--ink);font:inherit}
+.tools input:focus,.tools select:focus{outline:2px solid #4da3ff;outline-offset:-1px}
+.pend{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding:10px 12px;border:1px solid #2ea043;background:var(--chg);border-radius:6px;font-size:13px}
+.pend span{margin-right:auto}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.st{flex:1 1 140px;padding:10px 12px;background:var(--grey);border-radius:6px}
+.st b{display:block;font-size:20px}.st small{color:var(--mute);text-transform:uppercase;letter-spacing:.06em;font-size:11px}
+.scroll{overflow-x:auto}
+th{background:var(--head);color:#fff;text-align:left;padding:8px 10px;font-size:13px;user-select:none;white-space:nowrap}
+th[data-k]{cursor:pointer}
+td.act{text-align:right;white-space:nowrap;width:1%}
+mark{background:var(--hl);color:inherit;padding:0 1px;border-radius:2px}
+#msg{margin:10px 0 0;color:var(--mute);font-size:13px}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h2{margin:0 0 12px;font-size:17px}
+dialog label{display:block;font-size:12px;color:var(--mute);margin-bottom:10px}
+.derr{min-height:18px;margin:6px 0;color:#d33;font-size:13px}
+.dbtn{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ghx b{color:var(--ink)}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;border-radius:4px;font-size:13px;z-index:70;max-width:92vw;text-align:center}
