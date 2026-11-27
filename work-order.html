@@ -227,9 +227,9 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 .paper.on #uk td.ucn:empty::before{content:"+ Isi Rencana"}
 .paper.on.real #uk td.ucr:empty::before{content:"+ Isi";background:#1a7f4b}
 .paper.on #uk td.ucn:not(:empty):hover::after,.paper.on.real #uk td.ucr:not(:empty):hover::after{content:"\270E";position:absolute;top:1px;right:3px;font-size:10px;color:var(--head)}
-.ubox{width:min(920px,100%)}
+.ubox{width:min(980px,100%)}
 .ubox .mbody{overflow:auto}
-.ubox .mtab{min-width:740px}
+.ubox .mtab{min-width:820px}
 .ubox .mtab td.ro{line-height:15px}
 .ubox.real .madd{display:block}
 .ubox .mnote{margin-top:8px;font-size:11.5px;color:var(--mute);line-height:1.5}
@@ -269,7 +269,7 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
  <colgroup><col style="width:3%"><col style="width:8%"><col style="width:19.5%"><col style="width:11%"><col style="width:5.5%"><col style="width:7.5%"><col style="width:7%"><col style="width:5.5%"><col style="width:5.5%"><col style="width:4.5%"><col style="width:23%"></colgroup>
  <thead>
   <tr><th colspan="11">Operation</th></tr>
-  <tr><th rowspan="3">No</th><th colspan="2">Pekerjaan</th><th colspan="2">Field</th><th rowspan="3">Jlh HK Support</th><th rowspan="3">Jlh Realisasi</th><th colspan="3">Target Kerja</th><th rowspan="3">Keterangan</th></tr>
+  <tr><th rowspan="3">No</th><th colspan="2">Pekerjaan</th><th colspan="2">Field</th><th rowspan="3">Jumlah HK</th><th rowspan="3">Jlh Realisasi</th><th colspan="3">Target Kerja</th><th rowspan="3">Keterangan</th></tr>
   <tr><th rowspan="2">Op Code</th><th rowspan="2">Desc</th><th rowspan="2">Paddock / Block</th><th rowspan="2">Luas Area</th><th rowspan="2">Open</th><th colspan="2">Luas Area</th></tr>
   <tr><th>Close</th><th>%</th></tr>
  </thead>
@@ -280,7 +280,7 @@ input:disabled{color:var(--ink);opacity:1;background:transparent}
 </table>
 <div class="gap"></div>
 <table id="uk">
- <colgroup><col style="width:3%"><col style="width:11%"><col style="width:7%"><col style="width:13.5%"><col style="width:6.5%"><col style="width:9%"><col style="width:3%"><col style="width:11%"><col style="width:8%"><col style="width:15.5%"><col style="width:6.5%"><col style="width:6%"></colgroup>
+ <colgroup><col style="width:3%"><col style="width:11%"><col style="width:6.5%"><col style="width:12.5%"><col style="width:7%"><col style="width:10%"><col style="width:3%"><col style="width:11%"><col style="width:8%"><col style="width:15.5%"><col style="width:6.5%"><col style="width:6%"></colgroup>
  <thead>
   <tr><th colspan="12">Unit Kerja</th></tr>
   <tr><th rowspan="2">No</th><th rowspan="2">Unit Kerja<br>Kode Unit / Implement</th><th colspan="2">Data Unit/Opt</th><th rowspan="2">Est<br>HM/KM/Rit</th><th rowspan="2">Realisasi<br>HM/Rit &middot; Output</th><th rowspan="2">No</th><th rowspan="2">Shift</th><th colspan="2">Data Material</th><th rowspan="2">Total<br>Kebutuhan</th><th rowspan="2">Total<br>Realisasi</th></tr>
@@ -597,7 +597,7 @@ ukBody.addEventListener('click',e=>{
 //   rcode/rimpl/rjlh/rhm = REALISASI yang menempel pada baris rencana yang sama (boleh unit pengganti)
 //   x=true              = unit DI LUAR RENCANA (hanya punya realisasi)
 // kolom lama ukode/unik/unama/uest/uhk tetap diisi (ringkasan per baris) supaya Timeline/Summary/Costing/Export tetap jalan
-const UE=()=>({code:'',impl:'',jlh:'',est:'',rcode:'',rimpl:'',rjlh:'',rhm:'',rout:'',ruom:'Ha',x:false});
+const UE=()=>({code:'',impl:'',jlh:'',est:'',estu:'HM',rcode:'',rimpl:'',rjlh:'',rhm:'',rhmu:'HM',rout:'',ruom:'Ha',x:false});
 const UT={unik:'jlh',unama:'rjlh',uest:'est',uhk:'rhm'};
 const UTYPE={code:'unit',rcode:'unit',impl:'impl',rimpl:'impl'};
 let umaster=null;
@@ -623,7 +623,7 @@ function setUnits(u,us){
   const hasR=!!(e.rcode||e.rimpl||e.rjlh||e.rhm||e.rout);if(hasR)anyR=true;
   const rl=hasR?[(e.rcode||'–')+(e.rjlh!==''?' × '+e.rjlh:'')].concat(e.rimpl?['↳ '+e.rimpl]:[]):[];
   const n=Math.max(pl.length,rl.length,1),pad=a=>{while(a.length<n)a.push('');return a};
-  col[0].push(...pad(pl));col[1].push(...pad([e.x?'':e.jlh]));col[2].push(...pad(rl));col[3].push(...pad([e.x?'':e.est]));col[4].push(...pad([[e.rhm,e.rout!==''?e.rout+' '+(e.ruom||'Ha'):''].filter(Boolean).join(' \u00b7 ')]));
+  col[0].push(...pad(pl));col[1].push(...pad([e.x?'':e.jlh]));col[2].push(...pad(rl));col[3].push(...pad([e.x||e.est===''?'':e.est+' '+(e.estu||'HM')]));col[4].push(...pad([[e.rhm!==''?e.rhm+' '+(e.rhmu||'HM'):'',e.rout!==''?e.rout+' '+(e.ruom||'Ha'):''].filter(Boolean).join(' \u00b7 ')]));
  });
  const tx=a=>a.map(x=>x===''||x==null?' ':x).join('\n');
  c[0].textContent=us.length?tx(col[0]):'';
@@ -655,20 +655,21 @@ function uOpen(i,kind){
 function uDraw(){
  const {kind,list}=uCur,plan=kind==='plan',th=$('uTab').tHead,tb=$('uTab').tBodies[0];
  th.innerHTML=plan
-  ?'<tr><th>Kode Unit</th><th>Implement / Gandengan</th><th style="width:76px">Jlh Unit/Opt</th><th style="width:100px">Est HM/KM/Rit</th><th style="width:30px"></th></tr>'
-  :'<tr><th style="width:150px">Rencana</th><th>Unit Aktual</th><th>Implement Aktual</th><th style="width:56px">Jlh</th><th style="width:78px">HM/Rit</th><th style="width:84px">Output</th><th style="width:74px">UOM</th><th style="width:30px"></th></tr>';
+  ?'<tr><th>Kode Unit</th><th>Implement / Gandengan</th><th style="width:76px">Jlh Unit/Opt</th><th style="width:84px">Est</th><th style="width:74px">UOM</th><th style="width:30px"></th></tr>'
+  :'<tr><th style="width:150px">Rencana</th><th>Unit Aktual</th><th>Implement Aktual</th><th style="width:56px">Jlh</th><th style="width:78px">HM/Rit</th><th style="width:72px">UOM</th><th style="width:84px">Output</th><th style="width:74px">UOM</th><th style="width:30px"></th></tr>';
  tb.innerHTML='';
  let shown=0;
+ const sel=(f,val,o,d)=>'<td><select data-f="'+f+'">'+o.map(s=>'<option'+(s===(val||d)?' selected':'')+'>'+s+'</option>').join('')+'</select></td>';
  const fld=(f,val,ph,dl,num)=>'<td><input data-f="'+f+'"'+(dl?' list="'+dl+'" autocomplete="off"':'')+(num?' class="num" inputmode="decimal"':'')+' placeholder="'+esc(ph)+'" value="'+esc(val)+'"></td>';
  list.forEach((m,k)=>{
   if(plan&&m.x)return;
   shown++;
   const tr=document.createElement('tr');
   if(plan){
-   tr.innerHTML=fld('code',m.code,'Kode unit','dlUnit')+fld('impl',m.impl,'Implement','dlImpl')+fld('jlh',m.jlh,'1','',1)+fld('est',m.est,'0','',1)+'<td><button type="button" class="del" title="Hapus unit">&times;</button></td>';
+   tr.innerHTML=fld('code',m.code,'Kode unit','dlUnit')+fld('impl',m.impl,'Implement','dlImpl')+fld('jlh',m.jlh,'1','',1)+fld('est',m.est,'0','',1)+sel('estu',m.estu,['HM','KM','Rit'],'HM')+'<td><button type="button" class="del" title="Hapus unit">&times;</button></td>';
   }else{
    const lab=m.x?'<i>Di luar rencana</i>':'<b>'+esc(m.code||'–')+'</b>'+(m.impl?'<br><span class="msub">↳ '+esc(m.impl)+'</span>':'')+((m.jlh||m.est)?'<br><span class="msub">'+esc([m.jlh&&m.jlh+' unit',m.est&&'Est '+m.est].filter(Boolean).join(' · '))+'</span>':'');
-   tr.innerHTML='<td class="ro">'+lab+'</td>'+fld('rcode',m.rcode,m.x?'Kode unit':(m.code||'Kode unit'),'dlUnit')+fld('rimpl',m.rimpl,m.x?'Implement':(m.impl||'Implement'),'dlImpl')+fld('rjlh',m.rjlh,m.x?'1':(m.jlh||'1'),'',1)+fld('rhm',m.rhm,'0','',1)+fld('rout',m.rout,'0','',1)+'<td><select data-f="ruom">'+['Ha','m','rit'].map(s=>'<option'+(s===(m.ruom||'Ha')?' selected':'')+'>'+s+'</option>').join('')+'</select></td><td>'+(m.x?'<button type="button" class="del" title="Hapus unit">&times;</button>':'')+'</td>';
+   tr.innerHTML='<td class="ro">'+lab+'</td>'+fld('rcode',m.rcode,m.x?'Kode unit':(m.code||'Kode unit'),'dlUnit')+fld('rimpl',m.rimpl,m.x?'Implement':(m.impl||'Implement'),'dlImpl')+fld('rjlh',m.rjlh,m.x?'1':(m.jlh||'1'),'',1)+fld('rhm',m.rhm,'0','',1)+sel('rhmu',m.rhmu,['HM','KM','Rit'],'HM')+fld('rout',m.rout,'0','',1)+'<td><select data-f="ruom">'+['Ha','m','rit'].map(s=>'<option'+(s===(m.ruom||'Ha')?' selected':'')+'>'+s+'</option>').join('')+'</select></td><td>'+(m.x?'<button type="button" class="del" title="Hapus unit">&times;</button>':'')+'</td>';
   }
   const chk=(e,fix)=>{
    const t=UTYPE[e.dataset.f];if(!t||!umaster)return;
@@ -709,11 +710,11 @@ $('uOk').onclick=()=>{
  const t=s=>String(s==null?'':s).trim();
  let out=[];
  if(uCur.kind==='plan'){
-  const pl=uCur.list.filter(e=>!e.x).map(e=>Object.assign({},e,{code:t(e.code),impl:t(e.impl),jlh:t(e.jlh),est:t(e.est)})).filter(e=>e.code||e.impl||e.jlh||e.est);
+  const pl=uCur.list.filter(e=>!e.x).map(e=>Object.assign({},e,{code:t(e.code),impl:t(e.impl),jlh:t(e.jlh),est:t(e.est),estu:e.estu||'HM'})).filter(e=>e.code||e.impl||e.jlh||e.est);
   out=pl.concat(uCur.list.filter(e=>e.x));
  }else{
   uCur.list.forEach(e=>{
-   const n=Object.assign({},e,{rcode:t(e.rcode),rimpl:t(e.rimpl),rjlh:t(e.rjlh),rhm:t(e.rhm),rout:t(e.rout),ruom:e.ruom||'Ha'});
+   const n=Object.assign({},e,{rcode:t(e.rcode),rimpl:t(e.rimpl),rjlh:t(e.rjlh),rhm:t(e.rhm),rout:t(e.rout),ruom:e.ruom||'Ha',rhmu:e.rhmu||'HM'});
    const has=n.rcode||n.rimpl||n.rjlh||n.rhm||n.rout;
    if(e.x){if(has){if(n.rcode&&!n.rjlh)n.rjlh='1';out.push(n)}return}
    if(has){n.rcode=n.rcode||n.code;n.rimpl=n.rimpl==='-'?'':(n.rimpl||n.impl);n.rjlh=n.rjlh||n.jlh||'1'}
