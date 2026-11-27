@@ -4,21 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Master Operation</title>
+<link rel="stylesheet" href="base.css">
 <style>
 :root{--bg:#e9ebef;--paper:#fff;--ink:#111;--mute:#5b6270;--line:#c9cdd4;--head:#1f3a73;--grey:#f1f3f6;--inp:#fff;--hl:#fff8c6;--chg:rgba(46,160,67,.16);--ok:#1a7f4b;--off:#8c959f;--bad:#b3261e;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root{--bg:#15171b;--paper:#1e2127;--ink:#e8e8e8;--mute:#9aa0aa;--line:#3a3f48;--head:#2c4f94;--grey:#262a31;--inp:#1e2127;--hl:#4a4520;--chg:rgba(46,160,67,.28)}}
-*{box-sizing:border-box}
-html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:14px/1.4 Arial,Helvetica,sans-serif;padding:10px}
-[hidden]{display:none!important}
 .top{max-width:1040px;margin:0 auto 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.top #who{margin-right:auto;color:var(--mute);font-size:13px}
-button{padding:7px 12px;border:1px solid var(--line);background:var(--head);color:#fff;border-radius:4px;cursor:pointer;font:inherit;font-size:13px}
-button.g{background:var(--paper);color:var(--ink)}
-button.sm{padding:3px 9px;font-size:12px}
 button.dg{background:var(--bad);border-color:var(--bad);color:#fff}
-button:disabled{opacity:.6;cursor:wait}
 .paper{max-width:1040px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px}
 .h1r{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 h1{margin:0 auto 0 0;font-size:20px}
@@ -29,22 +21,11 @@ h1{margin:0 auto 0 0;font-size:20px}
 .tabs .ct{font-size:11px;font-weight:700;min-width:20px;padding:0 6px;border-radius:999px;background:var(--grey);color:var(--ink);text-align:center}
 .tabs button.on .ct{background:rgba(255,255,255,.25);color:#fff}
 .tools{display:grid;grid-template-columns:2fr 1fr auto;gap:8px;margin-bottom:12px}
-.tools input,.tools select{width:100%;height:38px;padding:0 10px;border:1px solid var(--line);border-radius:4px;background:var(--inp);color:var(--ink);font:inherit}
-.tools input:focus,.tools select:focus{outline:2px solid #4da3ff;outline-offset:-1px}
 .dup{margin-bottom:12px;padding:10px 12px;border:1px solid var(--bad);background:rgba(179,38,30,.1);border-radius:6px;font-size:13px}
 .dup b{color:var(--bad)}
 .dup ul{margin:6px 0 0;padding-left:18px}
-.pend{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding:10px 12px;border:1px solid #2ea043;background:var(--chg);border-radius:6px;font-size:13px}
-.pend span{margin-right:auto}
-.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-.st{flex:1 1 140px;padding:10px 12px;background:var(--grey);border-radius:6px}
-.st b{display:block;font-size:20px}.st small{color:var(--mute);text-transform:uppercase;letter-spacing:.06em;font-size:11px}
-.scroll{overflow-x:auto}
 table{border-collapse:collapse;width:100%;min-width:640px}
-th{background:var(--head);color:#fff;text-align:left;padding:8px 10px;font-size:13px;user-select:none;white-space:nowrap}
-th[data-k]{cursor:pointer}
 td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-td.act{text-align:right;white-space:nowrap;width:1%}
 td.code{font-family:Consolas,Menlo,monospace;white-space:nowrap}
 td small{display:block;color:var(--mute);font-size:12px}
 tbody tr.alt{background:var(--grey)}
@@ -53,27 +34,18 @@ tbody tr.off td{color:var(--mute)}
 tbody tr.dupr td.code{color:var(--bad);font-weight:700}
 .badge{display:inline-block;padding:1px 9px;border-radius:999px;font-size:11px;font-weight:700;color:#fff;background:var(--ok);white-space:nowrap}
 .badge.off{background:var(--off)}
-mark{background:var(--hl);color:inherit;padding:0 1px;border-radius:2px}
-#msg{margin:10px 0 0;color:var(--mute);font-size:13px}
 dialog{width:min(680px,94vw);padding:16px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
-dialog::backdrop{background:rgba(0,0,0,.45)}
-dialog h2{margin:0 0 12px;font-size:17px}
-dialog label{display:block;font-size:12px;color:var(--mute);margin-bottom:10px}
 dialog input[type=text],dialog input[type=password],dialog select{width:100%;height:36px;padding:0 9px;margin-top:3px;border:1px solid var(--line);border-radius:4px;background:var(--inp);color:var(--ink);font:inherit;font-size:14px}
 dialog input:focus,dialog select:focus{outline:2px solid #4da3ff;outline-offset:-1px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
 .g3{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:0 12px}
 .more summary{cursor:pointer;font-size:12px;color:var(--head);margin:2px 0 10px}
-.derr{min-height:18px;margin:6px 0;color:#d33;font-size:13px}
-.dbtn{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .ghx,.hlp{font-size:12px;color:var(--mute);line-height:1.5;margin:0 0 10px}
-.ghx b{color:var(--ink)}
 .imp{font-size:13px;margin:0 0 10px;padding:10px 12px;background:var(--grey);border-radius:6px}
 .imp ul{margin:4px 0 0;padding-left:18px}
 .imp .bad{color:var(--bad)}
 .chk{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--ink)!important}
 .chk input{margin-top:2px}
-#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;border-radius:4px;font-size:13px;z-index:70;max-width:92vw;text-align:center}
 @media(max-width:640px){.tools{grid-template-columns:1fr 1fr}.tools input{grid-column:1/-1}.g2,.g3{grid-template-columns:1fr}}
 </style>
 </head>
@@ -147,16 +119,12 @@ dialog input:focus,dialog select:focus{outline:2px solid #4da3ff;outline-offset:
 
 <div id="toast" hidden></div>
 <script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {getAuth,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {initializeFirestore,doc,getDoc} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {auth,signOut,onAuthStateChanged,connect} from "./firebase.js";
+import {ls,lsDel} from "./util.js";
+import {createGithub} from "./github.js";
 import {DEPTS,normDept,isInactive,loadOpsText,parseOpsSource,serializeOps,itemOf,findDuplicates,setPendingOps} from "./operation.js";
 
-const cfg={apiKey:"AIzaSyDEsM1oAvOw_7Zd14wd2SmlnOAqAgwbQIU",authDomain:"gpa---work-order.firebaseapp.com",projectId:"gpa---work-order",storageBucket:"gpa---work-order.firebasestorage.app",messagingSenderId:"352208521958",appId:"1:352208521958:web:895d25863e8ec918070927"};
 const $=id=>document.getElementById(id);
-const fbApp=initializeApp(cfg),auth=getAuth(fbApp);
-const ls=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};
-const lsDel=k=>{try{localStorage.removeItem(k)}catch(e){}};
 const MAX=500,NODEPT='(tanpa department)';
 const hk=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
 const short=d=>d===NODEPT?'Tanpa department':String(d).replace(/^Agri - /,'');
@@ -167,15 +135,7 @@ function toast(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout
 
 /* ---------- peran admin (sama seperti halaman Work Order) ---------- */
 async function getRole(u){
- try{
-  const ids=[...new Set([ls('woDb'),'(default)','default'].filter(Boolean))];
-  for(const id of ids){
-   const t=initializeFirestore(fbApp,{experimentalForceLongPolling:true},id);
-   try{const d=await getDoc(doc(t,'users',u.uid));ls('woDb',id);return d.exists()?(d.data().role||''):''}
-   catch(e){if(e.code!=='unavailable'&&e.code!=='not-found')throw e}
-  }
- }catch(e){}
- return '';
+ try{const {snap}=await connect(u.uid);return snap.exists()?(snap.data().role||''):''}catch(e){return ''}
 }
 
 onAuthStateChanged(auth,async u=>{
@@ -372,7 +332,7 @@ $('bImp').onclick=()=>{$('fImp').value='';$('fImp').click()};
 $('fImp').onchange=async()=>{
  const f=$('fImp').files[0];if(!f)return;
  let text=await f.text();
- if(text.includes('�')){try{text=new TextDecoder('windows-1252').decode(await f.arrayBuffer())}catch(e){}}
+ if(text.includes(' ')){try{text=new TextDecoder('windows-1252').decode(await f.arrayBuffer())}catch(e){}}
  const src=parseOpsSource(text);
  imp={name:f.name,src};
  const ds=$('iDept');ds.replaceChildren();
@@ -434,57 +394,7 @@ $('iOk').onclick=()=>{
 };
 
 /* ---------- GitHub: simpan sebagai commit ---------- */
-function ghDefaults(){
- let repo='';try{repo=(JSON.parse(ls('ghCfg')||'{}').repo)||''}catch(e){}
- const h=location.hostname;
- if(!repo&&/\.github\.io$/.test(h)){const seg=location.pathname.split('/')[1]||'';repo=h.split('.')[0]+'/'+((seg&&!seg.includes('.'))?seg:h)}
- return{repo,branch:'',path:'operation.csv'};
-}
-function ghCfg(){let c={};try{c=JSON.parse(ls('ghCfgOps')||'{}')}catch(e){}return Object.assign(ghDefaults(),c)}
-const fileUrl=c=>'/repos/'+c.repo+'/contents/'+c.path.split('/').map(encodeURIComponent).join('/');
-const b64dec=s=>new TextDecoder('utf-8',{ignoreBOM:true}).decode(Uint8Array.from(atob(s.replace(/\s/g,'')),c=>c.charCodeAt(0)));
-const b64enc=t=>{const b=new TextEncoder().encode(t);let s='';for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode.apply(null,b.subarray(i,i+8192));return btoa(s)};
-async function gh(method,url,body){
- const t=ls('ghToken');
- if(!t){const e=new Error('Token GitHub belum diisi.');e.status=0;throw e}
- const r=await fetch('https://api.github.com'+url,{method,cache:'no-store',headers:Object.assign({Accept:'application/vnd.github+json',Authorization:'Bearer '+t},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined});
- const j=await r.json().catch(()=>({}));
- if(!r.ok){const e=new Error(j.message||('HTTP '+r.status));e.status=r.status;throw e}
- return j;
-}
-function ghErr(e){
- if(e.status===0)return 'Token GitHub belum diisi.';
- if(e.status===401)return 'Token tidak valid atau sudah kedaluwarsa.';
- if(e.status===403)return 'Token tidak punya izin (perlu Contents: Read and write) atau terkena batas permintaan GitHub.';
- if(e.status===404)return 'Repo, branch, atau file tidak ditemukan, atau token tidak punya akses ke repo ini.';
- if(e.status===409||e.status===422)return 'Konflik versi file di GitHub. Coba lagi.';
- return e.message||'Gagal terhubung ke GitHub.';
-}
-function openGh(msg){
- const c=ghCfg();$('ghRepo').value=c.repo;$('ghBranch').value=c.branch;$('ghPath').value=c.path;$('ghToken').value=ls('ghToken')||'';
- $('ghMsg').style.color='#d33';$('ghMsg').textContent=msg||'';$('dlgGh').showModal();
-}
-const readGh=()=>({repo:$('ghRepo').value.trim(),branch:$('ghBranch').value.trim(),path:$('ghPath').value.trim()||'operation.csv'});
-$('bGh').onclick=()=>openGh();
-$('ghClose').onclick=()=>$('dlgGh').close();
-$('ghSave').onclick=()=>{
- const c=readGh();
- if(!/^[\w.-]+\/[\w.-]+$/.test(c.repo)){$('ghMsg').style.color='#d33';$('ghMsg').textContent='Repo harus berformat pemilik/nama, contoh: siahaans/siahaans.github.io';return}
- ls('ghCfgOps',JSON.stringify(c));const t=$('ghToken').value.trim();if(t)ls('ghToken',t);
- $('dlgGh').close();toast('Pengaturan GitHub tersimpan.');
-};
-$('ghClear').onclick=()=>{lsDel('ghToken');$('ghToken').value='';$('ghMsg').style.color='';$('ghMsg').textContent='Token dihapus dari browser ini.'};
-$('ghTest').onclick=async()=>{
- const c=readGh(),msg=$('ghMsg');msg.style.color='';msg.textContent='Menguji...';
- const t=$('ghToken').value.trim();if(t)ls('ghToken',t);
- try{
-  const rp=await gh('GET','/repos/'+c.repo);
-  const f=await gh('GET',fileUrl(c)+(c.branch?'?ref='+encodeURIComponent(c.branch):''));
-  const w=rp.permissions?(rp.permissions.push?'akses tulis: ya':'akses tulis: TIDAK (token hanya baca)'):'akses tulis: tidak diketahui';
-  msg.style.color=rp.permissions&&!rp.permissions.push?'#d33':'#2ea043';
-  msg.textContent='Terhubung. File '+f.path+' ditemukan ('+f.size+' byte), '+w+'.';
- }catch(e){msg.style.color='#d33';msg.textContent=ghErr(e)}
-};
+const {ghCfg,fileUrl,b64dec,b64enc,gh,ghErr,openGh}=createGithub({key:'ghCfgOps',path:'operation.csv',toast});
 
 async function push(){
  if(!sm||!sm.n){toast('Tidak ada perubahan.');return}
