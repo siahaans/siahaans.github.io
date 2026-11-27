@@ -4,11 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Work Order</title>
-<link rel="stylesheet" href="wo.css?v=2">
+<link rel="stylesheet" href="wo.css?v=4">
 </head>
 <body>
 <p id="ld" style="text-align:center;padding:30px">Memuat...</p>
-<div class="bar" id="nav" hidden><span id="who" style="margin-right:auto;align-self:center"></span><button class="g" id="bHome">&larr; Beranda</button><button class="g" id="bList">Daftar WO</button><button id="bNew">+ WO Baru</button><button class="g" id="bOut">Keluar</button></div>
+<div class="bar" id="nav" hidden><span id="who"></span><div class="grp end">
+<button class="tb opt" id="bHome" title="Kembali ke menu utama"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg><span class="lb">Beranda</span></button>
+<button class="tb" id="bList" title="Lihat semua Work Order"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span class="lb">Daftar WO</span></button>
+<button class="tb pri" id="bNew" title="Buat Work Order baru"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="lb">WO Baru</span></button>
+<i class="sep"></i>
+<button class="tb mute opt" id="bOut" title="Keluar dari akun"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span class="lb">Keluar</span></button>
+</div></div>
 <div id="list" class="wrap" hidden><div class="paper"><h2 style="margin:0 0 8px">Daftar Work Order</h2>
 <div class="flt" id="flt">
  <div class="flt-row"><span class="flt-lb">Department</span><div class="chips" id="fDept"></div></div>
@@ -20,8 +26,14 @@
 </div>
 <table id="lt"><colgroup><col style="width:29%"><col style="width:11%"><col style="width:8%"><col style="width:8%"><col style="width:7%"><col style="width:12%"><col style="width:25%"></colgroup><thead><tr><th>No WO - Pekerjaan</th><th>Forecast Start</th><th>Department</th><th>Mandor</th><th>Status</th><th>Diubah</th><th>Aksi</th></tr></thead><tbody></tbody></table><p id="lmsg"></p><p style="text-align:center;margin:10px 0 0"><button class="g" id="lMore" hidden>Muat lagi</button></p></div></div>
 <div id="formv" hidden>
-<div class="bar"><span id="stat" style="margin-right:auto;align-self:center;font-weight:700"></span><button class="g" id="bSave">Simpan</button><button class="dg" id="bClose">Close WO</button><button class="g" id="bXls">Export Excel</button><button class="g" onclick="window.print()">Cetak / PDF</button></div>
-<div class="tabs"><button type="button" id="tWo" class="on">Work Order</button><button type="button" id="tTl">Timeline</button><button type="button" id="tSm">Summary</button><button type="button" id="tCs">Costing</button></div>
+<div class="bar" id="actions"><span id="stat"></span><div class="grp end">
+<button class="tb ok" id="bSave" title="Simpan perubahan Work Order"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2zM17 21v-8H7v8M7 3v5h8"/></svg><span class="lb">Simpan</span></button>
+<button class="tb opt" id="bXls" title="Unduh sebagai file Excel (.xlsx)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18"/></svg><span class="lb">Export Excel</span></button>
+<button class="tb opt" onclick="window.print()" title="Cetak atau simpan sebagai PDF"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg><span class="lb">Cetak / PDF</span></button>
+<i class="sep" id="sepC"></i>
+<button class="tb danger" id="bClose" title="Tutup WO. Setelah di-close tidak bisa diubah lagi."><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3"/></svg><span class="lb">Close WO</span></button>
+</div></div>
+<div class="tabs"><button type="button" id="tWo" class="on"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h8"/></svg>Work Order</button><button type="button" id="tTl"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v18H3zM16 2v4M8 2v4M3 10h18"/></svg>Timeline</button><button type="button" id="tSm"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>Summary</button><button type="button" id="tCs"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Costing</button></div>
 <div class="warn" id="mwarn" hidden>Master paddock tidak bisa dimuat. Luas Area diisi manual dan paddock tidak divalidasi.</div>
 <div class="wrap"><div class="paper">
 
@@ -102,7 +114,7 @@
 <datalist id="dlUnit"></datalist><datalist id="dlImpl"></datalist>
 <datalist id="dlMat"></datalist>
 <div id="toast" hidden></div>
-<script type="module" src="wo.js?v=2"></script>
+<script type="module" src="wo.js?v=3"></script>
 <script>
 /* Nama file PDF saat cetak: "nomor WO - Pekerjaan/Desc" (browser memakai judul halaman sebagai nama file) */
 (function(){
