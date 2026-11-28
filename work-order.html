@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Work Order</title>
-<link rel="stylesheet" href="wo.css?v=4">
+<link rel="stylesheet" href="wo.css?v=5">
 </head>
 <body>
 <p id="ld" style="text-align:center;padding:30px">Memuat...</p>
@@ -16,13 +16,16 @@
 <button class="tb mute opt" id="bOut" title="Keluar dari akun"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span class="lb">Keluar</span></button>
 </div></div>
 <div id="list" class="wrap" hidden><div class="paper"><h2 style="margin:0 0 8px">Daftar Work Order</h2>
-<div class="flt" id="flt">
- <div class="flt-row"><span class="flt-lb">Department</span><div class="chips" id="fDept"></div></div>
- <div class="flt-row"><span class="flt-lb">Forecast Start</span>
-  <div class="flt-dates"><label>Dari<input type="date" id="fFrom"></label><span class="flt-sep">&ndash;</span><label>Sampai<input type="date" id="fTo"></label></div>
-  <div class="chips" id="fQuick"><button type="button" data-q="today">Hari ini</button><button type="button" data-q="week">Minggu ini</button><button type="button" data-q="month">Bulan ini</button></div>
+<div class="flt" id="flt" role="search" aria-label="Filter daftar Work Order">
+ <div class="flt-main">
+  <span class="flt-ti"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg>Filter</span>
+  <label class="fld"><span class="fl">Department</span><select id="fDept" title="Tampilkan WO dari department tertentu"></select></label>
+  <div class="fld"><span class="fl">Forecast Start <em>(tanggal mulai)</em></span>
+   <div class="rng"><input type="date" id="fFrom" aria-label="Dari tanggal"><span class="flt-sep">&rarr;</span><input type="date" id="fTo" aria-label="Sampai tanggal"></div></div>
+  <div class="fld"><span class="fl">Cepat</span>
+   <div class="chips" id="fQuick"><button type="button" data-q="today">Hari ini</button><button type="button" data-q="week">Minggu ini</button><button type="button" data-q="month">Bulan ini</button></div></div>
  </div>
- <div class="flt-foot"><span id="fCount"></span><button type="button" class="flt-reset" id="fReset">Reset filter</button></div>
+ <div class="flt-foot"><span id="fCount"></span><span class="fact" id="fAct"></span><button type="button" class="flt-reset" id="fReset">&#10005; Reset</button></div>
 </div>
 <table id="lt"><colgroup><col style="width:29%"><col style="width:11%"><col style="width:8%"><col style="width:8%"><col style="width:7%"><col style="width:12%"><col style="width:25%"></colgroup><thead><tr><th>No WO - Pekerjaan</th><th>Forecast Start</th><th>Department</th><th>Mandor</th><th>Status</th><th>Diubah</th><th>Aksi</th></tr></thead><tbody></tbody></table><p id="lmsg"></p><p style="text-align:center;margin:10px 0 0"><button class="g" id="lMore" hidden>Muat lagi</button></p></div></div>
 <div id="formv" hidden>
@@ -114,7 +117,7 @@
 <datalist id="dlUnit"></datalist><datalist id="dlImpl"></datalist>
 <datalist id="dlMat"></datalist>
 <div id="toast" hidden></div>
-<script type="module" src="wo.js?v=3"></script>
+<script type="module" src="wo.js?v=4"></script>
 <script>
 /* Nama file PDF saat cetak: "nomor WO - Pekerjaan/Desc" (browser memakai judul halaman sebagai nama file) */
 (function(){
