@@ -132,6 +132,25 @@ a.app:hover{transform:translateY(-4px);border-color:var(--ac);box-shadow:0 18px 
 
 #home.open .side{background:linear-gradient(160deg,rgba(255,255,255,.82),rgba(255,248,244,.7))}
 #stage.home:not([data-th=light]) #home.open .side{background:linear-gradient(160deg,rgba(28,36,84,.82),rgba(14,18,48,.78))}
+
+.sheet{display:none}
+@media(max-width:700px){
+ .scrim{display:block}
+ .sheet{display:block;position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:40;padding:8px 14px 16px;border-radius:28px;background:linear-gradient(170deg,rgba(255,255,255,.88),rgba(255,248,244,.8));border:1px solid var(--gb);box-shadow:inset 0 1px 0 var(--hi),0 -10px 60px rgba(0,0,0,.28);-webkit-backdrop-filter:blur(30px) saturate(190%);backdrop-filter:blur(30px) saturate(190%);transform:translateY(120%);visibility:hidden;transition:transform .55s cubic-bezier(.2,.9,.2,1),visibility 0s .55s;color:var(--ink)}
+ #stage.home:not([data-th=light]) .sheet{background:linear-gradient(170deg,rgba(28,36,84,.9),rgba(14,18,48,.88))}
+ .sheet.on{transform:none;visibility:visible;transition:transform .55s cubic-bezier(.2,.9,.2,1)}
+ .grab{display:block;width:100%;height:22px;border:0;background:none;cursor:pointer}.grab i{display:block;width:40px;height:4px;border-radius:4px;background:var(--mut);opacity:.5;margin:8px auto 0}
+ .sh-brand{display:flex;align-items:center;gap:12px;padding:2px 4px 12px}.sh-brand .logo{width:46px;height:46px;font-size:15px}
+ .sh-brand span{display:flex;flex-direction:column;line-height:1.25}.sh-brand b{font-size:16px;letter-spacing:.08em}.sh-brand small{font-size:12px;color:var(--mut)}
+ .sh-list{display:flex;flex-direction:column;gap:6px}
+ .sh-i{display:flex;align-items:center;gap:14px;height:52px;padding:0 16px;border-radius:16px;color:var(--ink);text-decoration:none;font-size:15px;background:rgba(255,255,255,.16);opacity:0;transform:translateY(14px);transition:opacity .4s,transform .5s cubic-bezier(.2,.9,.2,1),background .2s}
+ .sh-i svg{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+ .sh-i.on{background:var(--act);color:var(--act-ink);font-weight:700}.sh-i.off{opacity:.4!important}
+ .sheet.on .sh-i{opacity:1;transform:none}
+ .sheet.on .sh-i:nth-child(1){transition-delay:.12s}.sheet.on .sh-i:nth-child(2){transition-delay:.17s}.sheet.on .sh-i:nth-child(3){transition-delay:.22s}.sheet.on .sh-i:nth-child(4){transition-delay:.27s}.sheet.on .sh-i:nth-child(5){transition-delay:.32s}.sheet.on .sh-i:nth-child(6){transition-delay:.37s}
+ .sh-i:active{background:rgba(255,255,255,.4)}
+}
+@media(prefers-reduced-motion:reduce){.sheet,.sh-i{transition:none}}
 </style>
 <link rel="stylesheet" href="wallpaper.css">
 </head>
@@ -164,6 +183,18 @@ a.app:hover{transform:translateY(-4px);border-color:var(--ac);box-shadow:0 18px 
   <button class="ni out" id="bOut" title="Keluar" aria-label="Keluar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span class="nl">Keluar</span></button>
  </aside>
  <div class="scrim" id="scrim"></div>
+ <div class="sheet" id="sheet" role="dialog" aria-label="Menu" aria-hidden="true">
+  <button class="grab" id="grab" type="button" aria-label="Tutup menu"><i></i></button>
+  <div class="sh-brand"><div class="logo sm"><span>WO</span></div><span><b>GPA PORTAL</b><small>Work Order System</small></span></div>
+  <div class="sh-list">
+   <a class="sh-i on" href="index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg><span>Beranda</span></a>
+   <a class="sh-i" href="work-order.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1zM8 6H6a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-2M9 12h6M9 16h4"/></svg><span>Work Order</span></a>
+   <a class="sh-i" href="master-paddock.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span>Master Paddock</span></a>
+   <a class="sh-i" href="master-operation.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z"/></svg><span>Master Operation</span></a>
+   <a class="sh-i" href="master-unit.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="17" r="3"/><circle cx="18" cy="18" r="2"/><path d="M10 17h6M7 14V8h6l3 4h3v5M13 8V5h3"/></svg><span>Master Unit</span></a>
+   <span class="sh-i off"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Laporan &middot; segera</span></span>
+  </div>
+ </div>
  <div class="main">
   <header class="top">
    <div><h1 class="hi"><span id="gr">Selamat datang</span>, <span id="nm"></span></h1><p class="sub2">GPA Portal &middot; pilih modul yang ingin Anda buka.</p><span class="who" id="who"></span></div>
@@ -189,9 +220,9 @@ a.app:hover{transform:translateY(-4px);border-color:var(--ac);box-shadow:0 18px 
    <div class="app gl off"><div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><h3>Laporan</h3><p>Segera hadir.</p></div>
   </div>
  </div>
- <nav class="mnav" aria-label="Menu">
-  <a class="ni on" href="index.html" aria-label="Beranda"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg></a><a class="ni" href="work-order.html" aria-label="Work Order"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1zM8 6H6a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-2M9 12h6M9 16h4"/></svg></a>
-  <a class="ni" href="master-paddock.html" aria-label="Paddock"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></a><a class="ni" href="master-operation.html" aria-label="Operation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z"/></svg></a><a class="ni" href="master-unit.html" aria-label="Unit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="17" r="3"/><circle cx="18" cy="18" r="2"/><path d="M10 17h6M7 14V8h6l3 4h3v5M13 8V5h3"/></svg></a>
+ <nav class="mnav" id="mnav" aria-label="Menu">
+  <button type="button" class="ni on" aria-label="Buka menu: Beranda"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg></button><button type="button" class="ni" aria-label="Buka menu: Work Order"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1zM8 6H6a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-2M9 12h6M9 16h4"/></svg></button>
+  <button type="button" class="ni" aria-label="Buka menu: Paddock"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></button><button type="button" class="ni" aria-label="Buka menu: Operation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z"/></svg></button><button type="button" class="ni" aria-label="Buka menu: Unit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="17" r="3"/><circle cx="18" cy="18" r="2"/><path d="M10 17h6M7 14V8h6l3 4h3v5M13 8V5h3"/></svg></button>
  </nav>
 </section>
 </div>
@@ -231,11 +262,19 @@ function tick(){const d=new Date(),h=d.getHours(),p=n=>String(n).padStart(2,'0')
  $('gr').textContent=h<11?'Selamat pagi':h<15?'Selamat siang':h<18?'Selamat sore':'Selamat malam';
  $('d_n').textContent=d.getDate();$('d_w').textContent=DAY[d.getDay()];$('d_m').textContent=MN[d.getMonth()]+' '+d.getFullYear();$('d_t').textContent=p(h)+':'+p(d.getMinutes())}
 tick();setInterval(()=>{if(!document.hidden)tick()},20000);
-/* sidebar: klik logo WO -> meluncur terbuka ke kanan (menimpa konten, tidak menggeser) */
-const hm=$('home'),scr=$('scrim'),setSide=o=>{hm.classList.toggle('open',o);scr.classList.toggle('on',o);$('bBrand').setAttribute('aria-expanded',String(o))};
-$('bBrand').onclick=()=>setSide(!hm.classList.contains('open'));
-scr.onclick=()=>setSide(false);
-document.addEventListener('keydown',e=>{if(e.key==='Escape')setSide(false)});
+/* menu: laptop = terbuka saat kursor masuk (atau klik logo WO untuk "kunci"); HP = panel menu naik dari bawah */
+const hm=$('home'),scr=$('scrim'),sd=$('side'),sh=$('sheet');let pin=false,hT=0;
+const isM=()=>matchMedia('(max-width:700px)').matches;
+function setSide(o,k){clearTimeout(hT);hm.classList.toggle('open',o);$('bBrand').setAttribute('aria-expanded',String(o));if(k==='pin'){pin=o;scr.classList.toggle('on',o)}if(!o){pin=false;scr.classList.remove('on')}}
+$('bBrand').onclick=()=>setSide(!hm.classList.contains('open')||!pin,'pin');
+sd.addEventListener('pointerenter',e=>{if(e.pointerType!=='mouse'||isM())return;clearTimeout(hT);hT=setTimeout(()=>{if(!hm.classList.contains('open'))setSide(true)},90)});
+sd.addEventListener('pointerleave',e=>{if(e.pointerType!=='mouse'||pin)return;clearTimeout(hT);hT=setTimeout(()=>setSide(false),260)});
+function setSheet(o){sh.classList.toggle('on',o);sh.setAttribute('aria-hidden',String(!o));scr.classList.toggle('on',o)}
+$('mnav').onclick=e=>{e.preventDefault();setSheet(true)};
+$('grab').onclick=()=>setSheet(false);
+scr.onclick=()=>{setSide(false);setSheet(false)};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){setSide(false);setSheet(false)}});
+addEventListener('resize',()=>{if(!isM())setSheet(false)});
 /* kilau kaca mengikuti kursor */
 document.addEventListener('pointermove',e=>{const g=e.target.closest&&e.target.closest('.gl');if(!g)return;const r=g.getBoundingClientRect();g.style.setProperty('--mx',(e.clientX-r.left)+'px');g.style.setProperty('--my',(e.clientY-r.top)+'px')},{passive:true});
 
