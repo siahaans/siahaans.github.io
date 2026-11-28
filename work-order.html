@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Work Order</title>
-<link rel="stylesheet" href="wo.css?v=6">
+<link rel="stylesheet" href="wo.css?v=7">
 </head>
 <body>
 <p id="ld" style="text-align:center;padding:30px">Memuat...</p>
@@ -21,10 +21,13 @@
   <span class="flt-ti"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg>Filter</span>
   <label class="fld fsr"><span class="fl">Cari</span><span class="sbox"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="search" id="fQ" placeholder="No WO, pekerjaan, mandor, paddock, status…" autocomplete="off" enterkeyhint="search"></span></label>
   <label class="fld"><span class="fl">Department</span><select id="fDept" title="Tampilkan WO dari department tertentu"></select></label>
-  <div class="fld"><span class="fl">Forecast Start <em>(tanggal mulai)</em></span>
-   <div class="rng"><input type="date" id="fFrom" aria-label="Dari tanggal"><span class="flt-sep">&rarr;</span><input type="date" id="fTo" aria-label="Sampai tanggal"></div></div>
-  <div class="fld"><span class="fl">Cepat</span>
-   <div class="chips" id="fQuick"><button type="button" data-q="today">Hari ini</button><button type="button" data-q="week">Minggu ini</button><button type="button" data-q="month">Bulan ini</button></div></div>
+  <div class="fld fdt"><span class="fl">Forecast Start <em>(tanggal mulai)</em></span>
+   <button type="button" class="drg" id="fRange" aria-haspopup="true" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span id="fRangeTx">Semua tanggal</span><i class="car">&#9662;</i></button>
+   <div class="pop" id="fPop" hidden>
+    <div id="fQuick"></div>
+    <hr><div class="cust"><span>Rentang sendiri</span><div class="rng"><input type="date" id="fFrom" aria-label="Dari tanggal"><span class="flt-sep">&rarr;</span><input type="date" id="fTo" aria-label="Sampai tanggal"></div></div>
+    <button type="button" class="pclr" id="fClr">Semua tanggal</button>
+   </div></div>
  </div>
  <div class="flt-foot"><span id="fCount"></span><span class="fact" id="fAct"></span><button type="button" class="flt-reset" id="fReset">&#10005; Reset</button></div>
 </div>
@@ -118,7 +121,7 @@
 <datalist id="dlUnit"></datalist><datalist id="dlImpl"></datalist>
 <datalist id="dlMat"></datalist>
 <div id="toast" hidden></div>
-<script type="module" src="wo.js?v=5"></script>
+<script type="module" src="wo.js?v=6"></script>
 <script>
 /* Nama file PDF saat cetak: "nomor WO - Pekerjaan/Desc" (browser memakai judul halaman sebagai nama file) */
 (function(){
