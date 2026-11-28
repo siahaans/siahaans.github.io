@@ -62,3 +62,29 @@
 10727113;Agri - Upkeep & Manuring;RC -  Support operations - 10727113;RC - Perbantuan tenaga kerja, kegiatan umum - 10727113;Perbantuan tenaga kerja, kegiatan umum;10727113 - Upkeep Manuring - Ratoon - Perbantuan tenaga kerja, kegiatan umum;10727113 - Upkeep Manuring - Ratoon - Support operations;Aktif
 10727190;Agri - Upkeep & Manuring;RC -  Bailing Trash - 10727190;RC - Kumpul dan tumpuk daun kering dan pucuk tebu - 10727190;Kumpul dan tumpuk daun kering dan pucuk tebu;10727190 - Upkeep Manuring - Ratoon - Kumpul dan tumpuk daun kering dan pucuk tebu;10727190 - Upkeep Manuring - Ratoon - Bailing Trash;Aktif
 10727191;Agri - Upkeep & Manuring;RC -  Headland Management - 10727191;RC - Perapihan tempat alat berat putar - 10727191;Perapihan tempat alat berat putar;10727191 - Upkeep Manuring - Ratoon - Perapihan tempat alat berat putar;10727191 - Upkeep Manuring - Ratoon - Headland Management;Aktif
+10306121;Agri - Land Development;Harrowing - 10306121;;;;;Aktif
+10306122;Agri - Land Development;Scooping - 10306122;;;;;Aktif
+10306123;Agri - Land Development;Ripping - 10306123;;;;;Aktif
+10306124;Agri - Land Development;Grubbing - 10306124;;;;;Aktif
+10306125;Agri - Land Development;Manual Picking - 10306125;;;;;Aktif
+10306126;Agri - Land Development;Wood Mulching - 10306126;;;;;Aktif
+10306127;Agri - Land Development;Zonal - 10306127;;;;;Aktif
+10306128;Agri - Land Development;Bed Forming - 10306128;;;;;Aktif
+10307129;Agri - Land Development;EC Soil Mapping - 10307129;;;;;Aktif
+10308130;Agri - Land Development;Manual Ameliorant Application - 10308130;;;;;Aktif
+10308131;Agri - Land Development;Ameliorant Application - 10308131;;;;;Aktif
+10308132;Agri - Land Development;Filter Cake Broadcasting - 10308132;;;;;Aktif
+10308133;Agri - Land Development;Ash Broadcasting - 10308133;;;;;Aktif
+10309113;Agri - Land Development;Support operations - 10309113;;;;;Aktif
+10309134;Agri - Land Development;Material Loading/Unloading - 10309134;;;;;Aktif
+10309135;Agri - Land Development;Ameliorant Transport - 10309135;;;;;Aktif
+10309136;Agri - Land Development;Machinery Transport - 10309136;;;;;Aktif
+10309137;Agri - Land Development;Workforce Transport - 10309137;;;;;Aktif
+10341121;Agri - Land Development;Resupply - Harrowing - 10341121;;;;;Aktif
+10341122;Agri - Land Development;Resupply - Scooping - 10341122;;;;;Aktif
+10341123;Agri - Land Development;Resupply - Ripping - 10341123;;;;;Aktif
+10341124;Agri - Land Development;Resupply - Grubbing - 10341124;;;;;Aktif
+10341125;Agri - Land Development;Resupply - Manual Picking - 10341125;;;;;Aktif
+10341126;Agri - Land Development;Resupply - Wood Mulching - 10341126;;;;;Aktif
+10341127;Agri - Land Development;Resupply - Zonal - 10341127;;;;;Aktif
+10341128;Agri - Land Development;Resupply - Bed Forming - 10341128;;;;;Aktif
